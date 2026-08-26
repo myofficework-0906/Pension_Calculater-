@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b5d3b">
+  <title>राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+  <div class="sub">Maharashtra Government Pension Calculator</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="calculator">🧮 निवृत्तीवेतन कॅल्क्युलेटर</button>
+  <button class="tab" data-tab="saved">📁 सेव्ह केलेली माहिती</button>
+  <button class="tab" data-tab="help">📖 वापरकर्ता मदत</button>
+</nav>
+
+<main class="container">
+<section id="calculator" class="tabpage active">
+<form id="pensionForm">
+
+<div class="section blue">
+<h3>माहिती भरा</h3>
+<div class="grid3">
+  <label>कर्मचाऱ्याचे नाव
+    <input id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर">
+  </label>
+  <label>कार्यालयाचे नाव
+    <input id="officeName" placeholder="कार्यालयाचे नाव">
+  </label>
+  <label>पदनाम
+    <input id="designation" placeholder="उदा. कनिष्ठ लिपिक">
+  </label>
+  <label>कर्मचारी वर्ग (Group)
+    <select id="group"><option>गट क</option><option>गट अ</option><option>गट ब</option><option>गट ड</option></select>
+  </label>
+  <label>जन्म दिनांक (DOB)
+    <input id="dob" type="date">
+  </label>
+  <label>निवृत्ती प्रकार
+    <select id="retirementType">
+      <option>नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
+      <option>स्वेच्छानिवृत्ती</option>
+      <option>अधिवार्षिकी निवृत्ती</option>
+      <option>रुग्णता / Invalid Pension</option>
+      <option>इतर</option>
+    </select>
+  </label>
+</div>
+</div>
+
+<div class="section purple">
+<h3>सेवा कालावधी तपशील</h3>
+<div class="grid4">
+  <label>आस्थापना (Establishment)
+    <select id="establishment"><option>कायम (Permanent)</option><option>तात्पुरते</option></select>
+  </label>
+  <label>सेवेत रुजू दिनांक
+    <input id="joiningDate" type="date">
+  </label>
+  <label>निवृत्त / सेवा समाप्ती दिनांक
+    <input id="retirementDate" type="date">
+  </label>
+  <label>अर्हताकारी सेवा सहामाही
+    <input id="serviceHalfYears" type="number" min="0" value="0" placeholder="उदा. 66">
+  </label>
+</div>
+<p class="hint">अर्हताकारी सेवा सहामाही थेट माहित असल्यास ती येथे भरा. अन्यथा रुजू व निवृत्ती दिनांकावरून “सेवा गणना” करा.</p>
+<button type="button" class="smallbtn" id="calcService">सेवा कालावधी गणना करा</button>
+<span id="serviceOutput" class="serviceout"></span>
+</div>
+
+<div class="section teal">
+<h3>वेतन तपशील</h3>
+<div class="grid4">
+  <label>वेतन स्तर (Pay Level)
+    <select id="payLevel">
+      <option>S-4</option><option>S-5</option><option>S-6</option><option>S-7</option><option>S-8</option>
+      <option>S-9</option><option>S-10</option><option>S-11</option><option>S-12</option><option>S-13</option>
+      <option>S-14</option><option>S-15</option><option>S-16</option><option>S-17</option><option>S-18</option>
+      <option>S-19</option><option>S-20</option><option>S-21</option><option>S-22</option><option>S-23</option>
+    </select>
+  </label>
+  <label>वेतन रुपया / Basic Pay
+    <input id="basicPay" type="number" min="0" step="1" value="39000">
+  </label>
+  <label>महागाई भत्ता (DA) %
+    <input id="daPercent" type="number" min="0" step="0.01" value="50">
+  </label>
+  <label>निवृत्तीवेतन वयोमर्यादा / वय
+    <input id="ageAtRetirement" type="number" min="1" max="100" value="60">
+  </label>
+</div>
+</div>
+
+<div class="section orange">
+<h3>अंशराशीकरण (Commutation)</h3>
+<div class="grid4">
+  <label>हवे आहे का?
+    <div class="radio"><label><input type="radio" name="commute" value="yes" checked> होय (%)</label><label><input type="radio" name="commute" value="no"> नाही</label></div>
+  </label>
+  <label>अंशराशीकरण %
+    <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40">
+  </label>
+  <label>अंशराशीकरण गुणक
+    <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194">
+  </label>
+  <label>टीप
+    <input value="अधिकृत वय-गुणक तक्त्यानुसार तपासा" disabled>
+  </label>
+</div>
+</div>
+
+<div class="section red">
+<h3>शासकीय वसुली (Recovery)</h3>
+<div class="grid3">
+  <label>वसुली आहे का?
+    <div class="radio"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div>
+  </label>
+  <label>एकूण वसुली रक्कम
+    <input id="recovery" type="number" min="0" value="0">
+  </label>
+  <label>इतर वजावट
+    <input id="otherDeduction" type="number" min="0" value="0">
+  </label>
+</div>
+</div>
+
+<div class="section green">
+<h3>GPF / GIS</h3>
+<div class="grid3">
+  <label>GPF रक्कम (₹)
+    <input id="gpf" type="number" min="0" value="0">
+  </label>
+  <label>GIS रक्कम (₹)
+    <input id="gis" type="number" min="0" value="0">
+  </label>
+  <label>निवृत्ती रजा रोखीकरण (₹)
+    <input id="leaveEncashment" type="number" min="0" value="0">
+  </label>
+</div>
+</div>
+
+<div class="actions">
+  <button type="submit" class="primary">माहिती सेव्ह करा व गणना करा</button>
+  <button type="reset" class="secondary" id="resetBtn">रिकामा करा</button>
+  <button type="button" class="print" id="printBtn">🖨️ प्रिंट / PDF सेव्ह करा</button>
+</div>
+</form>
+
+<section id="result" class="result hidden">
+  <div class="resulthead"><h2>निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate"></span></div>
+  <div id="summary"></div>
+  <div class="resultgrid">
+    <div><span>मासिक मूळ निवृत्तीवेतन</span><b id="pension"></b></div>
+    <div><span>महागाई राहत (DA)</span><b id="pensionDA"></b></div>
+    <div><span>अंशराशीकरण रक्कम</span><b id="commuted"></b></div>
+    <div><span>अंशराशीकरणानंतर पेन्शन</span><b id="reducedPension"></b></div>
+    <div><span>अंशराशीकरण एकरकमी रक्कम</span><b id="commutationValue"></b></div>
+    <div><span>सेवानिवृत्ती उपदान (Gratuity)</span><b id="gratuity"></b></div>
+    <div><span>रजा रोखीकरण</span><b id="leaveResult"></b></div>
+    <div><span>GPF</span><b id="gpfResult"></b></div>
+    <div><span>GIS</span><b id="gisResult"></b></div>
+    <div class="total"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
+  </div>
+  <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
+</section>
+</section>
+
+<section id="saved" class="tabpage">
+  <h2>📁 सेव्ह केलेली माहिती</h2>
+  <div id="savedList"></div>
+</section>
+
+<section id="help" class="tabpage">
+  <h2>📖 वापरकर्ता मदत</h2>
+  <div class="helpbox">
+    <h3>कॅल्क्युलेटरमध्ये काय गणना होते?</h3>
+    <ul>
+      <li>मूलभूत निवृत्तीवेतनाची प्राथमिक गणना.</li>
+      <li>अंशराशीकरणासाठी निवडलेली टक्केवारी व गुणकावर आधारित अंदाज.</li>
+      <li>अर्हताकारी सेवेच्या पूर्ण सहामाहीवर आधारित सेवानिवृत्ती उपदानाचा प्राथमिक अंदाज.</li>
+      <li>GPF, GIS, रजा रोखीकरण व वसुली यांची नोंद.</li>
+      <li>ब्राउझरमध्ये माहिती Local Storage मध्ये सेव्ह.</li>
+      <li>प्रिंट केल्यावर Android/Chrome मधून “Save as PDF” निवडता येते.</li>
+    </ul>
+    <h3>महत्त्वाची नियमाधारित सूचना</h3>
+    <p>महाराष्ट्र वित्त विभागाच्या अधिकृत संकेतस्थळावर महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982 आणि महाराष्ट्र नागरी सेवा (निवृत्तिवेतनाचे अंशराशीकरण) नियम, 1984 उपलब्ध आहेत. प्रत्यक्ष प्रकरणात लागू सुधारणा/शासन निर्णय तपासणे आवश्यक आहे.</p>
+  </div>
+</section>
+</main>
+
+<footer>© Pension Calculator • Maharashtra Government Employee Utility • प्राथमिक गणना साधन</footer>
+<script src="script.js"></script>
+</body>
+</html>
