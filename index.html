@@ -41,13 +41,16 @@
   <label>जन्म दिनांक (DOB)
     <input id="dob" type="date">
   </label>
-  <label>निवृत्ती प्रकार
+  <label>निवृत्ती प्रकार (MCSR Rules 1982)
     <select id="retirementType">
-      <option>नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
-      <option>स्वेच्छानिवृत्ती</option>
-      <option>अधिवार्षिकी निवृत्ती</option>
-      <option>रुग्णता / Invalid Pension</option>
-      <option>इतर</option>
+      <option value="superannuation">नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
+      <option value="voluntary">स्वेच्छानिवृत्ती (Voluntary - Rule 65/66)</option>
+      <option value="invalid">रुग्णता निवृत्ती (Invalid Pension - Rule 68)</option>
+      <option value="compensation">नुकसान भरपाई निवृत्तीवेतन (Compensation - Rule 77)</option>
+      <option value="compulsory">सक्तीची निवृत्ती (Compulsory - Rule 100)</option>
+      <option value="compassionate">अनुकंपा भत्ता (Compassionate Allowance - Rule 101)</option>
+      <option value="family">कुटुंब निवृत्तीवेतन (Family Pension)</option>
+      <option value="other">इतर (Other)</option>
     </select>
   </label>
 </div>
@@ -57,7 +60,11 @@
 <h3>सेवा कालावधी तपशील</h3>
 <div class="grid4">
   <label>आस्थापना (Establishment)
-    <select id="establishment"><option>कायम (Permanent)</option><option>तात्पुरते</option></select>
+    <select id="establishment">
+      <option value="permanent">कायम (Permanent)</option>
+      <option value="temporary">तात्पुरती (Temporary)</option>
+      <option value="officiating">स्थानापन्न (Officiating)</option>
+    </select>
   </label>
   <label>सेवेत रुजू दिनांक
     <input id="joiningDate" type="date">
@@ -75,18 +82,28 @@
 </div>
 
 <div class="section teal">
-<h3>वेतन तपशील</h3>
+<h3>वेतन तपशील (7th Pay Commission)</h3>
 <div class="grid4">
   <label>वेतन स्तर (Pay Level)
-    <select id="payLevel">
-      <option>S-4</option><option>S-5</option><option>S-6</option><option>S-7</option><option>S-8</option>
-      <option>S-9</option><option>S-10</option><option>S-11</option><option>S-12</option><option>S-13</option>
-      <option>S-14</option><option>S-15</option><option>S-16</option><option>S-17</option><option>S-18</option>
-      <option>S-19</option><option>S-20</option><option>S-21</option><option>S-22</option><option>S-23</option>
+    <select id="payLevel" onchange="updateBasicPay()" required>
+      <option value="">वेतन स्तर निवडा...</option>
+      <option value="S-1">S-1</option><option value="S-2">S-2</option><option value="S-3">S-3</option>
+      <option value="S-4">S-4</option><option value="S-5">S-5</option><option value="S-6">S-6</option>
+      <option value="S-7">S-7</option><option value="S-8">S-8</option><option value="S-9">S-9</option>
+      <option value="S-10">S-10</option><option value="S-11">S-11</option><option value="S-12">S-12</option>
+      <option value="S-13">S-13</option><option value="S-14">S-14</option><option value="S-15">S-15</option>
+      <option value="S-16">S-16</option><option value="S-17">S-17</option><option value="S-18">S-18</option>
+      <option value="S-19">S-19</option><option value="S-20">S-20</option><option value="S-21">S-21</option>
+      <option value="S-22">S-22</option><option value="S-23">S-23</option><option value="S-24">S-24</option>
+      <option value="S-25">S-25</option><option value="S-26">S-26</option><option value="S-27">S-27</option>
+      <option value="S-28">S-28</option><option value="S-29">S-29</option><option value="S-30">S-30</option>
+      <option value="S-31">S-31</option>
     </select>
   </label>
   <label>वेतन रुपया / Basic Pay
-    <input id="basicPay" type="number" min="0" step="1" value="39000">
+    <select id="basicPay" required>
+        <option value="">प्रथम वेतन स्तर निवडा</option>
+    </select>
   </label>
   <label>महागाई भत्ता (DA) %
     <input id="daPercent" type="number" min="0" step="0.01" value="50">
