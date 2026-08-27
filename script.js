@@ -2,7 +2,7 @@ const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(Math.round(Number(n)||0));
 const val=id=>Number($(id).value)||0;
 
-// ७ वा वेतन आयोग पे मॅट्रिक्स (S-1 ते S-31)
+// ७ वा वेतन आयोग पे मॅट्रिक्स
 const payMatrix = {
     "S-1": [15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600],
     "S-2": [15300, 15800, 16300, 16800, 17300, 17800, 18300, 18800, 19400, 20000, 20600, 21200, 21800, 22500, 23200, 23900, 24600, 25300, 26100, 26900, 27700, 28500, 29400, 30300, 31200, 32100, 33100, 34100, 35100, 36200, 37300, 38400, 39600, 40800, 42000, 43300, 44600, 45900, 47300, 48700],
@@ -56,6 +56,7 @@ function updateBasicPay() {
     }
 }
 
+// टॅब बदलण्यासाठी
 document.querySelectorAll(".tab").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -65,20 +66,85 @@ document.querySelectorAll(".tab").forEach(btn=>{
   });
 });
 
-function sixMonthlyPeriods(){
-  const j=$("joiningDate").value, r=$("retirementDate").value;
-  if(!j||!r)return 0;
-  const a=new Date(j), b=new Date(r);
-  if(b<a)return 0;
-  let months=(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth());
-  if(b.getDate()<a.getDate()) months--;
-  return Math.floor(months/6);
+// रोजंदारी पर्याय निवडल्यावर UI मध्ये बदल करणे
+function toggleRozandari() {
+    const est = $("establishment").value;
+    const rDateBlock = $("rozandariDateBlock");
+    const rHint = $("rozandariHint");
+    const jLabel = $("joiningDateLabel");
+    
+    if (est === "rozandari") {
+        rDateBlock.style.display = "block";
+        rHint.style.display = "block";
+        jLabel.textContent = "नियमित रुजू दिनांक (Automatic)";
+        $("joiningDate").readOnly = true; 
+        $("joiningDate").style.backgroundColor = "#e9ecef";
+    } else {
+        rDateBlock.style.display = "none";
+        rHint.style.display = "none";
+        jLabel.textContent = "सेवेत रुजू दिनांक";
+        $("joiningDate").readOnly = false;
+        $("joiningDate").style.backgroundColor = "";
+        $("rozandariDate").value = "";
+    }
+}
+
+// रोजंदारी दिनांक टाकल्यावर बरोबर ५ वर्षांनंतरची नियमित दिनांक काढणे
+function calculateRegularDate() {
+    const rDateVal = $("rozandariDate").value;
+    if (!rDateVal) return;
+    
+    const rozDate = new Date(rDateVal);
+    rozDate.setFullYear(rozDate.getFullYear() + 5); // ५ वर्षे जोडली
+    
+    const yyyy = rozDate.getFullYear();
+    const mm = String(rozDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(rozDate.getDate()).padStart(2, '0');
+    
+    $("joiningDate").value = `${yyyy}-${mm}-${dd}`;
+}
+
+// सेवा कालावधी (सहामाही) काढणे - कालेलकर समिती नियमांसह
+function sixMonthlyPeriods() {
+    const r = $("retirementDate").value;
+    let j = $("joiningDate").value;
+    const est = $("establishment").value;
+    
+    if (!r) return 0;
+    
+    const b = new Date(r);
+    let totalMonths = 0;
+
+    if (est === "rozandari") {
+        const rozStart = $("rozandariDate").value;
+        if(!rozStart) return 0;
+        const rozDate = new Date(rozStart);
+        if (b < rozDate) return 0;
+        
+        let totalRozMonths = (b.getFullYear() - rozDate.getFullYear()) * 12 + (b.getMonth() - rozDate.getMonth());
+        if (b.getDate() < rozDate.getDate()) totalRozMonths--;
+        
+        if(totalRozMonths <= 60) return 0; // ५ वर्षांपेक्षा कमी सेवा असल्यास ०
+        
+        let remainingRozMonths = totalRozMonths - 60; // ५ वर्षे वजा केली
+        totalMonths = Math.floor(remainingRozMonths / 2); // उर्वरित सेवेचे ५०%
+
+    } else {
+        if (!j) return 0;
+        let a = new Date(j);
+        if (b < a) return 0;
+        
+        totalMonths = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+        if (b.getDate() < a.getDate()) totalMonths--;
+    }
+    
+    return Math.floor(totalMonths / 6);
 }
 
 $("calcService").addEventListener("click",()=>{
-  const p=sixMonthlyPeriods();
-  $("serviceHalfYears").value=p;
-  $("serviceOutput").textContent=`अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
+  const p = sixMonthlyPeriods();
+  $("serviceHalfYears").value = p;
+  $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
 });
 
 function calculate(){
@@ -121,7 +187,7 @@ function calculate(){
   
   return {name:$("employeeName").value,office:$("officeName").value,designation:$("designation").value,
     group:$("group").value,dob:$("dob").value,retirementType:$("retirementType").value,establishment:$("establishment").value,
-    joiningDate:$("joiningDate").value,retirementDate:$("retirementDate").value,serviceHalfYears:halfYears,payLevel:$("payLevel").value,
+    joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,serviceHalfYears:halfYears,payLevel:$("payLevel").value,
     basicPay:basic,daPercent:da,ageAtRetirement:val("ageAtRetirement"),commute:commute,commutePercent:cp,commuteFactor:factor,
     recovery,recoveryAmount:recovery,otherDeduction:other,gpf, gis, leaveEncashment:leave, savedAt:new Date().toISOString()};
 }
@@ -135,7 +201,11 @@ $("pensionForm").addEventListener("submit",e=>{
 });
 
 $("printBtn").addEventListener("click",()=>{if($("result").classList.contains("hidden")) calculate(); window.print()});
-$("resetBtn").addEventListener("click",()=>{$("result").classList.add("hidden");$("serviceOutput").textContent=""});
+$("resetBtn").addEventListener("click",()=>{
+    $("result").classList.add("hidden");
+    $("serviceOutput").textContent="";
+    toggleRozandari();
+});
 
 function renderSaved(){
   const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]");
@@ -149,7 +219,14 @@ function loadRecord(i){
       if($(k)) $(k).value=r[k]
   });
   
-  // जुनी सेव्ह केलेली माहिती उघडताना वेतन स्तरानुसार बेसिक पे सेट करणे
+  if(r.establishment) {
+      $("establishment").value = r.establishment;
+      toggleRozandari();
+      if(r.establishment === "rozandari" && r.rozandariDate) {
+          $("rozandariDate").value = r.rozandariDate;
+      }
+  }
+
   if(r.payLevel){
       updateBasicPay();
       if(r.basicPay) $("basicPay").value = r.basicPay;
