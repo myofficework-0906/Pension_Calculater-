@@ -60,23 +60,33 @@
 <h3>सेवा कालावधी तपशील</h3>
 <div class="grid4">
   <label>आस्थापना (Establishment)
-    <select id="establishment">
+    <select id="establishment" onchange="toggleRozandari()">
       <option value="permanent">कायम (Permanent)</option>
       <option value="temporary">तात्पुरती (Temporary)</option>
       <option value="officiating">स्थानापन्न (Officiating)</option>
+      <option value="rozandari">रोजंदारीवरून नियमित (५०% ग्राह्य)</option>
     </select>
   </label>
-  <label>सेवेत रुजू दिनांक
+  
+  <label id="rozandariDateBlock" style="display: none; color: #d9534f;">रोजंदारी रुजू दिनांक
+    <input id="rozandariDate" type="date" onchange="calculateRegularDate()">
+  </label>
+
+  <label><span id="joiningDateLabel">सेवेत रुजू दिनांक</span>
     <input id="joiningDate" type="date">
   </label>
+  
   <label>निवृत्त / सेवा समाप्ती दिनांक
     <input id="retirementDate" type="date">
   </label>
+  
   <label>अर्हताकारी सेवा सहामाही
     <input id="serviceHalfYears" type="number" min="0" value="0" placeholder="उदा. 66">
   </label>
 </div>
-<p class="hint">अर्हताकारी सेवा सहामाही थेट माहित असल्यास ती येथे भरा. अन्यथा रुजू व निवृत्ती दिनांकावरून “सेवा गणना” करा.</p>
+<p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">
+  * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
+</p>
 <button type="button" class="smallbtn" id="calcService">सेवा कालावधी गणना करा</button>
 <span id="serviceOutput" class="serviceout"></span>
 </div>
