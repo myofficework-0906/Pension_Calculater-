@@ -55,6 +55,45 @@ function updateBasicPay() {
     }
 }
 
+// सेवानिवृत्ती दिनांक ऑटोमॅटिक कॅल्क्युलेट करणे (नवीन फीचर)
+function calculateRetirementDate() {
+    const dobVal = $("dob").value;
+    const groupVal = $("group").value;
+    
+    if (!dobVal || !groupVal) return;
+    
+    let retAge = 58;
+    // गट ड (Group D) साठी निवृत्ती वय ६० वर्षे असते
+    if (groupVal === "D" || groupVal === "गट ड") {
+        retAge = 60;
+    }
+    
+    $("ageAtRetirement").value = retAge;
+    
+    const dob = new Date(dobVal);
+    let retYear = dob.getFullYear() + retAge;
+    let retMonth = dob.getMonth();
+    
+    // जर जन्म १ तारखेला असेल तर आदल्या महिन्याच्या शेवटच्या दिवशी निवृत्ती
+    if (dob.getDate() === 1) {
+        retMonth = retMonth - 1;
+    }
+    
+    const retDate = new Date(retYear, retMonth + 1, 0); 
+    
+    const yyyy = retDate.getFullYear();
+    const mm = String(retDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(retDate.getDate()).padStart(2, '0');
+    
+    $("retirementDate").value = `${yyyy}-${mm}-${dd}`;
+    
+    if($("joiningDate").value) {
+         const p = sixMonthlyPeriods();
+         $("serviceHalfYears").value = p;
+         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
+    }
+}
+
 document.querySelectorAll(".tab").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -98,6 +137,12 @@ function calculateRegularDate() {
     const dd = String(rozDate.getDate()).padStart(2, '0');
     
     $("joiningDate").value = `${yyyy}-${mm}-${dd}`;
+    
+    if($("retirementDate").value) {
+         const p = sixMonthlyPeriods();
+         $("serviceHalfYears").value = p;
+         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
+    }
 }
 
 function sixMonthlyPeriods() {
@@ -111,17 +156,27 @@ function sixMonthlyPeriods() {
 
     if (est === "rozandari") {
         const rozStart = $("rozandariDate").value;
-        if(!rozStart) return 0;
+        const regStart = $("joiningDate").value;
+        
+        if(!rozStart || !regStart) return 0;
+        
         const rozDate = new Date(rozStart);
-        if (b < rozDate) return 0;
+        const regDate = new Date(regStart);
         
-        let totalRozMonths = (b.getFullYear() - rozDate.getFullYear()) * 12 + (b.getMonth() - rozDate.getMonth());
-        if (b.getDate() < rozDate.getDate()) totalRozMonths--;
+        if (b < regDate) return 0;
         
-        if(totalRozMonths <= 60) return 0; 
+        // १. नियमित सेवा (Regular Service)
+        let regMonths = (b.getFullYear() - regDate.getFullYear()) * 12 + (b.getMonth() - regDate.getMonth());
+        if (b.getDate() < regDate.getDate()) regMonths--;
+        if (regMonths < 0) regMonths = 0;
         
-        let remainingRozMonths = totalRozMonths - 60; 
-        totalMonths = Math.floor(remainingRozMonths / 2); 
+        // २. रोजंदारी सेवा (कालेलकर समितीनुसार फक्त या सेवेच्या ५०% कालावधी ग्राह्य)
+        let rozMonths = (regDate.getFullYear() - rozDate.getFullYear()) * 12 + (regDate.getMonth() - rozDate.getMonth());
+        if (regDate.getDate() < rozDate.getDate()) rozMonths--;
+        if (rozMonths < 0) rozMonths = 0;
+        
+        // एकूण सेवा = नियमित सेवा + (रोजंदारी सेवेच्या ५०% म्हणजे अर्धे महिने)
+        totalMonths = regMonths + Math.floor(rozMonths / 2); 
 
     } else {
         if (!j) return 0;
@@ -230,6 +285,9 @@ $("printBtn").addEventListener("click",()=>{if($("result").classList.contains("h
 $("resetBtn").addEventListener("click",()=>{
     $("result").classList.add("hidden");
     $("serviceOutput").textContent="";
+    if(window.jQuery && $('#department').length) {
+        $('#department').val('').trigger('change');
+    }
     toggleRozandari();
 });
 
@@ -248,6 +306,10 @@ function loadRecord(i){
       if($(k)) $(k).value=r[k]
   });
   
+  if(r.department && window.jQuery && $('#department').length) {
+      $('#department').val(r.department).trigger('change');
+  }
+
   if(r.establishment) {
       $("establishment").value = r.establishment;
       toggleRozandari();
