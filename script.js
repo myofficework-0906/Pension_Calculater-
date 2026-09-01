@@ -3,7 +3,7 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
-// FIREBASE CONFIGURATION (तुमचा दिलेला कोड)
+// FIREBASE CONFIGURATION 
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDBZ739gmtcIIJU9Zau--zlYIfibH4hUsk",
@@ -307,7 +307,6 @@ function calculate(){
   <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
   
   $("result").classList.remove("hidden");
-  $("editBtn").style.display = "inline-block"; 
   $("printBtn").style.display = "inline-block"; 
   
   return {
@@ -355,7 +354,9 @@ $("pensionForm").addEventListener("submit", async e=>{
       if(currentEditId !== null) {
           await dbRef.child(currentEditId).set(data);
           currentEditId = null;
-          $("editBtn").style.display = "none";
+          $("submitBtn").innerHTML = "माहिती सेव्ह करा व गणना करा";
+          $("submitBtn").style.backgroundColor = "";
+          $("submitBtn").style.color = "";
           alert("माहिती यशस्वीरीत्या अपडेट (Edit) झाली.");
       } else {
           await dbRef.push(data);
@@ -367,10 +368,6 @@ $("pensionForm").addEventListener("submit", async e=>{
   }
 });
 
-$("editBtn").addEventListener("click", ()=>{
-    window.scrollTo({top: 0, behavior: 'smooth'});
-});
-
 $("printBtn").addEventListener("click",()=>{
     if($("result").classList.contains("hidden")) calculate(); 
     window.print();
@@ -379,7 +376,9 @@ $("printBtn").addEventListener("click",()=>{
 $("resetBtn").addEventListener("click",()=>{
     $("result").classList.add("hidden");
     $("serviceOutput").textContent="";
-    $("editBtn").style.display = "none";
+    $("submitBtn").innerHTML = "माहिती सेव्ह करा व गणना करा";
+    $("submitBtn").style.backgroundColor = "";
+    $("submitBtn").style.color = "";
     $("printBtn").style.display = "none";
     currentEditId = null;
     if(window.jQuery && $('#department').length) {
@@ -418,7 +417,10 @@ function renderSaved(){
   $("savedList").innerHTML = fetchedRecords.map((recordObj, i)=>{
       let r = recordObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})" style="margin-right:10px;">उघडा / एडिट करा</button><button style="background-color:#d9534f;" onclick="deleteRecord(${i})">हटवा</button></div>`;
+      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><br>
+      <button onclick="loadRecord(${i})" style="margin-right:10px;">उघडा / एडिट करा</button>
+      <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; margin-right:10px;">🖨️ प्रिंट</button>
+      <button style="background-color:#d9534f; color:white;" onclick="deleteRecord(${i})">हटवा</button></div>`;
   }).join("");
 }
 
@@ -453,7 +455,20 @@ window.loadRecord = function(i){
   currentEditId = fetchedRecords[i].id; 
   document.querySelector('[data-tab="calculator"]').click(); 
   calculate();
-  $("editBtn").style.display = "inline-block";
+  
+  // Change submit button to Edit mode
+  $("submitBtn").innerHTML = "💾 बदल सेव्ह करा (Update)";
+  $("submitBtn").style.backgroundColor = "#ffc107";
+  $("submitBtn").style.color = "black";
+  
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+window.printRecord = function(i) {
+    loadRecord(i);
+    setTimeout(() => {
+        window.print();
+    }, 500);
 }
 
 window.deleteRecord = function(i){
@@ -468,43 +483,3 @@ window.deleteRecord = function(i){
       });
   }
 }
-
-// Backup logic (now exports from fetchedRecords)
-$("downloadBackupBtn").addEventListener("click", () => {
-    if(!fetchedRecords.length) { 
-        alert("बॅकअप घेण्यासाठी कोणतीही माहिती उपलब्ध नाही!"); 
-        return; 
-    }
-    const exportData = fetchedRecords.map(r => r.data);
-    const blob = new Blob([JSON.stringify(exportData)], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Pension_Backup_" + new Date().toISOString().split('T')[0] + ".json";
-    a.click();
-    URL.revokeObjectURL(url);
-});
-
-$("uploadBackupFile").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        try {
-            const importedData = JSON.parse(event.target.result);
-            if(Array.isArray(importedData) && currentUser) {
-                const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
-                importedData.forEach(async data => {
-                    await dbRef.push(data);
-                });
-                alert("माहिती यशस्वीरीत्या रिस्टोअर (Restore) झाली आहे!");
-            } else {
-                alert("चुकीची फाईल किंवा तुम्ही लॉग-इन केलेले नाही.");
-            }
-        } catch(err) {
-            alert("फाईल वाचण्यात त्रुटी आली. फाईल खराब असू शकते.");
-        }
-        $("uploadBackupFile").value = ""; 
-    };
-    reader.readAsText(file);
-});
