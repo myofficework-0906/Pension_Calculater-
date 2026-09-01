@@ -2,6 +2,8 @@ const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(Math.round(Number(n)||0));
 const val=id=>Number($(id).value)||0;
 
+let currentRetirementAge = 58; // Default age
+
 // ७ वा वेतन आयोग पे मॅट्रिक्स
 const payMatrix = {
     "S-1": [15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600],
@@ -37,6 +39,17 @@ const payMatrix = {
     "S-31": [182200, 187700, 193300, 199100, 205100, 211300, 217600, 224100]
 };
 
+// Commutation Factors Table (Age Next Birthday)
+const commutationFactors = {
+    20: 9.188, 21: 9.187, 22: 9.186, 23: 9.185, 24: 9.184, 25: 9.183, 26: 9.182, 27: 9.180, 28: 9.178, 29: 9.176,
+    30: 9.173, 31: 9.169, 32: 9.164, 33: 9.159, 34: 9.152, 35: 9.145, 36: 9.136, 37: 9.126, 38: 9.116, 39: 9.103,
+    40: 9.090, 41: 9.075, 42: 9.059, 43: 9.040, 44: 9.019, 45: 8.996, 46: 8.971, 47: 8.943, 48: 8.913, 49: 8.881,
+    50: 8.846, 51: 8.808, 52: 8.768, 53: 8.724, 54: 8.678, 55: 8.627, 56: 8.572, 57: 8.512, 58: 8.446, 59: 8.371,
+    60: 8.287, 61: 8.194, 62: 8.093, 63: 7.982, 64: 7.862, 65: 7.731, 66: 7.591, 67: 7.431, 68: 7.262, 69: 7.083,
+    70: 6.897, 71: 6.703, 72: 6.502, 73: 6.296, 74: 6.085, 75: 5.872, 76: 5.657, 77: 5.443, 78: 5.229, 79: 5.018,
+    80: 4.812, 81: 4.611
+};
+
 function updateBasicPay() {
     const payLevelDropdown = $("payLevel");
     const basicPayDropdown = $("basicPay");
@@ -55,7 +68,6 @@ function updateBasicPay() {
     }
 }
 
-// सेवानिवृत्ती दिनांक ऑटोमॅटिक कॅल्क्युलेट करणे (नवीन फीचर)
 function calculateRetirementDate() {
     const dobVal = $("dob").value;
     const groupVal = $("group").value;
@@ -63,18 +75,16 @@ function calculateRetirementDate() {
     if (!dobVal || !groupVal) return;
     
     let retAge = 58;
-    // गट ड (Group D) साठी निवृत्ती वय ६० वर्षे असते
     if (groupVal === "D" || groupVal === "गट ड") {
         retAge = 60;
     }
     
-    $("ageAtRetirement").value = retAge;
+    currentRetirementAge = retAge;
     
     const dob = new Date(dobVal);
     let retYear = dob.getFullYear() + retAge;
     let retMonth = dob.getMonth();
     
-    // जर जन्म १ तारखेला असेल तर आदल्या महिन्याच्या शेवटच्या दिवशी निवृत्ती
     if (dob.getDate() === 1) {
         retMonth = retMonth - 1;
     }
@@ -86,6 +96,12 @@ function calculateRetirementDate() {
     const dd = String(retDate.getDate()).padStart(2, '0');
     
     $("retirementDate").value = `${yyyy}-${mm}-${dd}`;
+    
+    // Auto calculate age next birthday for commutation factor
+    let ageNextBirthday = retAge + 1;
+    if(commutationFactors[ageNextBirthday]) {
+        $("commuteFactor").value = commutationFactors[ageNextBirthday];
+    }
     
     if($("joiningDate").value) {
          const p = sixMonthlyPeriods();
@@ -170,12 +186,11 @@ function sixMonthlyPeriods() {
         if (b.getDate() < regDate.getDate()) regMonths--;
         if (regMonths < 0) regMonths = 0;
         
-        // २. रोजंदारी सेवा (कालेलकर समितीनुसार फक्त या सेवेच्या ५०% कालावधी ग्राह्य)
+        // २. रोजंदारी सेवा (५ वर्षे वगळून उर्वरित सेवेच्या ५०%)
         let rozMonths = (regDate.getFullYear() - rozDate.getFullYear()) * 12 + (regDate.getMonth() - rozDate.getMonth());
         if (regDate.getDate() < rozDate.getDate()) rozMonths--;
         if (rozMonths < 0) rozMonths = 0;
         
-        // एकूण सेवा = नियमित सेवा + (रोजंदारी सेवेच्या ५०% म्हणजे अर्धे महिने)
         totalMonths = regMonths + Math.floor(rozMonths / 2); 
 
     } else {
@@ -207,10 +222,21 @@ function calculate(){
   const gratuity=Math.min(basic*0.25*halfYears, basic*16.5, 1400000);
   const commute=document.querySelector('input[name="commute"]:checked').value==="yes";
   const cp=Math.min(40,Math.max(0,val("commutePercent")));
-  const factor=val("commuteFactor");
+  
+  // Update factor just in case
+  let ageNextBirthday = currentRetirementAge + 1;
+  let factor = val("commuteFactor");
+  if(commutationFactors[ageNextBirthday]) {
+      factor = commutationFactors[ageNextBirthday];
+      $("commuteFactor").value = factor;
+  }
+  
   const commuted=commute ? pension*cp/100 : 0;
   const reduced=Math.max(0,pension-commuted);
-  const commutationValue=commuted*factor;
+  
+  // Corrected Commutation formula: Commuted amount * 12 * Factor
+  const commutationValue=commute ? commuted * 12 * factor : 0;
+  
   const leave=val("leaveEncashment"), gpf=val("gpf"), gis=val("gis");
   const recovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
   const other=val("otherDeduction");
@@ -242,6 +268,8 @@ function calculate(){
   <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
   
   $("result").classList.remove("hidden");
+  $("editBtn").style.display = "inline-block"; // Show edit button
+  $("printBtn").style.display = "inline-block"; // Show print button
   
   return {
     name:$("employeeName").value,
@@ -259,7 +287,6 @@ function calculate(){
     payLevel:$("payLevel").value,
     basicPay:basic,
     daPercent:da,
-    ageAtRetirement:val("ageAtRetirement"),
     commute:commute,
     commutePercent:cp,
     commuteFactor:factor,
@@ -273,18 +300,40 @@ function calculate(){
   };
 }
 
+let currentEditId = null;
+
 $("pensionForm").addEventListener("submit",e=>{
   e.preventDefault();
   const data=calculate();
   const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]");
-  arr.unshift(data); localStorage.setItem("pensionRecords",JSON.stringify(arr.slice(0,20)));
-  alert("माहिती सेव्ह झाली व गणना पूर्ण झाली.");
+  
+  if(currentEditId !== null) {
+      arr[currentEditId] = data; // Update existing
+      currentEditId = null;
+      alert("माहिती यशस्वीरीत्या अपडेट (Edit) झाली.");
+  } else {
+      arr.unshift(data); // Add new
+      alert("माहिती सेव्ह झाली व गणना पूर्ण झाली.");
+  }
+  
+  localStorage.setItem("pensionRecords",JSON.stringify(arr.slice(0,20)));
 });
 
-$("printBtn").addEventListener("click",()=>{if($("result").classList.contains("hidden")) calculate(); window.print()});
+$("editBtn").addEventListener("click", ()=>{
+    window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+$("printBtn").addEventListener("click",()=>{
+    if($("result").classList.contains("hidden")) calculate(); 
+    window.print();
+});
+
 $("resetBtn").addEventListener("click",()=>{
     $("result").classList.add("hidden");
     $("serviceOutput").textContent="";
+    $("editBtn").style.display = "none";
+    $("printBtn").style.display = "none";
+    currentEditId = null;
     if(window.jQuery && $('#department').length) {
         $('#department').val('').trigger('change');
     }
@@ -296,7 +345,7 @@ function renderSaved(){
   if(!arr.length){$("savedList").innerHTML="<p>अद्याप कोणतीही माहिती सेव्ह केलेली नाही.</p>";return}
   $("savedList").innerHTML=arr.map((r,i)=>{
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})">उघडा</button><button onclick="deleteRecord(${i})">हटवा</button></div>`;
+      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})">उघडा / एडिट करा</button><button onclick="deleteRecord(${i})">हटवा</button></div>`;
   }).join("");
 }
 
@@ -325,7 +374,11 @@ function loadRecord(i){
 
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
   document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
-  document.querySelector('[data-tab="calculator"]').click(); calculate();
+  
+  currentEditId = i;
+  document.querySelector('[data-tab="calculator"]').click(); 
+  calculate();
+  $("editBtn").style.display = "inline-block";
 }
 
 function deleteRecord(i){
