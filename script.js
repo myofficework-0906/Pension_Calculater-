@@ -3,17 +3,17 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
-// 🔴 येथे तुमचा FIREBASE CONFIG कोड टाका 🔴
+// FIREBASE CONFIGURATION (तुमचा दिलेला कोड)
 // ==========================================
 const firebaseConfig = {
-  // खालील ओळी खोडून तुमचा खरा कोड येथे पेस्ट करा
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL", // Realtime Database URL
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDBZ739gmtcIIJU9Zau--zlYIfibH4hUsk",
+  authDomain: "pension-calculater.firebaseapp.com",
+  databaseURL: "https://pension-calculater-default-rtdb.firebaseio.com", // आवश्यक असल्यास इथे तुमचा Realtime Database URL टाका
+  projectId: "pension-calculater",
+  storageBucket: "pension-calculater.firebasestorage.app",
+  messagingSenderId: "44699549394",
+  appId: "1:44699549394:web:07a15aa6980c869475370b",
+  measurementId: "G-LT71537XP1"
 };
 
 // Initialize Firebase
@@ -23,8 +23,8 @@ const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
 let currentUser = null;
-let fetchedRecords = []; // Firebase वरून आलेला डेटा साठवण्यासाठी
-let currentEditId = null; // Firebase Record ID साठवण्यासाठी
+let fetchedRecords = []; 
+let currentEditId = null; 
 
 // Authentication State Listener
 auth.onAuthStateChanged(user => {
@@ -51,7 +51,10 @@ $("loginBtn").addEventListener("click", () => {
     auth.signInWithPopup(provider).catch(error => alert("लॉगिन करताना त्रुटी: " + error.message));
 });
 $("logoutBtn").addEventListener("click", () => {
-    auth.signOut().then(()=> { alert("तुम्ही यशस्वीरीत्या लॉगआउट झाला आहात."); });
+    auth.signOut().then(()=> { 
+        alert("तुम्ही यशस्वीरीत्या लॉगआउट झाला आहात."); 
+        window.location.reload(); 
+    });
 });
 
 let currentRetirementAge = 58;
@@ -398,7 +401,7 @@ function fetchDataFromFirebase() {
                 data: childSnapshot.val()
             });
         });
-        fetchedRecords.reverse(); // Newest first
+        fetchedRecords.reverse(); 
         renderSaved();
     });
 }
@@ -447,7 +450,7 @@ window.loadRecord = function(i){
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
   document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
   
-  currentEditId = fetchedRecords[i].id; // Store Firebase ID for updating
+  currentEditId = fetchedRecords[i].id; 
   document.querySelector('[data-tab="calculator"]').click(); 
   calculate();
   $("editBtn").style.display = "inline-block";
