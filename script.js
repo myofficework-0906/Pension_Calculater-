@@ -37,7 +37,6 @@ const payMatrix = {
     "S-31": [182200, 187700, 193300, 199100, 205100, 211300, 217600, 224100]
 };
 
-// वेतन स्तरानुसार बेसिक पे ऑटोमॅटिक आणणारे फंक्शन
 function updateBasicPay() {
     const payLevelDropdown = $("payLevel");
     const basicPayDropdown = $("basicPay");
@@ -56,7 +55,6 @@ function updateBasicPay() {
     }
 }
 
-// टॅब बदलण्यासाठी
 document.querySelectorAll(".tab").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -66,7 +64,6 @@ document.querySelectorAll(".tab").forEach(btn=>{
   });
 });
 
-// रोजंदारी पर्याय निवडल्यावर UI मध्ये बदल करणे
 function toggleRozandari() {
     const est = $("establishment").value;
     const rDateBlock = $("rozandariDateBlock");
@@ -89,13 +86,12 @@ function toggleRozandari() {
     }
 }
 
-// रोजंदारी दिनांक टाकल्यावर बरोबर ५ वर्षांनंतरची नियमित दिनांक काढणे
 function calculateRegularDate() {
     const rDateVal = $("rozandariDate").value;
     if (!rDateVal) return;
     
     const rozDate = new Date(rDateVal);
-    rozDate.setFullYear(rozDate.getFullYear() + 5); // ५ वर्षे जोडली
+    rozDate.setFullYear(rozDate.getFullYear() + 5); 
     
     const yyyy = rozDate.getFullYear();
     const mm = String(rozDate.getMonth() + 1).padStart(2, '0');
@@ -104,14 +100,12 @@ function calculateRegularDate() {
     $("joiningDate").value = `${yyyy}-${mm}-${dd}`;
 }
 
-// सेवा कालावधी (सहामाही) काढणे - कालेलकर समिती नियमांसह
 function sixMonthlyPeriods() {
     const r = $("retirementDate").value;
     let j = $("joiningDate").value;
     const est = $("establishment").value;
     
     if (!r) return 0;
-    
     const b = new Date(r);
     let totalMonths = 0;
 
@@ -124,10 +118,10 @@ function sixMonthlyPeriods() {
         let totalRozMonths = (b.getFullYear() - rozDate.getFullYear()) * 12 + (b.getMonth() - rozDate.getMonth());
         if (b.getDate() < rozDate.getDate()) totalRozMonths--;
         
-        if(totalRozMonths <= 60) return 0; // ५ वर्षांपेक्षा कमी सेवा असल्यास ०
+        if(totalRozMonths <= 60) return 0; 
         
-        let remainingRozMonths = totalRozMonths - 60; // ५ वर्षे वजा केली
-        totalMonths = Math.floor(remainingRozMonths / 2); // उर्वरित सेवेचे ५०%
+        let remainingRozMonths = totalRozMonths - 60; 
+        totalMonths = Math.floor(remainingRozMonths / 2); 
 
     } else {
         if (!j) return 0;
@@ -182,14 +176,46 @@ function calculate(){
   
   const typeText = $("retirementType").options[$("retirementType").selectedIndex].text;
   
-  $("summary").innerHTML=`<p><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p><p>निवृत्ती प्रकार: ${typeText}</p><p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
+  let deptText = "-";
+  if($("department").selectedIndex > 0) {
+      deptText = $("department").options[$("department").selectedIndex].text;
+  }
+  
+  $("summary").innerHTML=`<p><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
+  <p>विभाग: <b>${deptText}</b></p>
+  <p>निवृत्ती प्रकार: ${typeText}</p>
+  <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
+  
   $("result").classList.remove("hidden");
   
-  return {name:$("employeeName").value,office:$("officeName").value,designation:$("designation").value,
-    group:$("group").value,dob:$("dob").value,retirementType:$("retirementType").value,establishment:$("establishment").value,
-    joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,serviceHalfYears:halfYears,payLevel:$("payLevel").value,
-    basicPay:basic,daPercent:da,ageAtRetirement:val("ageAtRetirement"),commute:commute,commutePercent:cp,commuteFactor:factor,
-    recovery,recoveryAmount:recovery,otherDeduction:other,gpf, gis, leaveEncashment:leave, savedAt:new Date().toISOString()};
+  return {
+    name:$("employeeName").value,
+    department:$("department").value,
+    office:$("officeName").value,
+    designation:$("designation").value,
+    group:$("group").value,
+    dob:$("dob").value,
+    retirementType:$("retirementType").value,
+    establishment:$("establishment").value,
+    joiningDate:$("joiningDate").value, 
+    rozandariDate:$("rozandariDate").value, 
+    retirementDate:$("retirementDate").value,
+    serviceHalfYears:halfYears,
+    payLevel:$("payLevel").value,
+    basicPay:basic,
+    daPercent:da,
+    ageAtRetirement:val("ageAtRetirement"),
+    commute:commute,
+    commutePercent:cp,
+    commuteFactor:factor,
+    recovery,
+    recoveryAmount:recovery,
+    otherDeduction:other,
+    gpf, 
+    gis, 
+    leaveEncashment:leave, 
+    savedAt:new Date().toISOString()
+  };
 }
 
 $("pensionForm").addEventListener("submit",e=>{
@@ -210,7 +236,10 @@ $("resetBtn").addEventListener("click",()=>{
 function renderSaved(){
   const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]");
   if(!arr.length){$("savedList").innerHTML="<p>अद्याप कोणतीही माहिती सेव्ह केलेली नाही.</p>";return}
-  $("savedList").innerHTML=arr.map((r,i)=>`<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})">उघडा</button><button onclick="deleteRecord(${i})">हटवा</button></div>`).join("");
+  $("savedList").innerHTML=arr.map((r,i)=>{
+      let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
+      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})">उघडा</button><button onclick="deleteRecord(${i})">हटवा</button></div>`;
+  }).join("");
 }
 
 function loadRecord(i){
@@ -240,3 +269,41 @@ function loadRecord(i){
 function deleteRecord(i){
   const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]"); arr.splice(i,1); localStorage.setItem("pensionRecords",JSON.stringify(arr)); renderSaved();
 }
+
+// Backup & Restore Logic
+$("downloadBackupBtn").addEventListener("click", () => {
+    const data = localStorage.getItem("pensionRecords");
+    if(!data || data === "[]") { 
+        alert("बॅकअप घेण्यासाठी कोणतीही माहिती उपलब्ध नाही!"); 
+        return; 
+    }
+    const blob = new Blob([data], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Pension_Backup_" + new Date().toISOString().split('T')[0] + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+$("uploadBackupFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            const importedData = JSON.parse(event.target.result);
+            if(Array.isArray(importedData)) {
+                localStorage.setItem("pensionRecords", JSON.stringify(importedData));
+                renderSaved();
+                alert("माहिती यशस्वीरीत्या रिस्टोअर (Restore) झाली आहे!");
+            } else {
+                alert("चुकीची फाईल! कृपया योग्य बॅकअप (.json) फाईल निवडा.");
+            }
+        } catch(err) {
+            alert("फाईल वाचण्यात त्रुटी आली. फाईल खराब असू शकते.");
+        }
+        $("uploadBackupFile").value = ""; 
+    };
+    reader.readAsText(file);
+});
