@@ -10,7 +10,6 @@
   <!-- Select2 CSS for Searchable Dropdown -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
-    /* Styling to match Select2 with your existing design */
     .select2-container .select2-selection--single {
         height: 38px;
         border: 1px solid #ccc;
@@ -84,10 +83,17 @@
     <input id="designation" placeholder="उदा. कनिष्ठ लिपिक">
   </label>
   <label>कर्मचारी वर्ग (Group)
-    <select id="group"><option>गट क</option><option>गट अ</option><option>गट ब</option><option>गट ड</option></select>
+    <select id="group" onchange="calculateRetirementDate()">
+      <option value="">निवडा...</option>
+      <option value="गट अ">गट अ</option>
+      <option value="गट ब (राजपत्रित)">गट ब (राजपत्रित)</option>
+      <option value="गट ब (अराजपत्रित)">गट ब (अराजपत्रित)</option>
+      <option value="गट क">गट क</option>
+      <option value="गट ड">गट ड</option>
+    </select>
   </label>
   <label>जन्म दिनांक (DOB)
-    <input id="dob" type="date">
+    <input id="dob" type="date" onchange="calculateRetirementDate()">
   </label>
   <label>निवृत्ती प्रकार (MCSR Rules 1982)
     <select id="retirementType">
@@ -133,7 +139,7 @@
   </label>
 </div>
 <p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">
-  * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
+  * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
 </p>
 <button type="button" class="smallbtn" id="calcService">सेवा कालावधी गणना करा</button>
 <span id="serviceOutput" class="serviceout"></span>
@@ -282,7 +288,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-  // Initialize Select2 on the department dropdown
   $(document).ready(function() {
       $('#department').select2({
           placeholder: "विभाग निवडा / शोधा...",
