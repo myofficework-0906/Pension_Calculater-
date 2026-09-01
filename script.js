@@ -2,9 +2,60 @@ const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(Math.round(Number(n)||0));
 const val=id=>Number($(id).value)||0;
 
-let currentRetirementAge = 58; // Default age
+// ==========================================
+// 🔴 येथे तुमचा FIREBASE CONFIG कोड टाका 🔴
+// ==========================================
+const firebaseConfig = {
+  // खालील ओळी खोडून तुमचा खरा कोड येथे पेस्ट करा
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  databaseURL: "YOUR_DATABASE_URL", // Realtime Database URL
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-// ७ वा वेतन आयोग पे मॅट्रिक्स
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+let currentUser = null;
+let fetchedRecords = []; // Firebase वरून आलेला डेटा साठवण्यासाठी
+let currentEditId = null; // Firebase Record ID साठवण्यासाठी
+
+// Authentication State Listener
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUser = user;
+        $("loginBtn").style.display = "none";
+        $("logoutBtn").style.display = "inline-block";
+        $("userNameDisplay").textContent = "Welcome, " + user.displayName;
+        $("loginWarning").style.display = "none";
+        fetchDataFromFirebase();
+    } else {
+        currentUser = null;
+        fetchedRecords = [];
+        $("loginBtn").style.display = "inline-block";
+        $("logoutBtn").style.display = "none";
+        $("userNameDisplay").textContent = "";
+        $("loginWarning").style.display = "block";
+        renderSaved();
+    }
+});
+
+// Login / Logout Buttons
+$("loginBtn").addEventListener("click", () => {
+    auth.signInWithPopup(provider).catch(error => alert("लॉगिन करताना त्रुटी: " + error.message));
+});
+$("logoutBtn").addEventListener("click", () => {
+    auth.signOut().then(()=> { alert("तुम्ही यशस्वीरीत्या लॉगआउट झाला आहात."); });
+});
+
+let currentRetirementAge = 58;
+
 const payMatrix = {
     "S-1": [15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600],
     "S-2": [15300, 15800, 16300, 16800, 17300, 17800, 18300, 18800, 19400, 20000, 20600, 21200, 21800, 22500, 23200, 23900, 24600, 25300, 26100, 26900, 27700, 28500, 29400, 30300, 31200, 32100, 33100, 34100, 35100, 36200, 37300, 38400, 39600, 40800, 42000, 43300, 44600, 45900, 47300, 48700],
@@ -39,7 +90,6 @@ const payMatrix = {
     "S-31": [182200, 187700, 193300, 199100, 205100, 211300, 217600, 224100]
 };
 
-// Commutation Factors Table (Age Next Birthday)
 const commutationFactors = {
     20: 9.188, 21: 9.187, 22: 9.186, 23: 9.185, 24: 9.184, 25: 9.183, 26: 9.182, 27: 9.180, 28: 9.178, 29: 9.176,
     30: 9.173, 31: 9.169, 32: 9.164, 33: 9.159, 34: 9.152, 35: 9.145, 36: 9.136, 37: 9.126, 38: 9.116, 39: 9.103,
@@ -78,7 +128,6 @@ function calculateRetirementDate() {
     if (groupVal === "D" || groupVal === "गट ड") {
         retAge = 60;
     }
-    
     currentRetirementAge = retAge;
     
     const dob = new Date(dobVal);
@@ -88,16 +137,13 @@ function calculateRetirementDate() {
     if (dob.getDate() === 1) {
         retMonth = retMonth - 1;
     }
-    
     const retDate = new Date(retYear, retMonth + 1, 0); 
     
     const yyyy = retDate.getFullYear();
     const mm = String(retDate.getMonth() + 1).padStart(2, '0');
     const dd = String(retDate.getDate()).padStart(2, '0');
-    
     $("retirementDate").value = `${yyyy}-${mm}-${dd}`;
     
-    // Auto calculate age next birthday for commutation factor
     let ageNextBirthday = retAge + 1;
     if(commutationFactors[ageNextBirthday]) {
         $("commuteFactor").value = commutationFactors[ageNextBirthday];
@@ -173,20 +219,16 @@ function sixMonthlyPeriods() {
     if (est === "rozandari") {
         const rozStart = $("rozandariDate").value;
         const regStart = $("joiningDate").value;
-        
         if(!rozStart || !regStart) return 0;
         
         const rozDate = new Date(rozStart);
         const regDate = new Date(regStart);
-        
         if (b < regDate) return 0;
         
-        // १. नियमित सेवा (Regular Service)
         let regMonths = (b.getFullYear() - regDate.getFullYear()) * 12 + (b.getMonth() - regDate.getMonth());
         if (b.getDate() < regDate.getDate()) regMonths--;
         if (regMonths < 0) regMonths = 0;
         
-        // २. रोजंदारी सेवा (५ वर्षे वगळून उर्वरित सेवेच्या ५०%)
         let rozMonths = (regDate.getFullYear() - rozDate.getFullYear()) * 12 + (regDate.getMonth() - rozDate.getMonth());
         if (regDate.getDate() < rozDate.getDate()) rozMonths--;
         if (rozMonths < 0) rozMonths = 0;
@@ -197,11 +239,9 @@ function sixMonthlyPeriods() {
         if (!j) return 0;
         let a = new Date(j);
         if (b < a) return 0;
-        
         totalMonths = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
         if (b.getDate() < a.getDate()) totalMonths--;
     }
-    
     return Math.floor(totalMonths / 6);
 }
 
@@ -223,7 +263,6 @@ function calculate(){
   const commute=document.querySelector('input[name="commute"]:checked').value==="yes";
   const cp=Math.min(40,Math.max(0,val("commutePercent")));
   
-  // Update factor just in case
   let ageNextBirthday = currentRetirementAge + 1;
   let factor = val("commuteFactor");
   if(commutationFactors[ageNextBirthday]) {
@@ -233,8 +272,6 @@ function calculate(){
   
   const commuted=commute ? pension*cp/100 : 0;
   const reduced=Math.max(0,pension-commuted);
-  
-  // Corrected Commutation formula: Commuted amount * 12 * Factor
   const commutationValue=commute ? commuted * 12 * factor : 0;
   
   const leave=val("leaveEncashment"), gpf=val("gpf"), gis=val("gis");
@@ -256,7 +293,6 @@ function calculate(){
   $("reportDate").textContent=new Date().toLocaleDateString("en-IN");
   
   const typeText = $("retirementType").options[$("retirementType").selectedIndex].text;
-  
   let deptText = "-";
   if($("department").selectedIndex > 0) {
       deptText = $("department").options[$("department").selectedIndex].text;
@@ -268,8 +304,8 @@ function calculate(){
   <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
   
   $("result").classList.remove("hidden");
-  $("editBtn").style.display = "inline-block"; // Show edit button
-  $("printBtn").style.display = "inline-block"; // Show print button
+  $("editBtn").style.display = "inline-block"; 
+  $("printBtn").style.display = "inline-block"; 
   
   return {
     name:$("employeeName").value,
@@ -300,23 +336,32 @@ function calculate(){
   };
 }
 
-let currentEditId = null;
-
-$("pensionForm").addEventListener("submit",e=>{
+// Data saving logic to Firebase
+$("pensionForm").addEventListener("submit", async e=>{
   e.preventDefault();
-  const data=calculate();
-  const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]");
   
-  if(currentEditId !== null) {
-      arr[currentEditId] = data; // Update existing
-      currentEditId = null;
-      alert("माहिती यशस्वीरीत्या अपडेट (Edit) झाली.");
-  } else {
-      arr.unshift(data); // Add new
-      alert("माहिती सेव्ह झाली व गणना पूर्ण झाली.");
+  if(!currentUser) {
+      alert("माहिती सेव्ह करण्यासाठी कृपया आधी वरती 'Google ने Login करा' बटणावर क्लिक करा!");
+      return;
   }
   
-  localStorage.setItem("pensionRecords",JSON.stringify(arr.slice(0,20)));
+  const data = calculate();
+  const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+
+  try {
+      if(currentEditId !== null) {
+          await dbRef.child(currentEditId).set(data);
+          currentEditId = null;
+          $("editBtn").style.display = "none";
+          alert("माहिती यशस्वीरीत्या अपडेट (Edit) झाली.");
+      } else {
+          await dbRef.push(data);
+          alert("माहिती क्लाउडवर सेव्ह झाली व गणना पूर्ण झाली.");
+      }
+      fetchDataFromFirebase();
+  } catch(error) {
+      alert("माहिती सेव्ह करताना त्रुटी: " + error.message);
+  }
 });
 
 $("editBtn").addEventListener("click", ()=>{
@@ -340,17 +385,44 @@ $("resetBtn").addEventListener("click",()=>{
     toggleRozandari();
 });
 
+// Fetch Data from Firebase
+function fetchDataFromFirebase() {
+    if(!currentUser) return;
+    const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+    
+    dbRef.on('value', (snapshot) => {
+        fetchedRecords = [];
+        snapshot.forEach((childSnapshot) => {
+            fetchedRecords.push({
+                id: childSnapshot.key,
+                data: childSnapshot.val()
+            });
+        });
+        fetchedRecords.reverse(); // Newest first
+        renderSaved();
+    });
+}
+
 function renderSaved(){
-  const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]");
-  if(!arr.length){$("savedList").innerHTML="<p>अद्याप कोणतीही माहिती सेव्ह केलेली नाही.</p>";return}
-  $("savedList").innerHTML=arr.map((r,i)=>{
+  if(!currentUser){
+      $("savedList").innerHTML="<p>माहिती पाहण्यासाठी लॉगिन करा.</p>";
+      return;
+  }
+  if(!fetchedRecords.length){
+      $("savedList").innerHTML="<p>अद्याप कोणतीही माहिती सेव्ह केलेली नाही.</p>";
+      return;
+  }
+  $("savedList").innerHTML = fetchedRecords.map((recordObj, i)=>{
+      let r = recordObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})">उघडा / एडिट करा</button><button onclick="deleteRecord(${i})">हटवा</button></div>`;
+      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><button onclick="loadRecord(${i})" style="margin-right:10px;">उघडा / एडिट करा</button><button style="background-color:#d9534f;" onclick="deleteRecord(${i})">हटवा</button></div>`;
   }).join("");
 }
 
-function loadRecord(i){
-  const r=JSON.parse(localStorage.getItem("pensionRecords")||"[]")[i]; if(!r)return;
+window.loadRecord = function(i){
+  const r = fetchedRecords[i].data;
+  if(!r) return;
+  
   Object.keys(r).forEach(k=>{
       if($(k)) $(k).value=r[k]
   });
@@ -375,50 +447,37 @@ function loadRecord(i){
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
   document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
   
-  currentEditId = i;
+  currentEditId = fetchedRecords[i].id; // Store Firebase ID for updating
   document.querySelector('[data-tab="calculator"]').click(); 
   calculate();
   $("editBtn").style.display = "inline-block";
 }
 
-function deleteRecord(i){
-  const arr=JSON.parse(localStorage.getItem("pensionRecords")||"[]"); arr.splice(i,1); localStorage.setItem("pensionRecords",JSON.stringify(arr)); renderSaved();
+window.deleteRecord = function(i){
+  if(confirm("ही माहिती कायमची डिलीट करायची आहे का?")) {
+      const recordId = fetchedRecords[i].id;
+      db.ref('users/' + currentUser.uid + '/pensionRecords/' + recordId).remove()
+      .then(() => {
+          alert("माहिती डिलीट झाली.");
+      })
+      .catch(error => {
+          alert("त्रुटी: " + error.message);
+      });
+  }
 }
 
-// Backup & Restore Logic
+// Backup logic (now exports from fetchedRecords)
 $("downloadBackupBtn").addEventListener("click", () => {
-    const data = localStorage.getItem("pensionRecords");
-    if(!data || data === "[]") { 
+    if(!fetchedRecords.length) { 
         alert("बॅकअप घेण्यासाठी कोणतीही माहिती उपलब्ध नाही!"); 
         return; 
     }
-    const blob = new Blob([data], {type: "application/json"});
+    const exportData = fetchedRecords.map(r => r.data);
+    const blob = new Blob([JSON.stringify(exportData)], {type: "application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "Pension_Backup_" + new Date().toISOString().split('T')[0] + ".json";
     a.click();
     URL.revokeObjectURL(url);
-});
-
-$("uploadBackupFile").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        try {
-            const importedData = JSON.parse(event.target.result);
-            if(Array.isArray(importedData)) {
-                localStorage.setItem("pensionRecords", JSON.stringify(importedData));
-                renderSaved();
-                alert("माहिती यशस्वीरीत्या रिस्टोअर (Restore) झाली आहे!");
-            } else {
-                alert("चुकीची फाईल! कृपया योग्य बॅकअप (.json) फाईल निवडा.");
-            }
-        } catch(err) {
-            alert("फाईल वाचण्यात त्रुटी आली. फाईल खराब असू शकते.");
-        }
-        $("uploadBackupFile").value = ""; 
-    };
-    reader.readAsText(file);
 });
