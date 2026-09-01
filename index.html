@@ -26,6 +26,37 @@
 <div class="section blue">
 <h3>माहिती भरा</h3>
 <div class="grid3">
+
+  <label>विभाग (Department)
+    <select id="department" required>
+      <option value="">विभाग निवडा...</option>
+      <option value="Agriculture_ADF">१. कृषि, पशुसंवर्धन, दुग्धव्यवसाय विकास व मत्स्यव्यवसाय विभाग</option>
+      <option value="Cooperation_Marketing_Textile">२. सहकार, पणन व वस्त्रोद्योग विभाग</option>
+      <option value="Environment">३. पर्यावरण विभाग</option>
+      <option value="Finance">४. वित्त विभाग</option>
+      <option value="Food_Civil_Supplies">५. अन्न, नागरी पुरवठा व ग्राहक संरक्षण विभाग</option>
+      <option value="General_Administration">६. सामान्य प्रशासन विभाग</option>
+      <option value="Higher_Technical_Education">७. उच्च व तंत्र शिक्षण विभाग</option>
+      <option value="Home">८. गृह विभाग</option>
+      <option value="Housing">९. गृहनिर्माण विभाग</option>
+      <option value="Industries_Energy_Labour">१०. उद्योग, ऊर्जा व कामगार विभाग</option>
+      <option value="Law_Judiciary">११. विधि व न्याय विभाग</option>
+      <option value="Medical_Education_Drugs">१२. वैद्यकीय शिक्षण व औषधी द्रव्ये विभाग</option>
+      <option value="Planning">१३. नियोजन विभाग</option>
+      <option value="Public_Health">१४. सार्वजनिक आरोग्य विभाग</option>
+      <option value="Public_Works">१५. सार्वजनिक बांधकाम विभाग</option>
+      <option value="Revenue_Forest">१६. महसूल व वन विभाग</option>
+      <option value="Rural_Development_Water">१७. ग्रामविकास व जलसंधारण विभाग</option>
+      <option value="School_Education_Sports">१८. शालेय शिक्षण व क्रीडा विभाग</option>
+      <option value="Skill_Development_Entrepreneurship">१९. कौशल्य विकास व उद्योजगता विभाग</option>
+      <option value="Social_Justice_Special_Assistance">२०. सामाजिक न्याय, सांस्कृतिक कार्य व विशेष सहाय्य विभाग</option>
+      <option value="Urban_Development">२१. नगरविकास विभाग</option>
+      <option value="Water_Resources">२२. जलसंपदा विभाग</option>
+      <option value="Water_Supply_Sanitation">२३. पाणीपुरवठा व स्वच्छता विभाग</option>
+      <option value="Women_Child_Development">२४. महिला व बाल विकास विभाग</option>
+    </select>
+  </label>
+
   <label>कर्मचाऱ्याचे नाव
     <input id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर">
   </label>
@@ -199,7 +230,14 @@
 </section>
 
 <section id="saved" class="tabpage">
-  <h2>📁 सेव्ह केलेली माहिती</h2>
+  <h2>📁 सेव्ह केलेली माहिती आणि बॅकअप</h2>
+  <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+    <button id="downloadBackupBtn" class="smallbtn" style="background-color: #007bff; color: white;">⬇️ फाईल डाऊनलोड करा (Backup)</button>
+    <label for="uploadBackupFile" class="smallbtn" style="background-color: #28a745; color: white; cursor: pointer; margin: 0; padding: 8px 15px;">⬆️ फाईल अपलोड करा (Restore)</label>
+    <input type="file" id="uploadBackupFile" style="display:none" accept=".json">
+  </div>
+  <p style="font-size: 12px; color: #555; margin-bottom: 15px;">टीप: ब्राउझरची हिस्ट्री क्लिअर करण्यापूर्वी 'फाईल डाऊनलोड' करून सुरक्षित ठेवा. नंतर तीच फाईल 'अपलोड' करून तुम्ही तुमची जुनी माहिती परत मिळवू शकता.</p>
+  
   <div id="savedList"></div>
 </section>
 
