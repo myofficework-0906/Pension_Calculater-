@@ -47,30 +47,30 @@
   <label>विभाग (Department)
     <select id="department" required style="width: 100%;">
       <option value="">विभाग निवडा / शोधा...</option>
-      <option value="Agriculture_ADF">कृषि, पशुसंवर्धन, दुग्धव्यवसाय विकास व मत्स्यव्यवसाय विभाग (Agriculture, Animal Husbandry, Dairy & Fisheries)</option>
-      <option value="Cooperation_Marketing_Textile">सहकार, पणन व वस्त्रोद्योग विभाग (Cooperation, Marketing and Textile)</option>
-      <option value="Environment">पर्यावरण विभाग (Environment)</option>
-      <option value="Finance">वित्त विभाग (Finance)</option>
-      <option value="Food_Civil_Supplies">अन्न, नागरी पुरवठा व ग्राहक संरक्षण विभाग (Food, Civil Supplies and Consumer Protection)</option>
-      <option value="General_Administration">सामान्य प्रशासन विभाग (General Administration)</option>
-      <option value="Higher_Technical_Education">उच्च व तंत्र शिक्षण विभाग (Higher and Technical Education)</option>
-      <option value="Home">गृह विभाग (Home)</option>
-      <option value="Housing">गृहनिर्माण विभाग (Housing)</option>
-      <option value="Industries_Energy_Labour">उद्योग, ऊर्जा व कामगार विभाग (Industries, Energy and Labour)</option>
-      <option value="Law_Judiciary">विधि व न्याय विभाग (Law and Judiciary)</option>
-      <option value="Medical_Education_Drugs">वैद्यकीय शिक्षण व औषधी द्रव्ये विभाग (Medical Education and Drugs)</option>
-      <option value="Planning">नियोजन विभाग (Planning)</option>
-      <option value="Public_Health">सार्वजनिक आरोग्य विभाग (Public Health)</option>
-      <option value="Public_Works">सार्वजनिक बांधकाम विभाग (Public Works)</option>
-      <option value="Revenue_Forest">महसूल व वन विभाग (Revenue and Forest)</option>
-      <option value="Rural_Development_Water">ग्रामविकास व जलसंधारण विभाग (Rural Development and Water Conservation)</option>
-      <option value="School_Education_Sports">शालेय शिक्षण व क्रीडा विभाग (School Education and Sports)</option>
-      <option value="Skill_Development_Entrepreneurship">कौशल्य विकास व उद्योजगता विभाग (Skill Development and Entrepreneurship)</option>
-      <option value="Social_Justice_Special_Assistance">सामाजिक न्याय, सांस्कृतिक कार्य व विशेष सहाय्य विभाग (Social Justice and Special Assistance)</option>
-      <option value="Urban_Development">नगरविकास विभाग (Urban Development)</option>
-      <option value="Water_Resources">जलसंपदा विभाग (Water Resources)</option>
-      <option value="Water_Supply_Sanitation">पाणीपुरवठा व स्वच्छता विभाग (Water Supply and Sanitation)</option>
-      <option value="Women_Child_Development">महिला व बाल विकास विभाग (Women and Child Development)</option>
+      <option value="Agriculture_ADF">कृषि, पशुसंवर्धन, दुग्धव्यवसाय विकास व मत्स्यव्यवसाय विभाग</option>
+      <option value="Cooperation_Marketing_Textile">सहकार, पणन व वस्त्रोद्योग विभाग</option>
+      <option value="Environment">पर्यावरण विभाग</option>
+      <option value="Finance">वित्त विभाग</option>
+      <option value="Food_Civil_Supplies">अन्न, नागरी पुरवठा व ग्राहक संरक्षण विभाग</option>
+      <option value="General_Administration">सामान्य प्रशासन विभाग</option>
+      <option value="Higher_Technical_Education">उच्च व तंत्र शिक्षण विभाग</option>
+      <option value="Home">गृह विभाग</option>
+      <option value="Housing">गृहनिर्माण विभाग</option>
+      <option value="Industries_Energy_Labour">उद्योग, ऊर्जा व कामगार विभाग</option>
+      <option value="Law_Judiciary">विधि व न्याय विभाग</option>
+      <option value="Medical_Education_Drugs">वैद्यकीय शिक्षण व औषधी द्रव्ये विभाग</option>
+      <option value="Planning">नियोजन विभाग</option>
+      <option value="Public_Health">सार्वजनिक आरोग्य विभाग</option>
+      <option value="Public_Works">सार्वजनिक बांधकाम विभाग</option>
+      <option value="Revenue_Forest">महसूल व वन विभाग</option>
+      <option value="Rural_Development_Water">ग्रामविकास व जलसंधारण विभाग</option>
+      <option value="School_Education_Sports">शालेय शिक्षण व क्रीडा विभाग</option>
+      <option value="Skill_Development_Entrepreneurship">कौशल्य विकास व उद्योजगता विभाग</option>
+      <option value="Social_Justice_Special_Assistance">सामाजिक न्याय, सांस्कृतिक कार्य व विशेष सहाय्य विभाग</option>
+      <option value="Urban_Development">नगरविकास विभाग</option>
+      <option value="Water_Resources">जलसंपदा विभाग</option>
+      <option value="Water_Supply_Sanitation">पाणीपुरवठा व स्वच्छता विभाग</option>
+      <option value="Women_Child_Development">महिला व बाल विकास विभाग</option>
     </select>
   </label>
 
@@ -286,7 +286,9 @@
   $(document).ready(function() {
       $('#department').select2({
           placeholder: "विभाग निवडा / शोधा...",
-          allowClear: true
+          allowClear: true,
+          dropdownParent: $('#pensionForm'),
+          minimumResultsForSearch: 0
       });
   });
 </script>
