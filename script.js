@@ -8,7 +8,7 @@ const val=id=>Number($(id).value)||0;
 const firebaseConfig = {
   apiKey: "AIzaSyDBZ739gmtcIIJU9Zau--zlYIfibH4hUsk",
   authDomain: "pension-calculater.firebaseapp.com",
-  databaseURL: "https://pension-calculater-default-rtdb.firebaseio.com", // आवश्यक असल्यास इथे तुमचा Realtime Database URL टाका
+  databaseURL: "https://pension-calculater-default-rtdb.firebaseio.com",
   projectId: "pension-calculater",
   storageBucket: "pension-calculater.firebasestorage.app",
   messagingSenderId: "44699549394",
@@ -483,4 +483,28 @@ $("downloadBackupBtn").addEventListener("click", () => {
     a.download = "Pension_Backup_" + new Date().toISOString().split('T')[0] + ".json";
     a.click();
     URL.revokeObjectURL(url);
+});
+
+$("uploadBackupFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            const importedData = JSON.parse(event.target.result);
+            if(Array.isArray(importedData) && currentUser) {
+                const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+                importedData.forEach(async data => {
+                    await dbRef.push(data);
+                });
+                alert("माहिती यशस्वीरीत्या रिस्टोअर (Restore) झाली आहे!");
+            } else {
+                alert("चुकीची फाईल किंवा तुम्ही लॉग-इन केलेले नाही.");
+            }
+        } catch(err) {
+            alert("फाईल वाचण्यात त्रुटी आली. फाईल खराब असू शकते.");
+        }
+        $("uploadBackupFile").value = ""; 
+    };
+    reader.readAsText(file);
 });
