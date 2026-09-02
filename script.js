@@ -456,7 +456,7 @@ $("pensionForm").addEventListener("submit", async e=>{
 });
 
 $("resetBtn").addEventListener("click",()=>{
-    $("pensionForm").reset(); // Explicitly reset form
+    $("pensionForm").reset(); 
     $("resultModal").style.display = "none";
     currentEditId = null;
     $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
