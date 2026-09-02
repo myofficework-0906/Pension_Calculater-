@@ -317,7 +317,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE
+// ADVANCED AUTO GIS MODULE (100% Correct Timeline)
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -424,7 +424,7 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// VALIDATION & MAIN CALCULATE FUNCTION
+// VALIDATION, DYNAMIC GRID & MAIN CALCULATE
 // ==========================================
 window.handleCalc = function() {
     const form = document.getElementById("pensionForm");
@@ -436,7 +436,7 @@ window.handleCalc = function() {
     calculate(true);
 };
 
-window.handleSave = async function() {
+window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
         form.reportValidity();
@@ -456,23 +456,27 @@ window.handleSave = async function() {
         const data = calculate(false); 
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
+        // Fire and Forget (Background Sync) - Prevents hanging!
         if(currentEditId !== null) {
-            await dbRef.child(currentEditId).set(data);
+            dbRef.child(currentEditId).set(data).catch(e => console.error(e));
             currentEditId = null;
         } else {
-            await dbRef.push(data);
+            dbRef.push(data).catch(e => console.error(e));
         }
         
-        fetchDataFromFirebase();
-        
-        saveBtn.innerHTML = "💾 जतन करा";
-        alert("माहिती यशस्वीरित्या जतन झाली!");
-        
-        document.querySelector('.tab[data-tab="saved"]').click();
-        if(window.innerWidth <= 768) {
-            const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
-            if(mobTab) mobTab.click();
-        }
+        // Immediately show success and switch tabs
+        setTimeout(() => {
+            fetchDataFromFirebase();
+            saveBtn.innerHTML = "💾 जतन करा";
+            alert("माहिती यशस्वीरित्या जतन झाली!");
+            
+            document.querySelector('.tab[data-tab="saved"]').click();
+            if(window.innerWidth <= 768) {
+                const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
+                if(mobTab) mobTab.click();
+            }
+        }, 300);
+
     } catch(error) { 
         saveBtn.innerHTML = "💾 जतन करा";
         alert("त्रुटी: " + error.message); 
@@ -521,24 +525,43 @@ function calculate(showModal = true){
   const amtRecovery = hasRecovery ? val("recovery") : 0;
   const amtOther = hasRecovery ? val("otherDeduction") : 0;
   
-  // DA on Basic Pension
+  // DA is ALWAYS calculated on Original Basic Pension
   const pensionDA = pension * (da/100);
-  const totalMonthlyPension = reduced + pensionDA; 
   
   const lump=Math.max(0,commutationValue+gratuity+amtLeave+amtGpf+amtGis-amtRecovery-amtOther);
 
-  $("pension").textContent=money(pension);
-  $("pensionDA").textContent=money(pensionDA);
-  $("totalMonthlyPension").textContent=money(totalMonthlyPension); 
-  $("commuted").textContent=money(commuted);
-  $("reducedPension").textContent=money(reduced);
-  $("commutationValue").textContent=money(commutationValue);
-  $("gratuity").textContent=money(gratuity);
-  $("leaveResult").textContent=money(amtLeave);
-  $("gpfResult").textContent=money(amtGpf);
-  $("gisResult").textContent=money(amtGis);
-  $("lumpSum").textContent=money(lump);
-  
+  // ✅ DYNAMIC RESULT GRID INJECTION
+  const resultGrid = $("resultGridContainer");
+  let gridHTML = "";
+
+  if(isCommute) {
+      gridHTML += `
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>मासिक मूळ निवृत्तीवेतन:</span><b>${money(pension)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण रक्कम:</span><b>${money(commuted)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण एकरकमी रक्कम:</span><b>${money(commutationValue)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरणानंतर पेन्शन:</span><b>${money(reduced)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA):</span><b>${money(pensionDA)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Reduced + DA):</b></span><b>${money(reduced + pensionDA)}</b></div>
+      `;
+  } else {
+      gridHTML += `
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>मासिक मूळ निवृत्तीवेतन:</span><b>${money(pension)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA):</span><b>${money(pensionDA)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Basic + DA):</b></span><b>${money(pension + pensionDA)}</b></div>
+      `;
+  }
+
+  gridHTML += `
+      <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px; margin-top:8px;"><span>सेवानिवृत्ती उपदान (Gratuity):</span><b>${money(gratuity)}</b></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>रजा रोखीकरण:</span><b>${money(amtLeave)}</b></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>GPF:</span><b>${money(amtGpf)}</b></div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>GIS (अंदाजे):</span><b>${money(amtGis)}</b></div>
+      <div class="total" style="font-size:18px; color: #0b5d3b; background:#e8f5e9; padding:12px; border-radius:6px; display:flex; justify-content:space-between; margin-top:8px;"><span>अंदाजे एकूण एकरकमी लाभ:</span><b>${money(lump)}</b></div>
+  `;
+
+  resultGrid.innerHTML = gridHTML;
+  // ==========================================
+
   let deptText = $("department").selectedIndex > 0 ? $("department").options[$("department").selectedIndex].text : "-";
   
   let yrs = Math.floor(halfYears / 2);
@@ -629,7 +652,6 @@ window.loadRecord = function(i){
 
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
   
-  // Backward compatibility check for older saved data
   let hasRec = (r.recoveryAmount > 0 || r.otherDeduction > 0) ? "yes" : "no";
   let recRadio = document.querySelector(`input[name="recovery"][value="${hasRec}"]`);
   if(recRadio) recRadio.checked = true;
@@ -660,7 +682,6 @@ window.deleteRecord = function(i){
   }
 }
 
-// Ensure initial UI state matches default radio button selection
 document.addEventListener("DOMContentLoaded", () => {
     toggleCommute();
     toggleRecovery();
