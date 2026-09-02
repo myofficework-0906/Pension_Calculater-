@@ -37,7 +37,7 @@ function toggleCommute() {
     if (!isYes) {
         cp.value = "0";
     } else if (cp.value === "0" || cp.value === "") {
-        cp.value = "40"; // Default back to 40
+        cp.value = "40"; 
     }
 }
 
@@ -317,7 +317,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE (100% Correct Timeline)
+// ADVANCED AUTO GIS MODULE
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -424,7 +424,7 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// VALIDATION, DYNAMIC GRID & MAIN CALCULATE
+// VALIDATION, DYNAMIC GRID & OFFLINE SAVE
 // ==========================================
 window.handleCalc = function() {
     const form = document.getElementById("pensionForm");
@@ -449,37 +449,29 @@ window.handleSave = function() {
         return; 
     }
     
-    const saveBtn = document.getElementById("saveBtn");
-    saveBtn.innerHTML = "⏳ जतन होत आहे...";
-    
     try {
-        const data = calculate(false); 
+        const rawData = calculate(false); 
+        const cleanData = JSON.parse(JSON.stringify(rawData)); // Safe Object for Firebase
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
-        // Fire and Forget (Background Sync) - Prevents hanging!
+        // Background Sync (Fire and Forget) - No Hanging!
         if(currentEditId !== null) {
-            dbRef.child(currentEditId).set(data).catch(e => console.error(e));
+            dbRef.child(currentEditId).set(cleanData).catch(e => console.log("Background sync error:", e));
             currentEditId = null;
         } else {
-            dbRef.push(data).catch(e => console.error(e));
+            dbRef.push(cleanData).catch(e => console.log("Background sync error:", e));
         }
         
-        // Immediately show success and switch tabs
-        setTimeout(() => {
-            fetchDataFromFirebase();
-            saveBtn.innerHTML = "💾 जतन करा";
-            alert("माहिती यशस्वीरित्या जतन झाली!");
-            
-            document.querySelector('.tab[data-tab="saved"]').click();
-            if(window.innerWidth <= 768) {
-                const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
-                if(mobTab) mobTab.click();
-            }
-        }, 300);
+        alert("माहिती यशस्वीरित्या जतन झाली!");
+        
+        document.querySelector('.tab[data-tab="saved"]').click();
+        if(window.innerWidth <= 768) {
+            const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
+            if(mobTab) mobTab.click();
+        }
 
     } catch(error) { 
-        saveBtn.innerHTML = "💾 जतन करा";
-        alert("त्रुटी: " + error.message); 
+        alert("तांत्रिक त्रुटी: " + error.message); 
     }
 };
 
@@ -487,7 +479,6 @@ window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
     currentEditId = null;
-    document.getElementById("saveBtn").innerHTML = "💾 जतन करा";
     if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
     toggleRozandari();
     toggleCommute();
@@ -609,7 +600,9 @@ window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal")
 
 function fetchDataFromFirebase() {
     if(!currentUser) return;
-    db.ref('users/' + currentUser.uid + '/pensionRecords').on('value', (snapshot) => {
+    const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+    dbRef.off(); // Prevent duplicate listeners
+    dbRef.on('value', (snapshot) => {
         fetchedRecords = [];
         snapshot.forEach((child) => fetchedRecords.push({id: child.key, data: child.val()}));
         fetchedRecords.reverse(); 
@@ -665,7 +658,6 @@ window.loadRecord = function(i){
       document.querySelector('.mobile-tab[data-tab="calculator"]').click();
   }
   
-  document.getElementById("saveBtn").innerHTML = "💾 बदल जतन करा";
   $("resultModal").style.display = "none";
   setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
 }
