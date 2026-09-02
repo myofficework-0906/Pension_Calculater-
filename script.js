@@ -3,7 +3,7 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
-// FIREBASE CONFIGURATION 
+// FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDBZ739gmtcIIJU9Zau--zlYIfibH4hUsk",
@@ -16,7 +16,6 @@ const firebaseConfig = {
   measurementId: "G-LT71537XP1"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -25,40 +24,35 @@ const provider = new firebase.auth.GoogleAuthProvider();
 let currentUser = null;
 let fetchedRecords = []; 
 let currentEditId = null; 
+let gisUnitChart = {}; 
 
-// Authentication State Listener
+// Authentication State Listener (The Gatekeeper)
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
-        $("loginBtn").style.display = "none";
-        $("logoutBtn").style.display = "inline-block";
+        // User logged in: Hide Login Screen, Show Main App
+        $("loginScreen").style.display = "none";
+        $("mainApp").style.display = "block";
         $("userNameDisplay").textContent = "Welcome, " + user.displayName;
-        $("loginWarning").style.display = "none";
         fetchDataFromFirebase();
+        loadGISChartFromCloud(); 
     } else {
         currentUser = null;
         fetchedRecords = [];
-        $("loginBtn").style.display = "inline-block";
-        $("logoutBtn").style.display = "none";
+        // User logged out: Show Login Screen, Hide Main App
+        $("loginScreen").style.display = "flex";
+        $("mainApp").style.display = "none";
         $("userNameDisplay").textContent = "";
-        $("loginWarning").style.display = "block";
-        renderSaved();
     }
 });
 
-// Login / Logout Buttons
-$("loginBtn").addEventListener("click", () => {
-    auth.signInWithPopup(provider).catch(error => alert("लॉगिन करताना त्रुटी: " + error.message));
-});
-$("logoutBtn").addEventListener("click", () => {
-    auth.signOut().then(()=> { 
-        alert("तुम्ही यशस्वीरीत्या लॉगआउट झाला आहात."); 
-        window.location.reload(); 
-    });
-});
+// Login / Logout Buttons attached
+$("loginBtnMain").addEventListener("click", () => auth.signInWithPopup(provider).catch(e => alert("त्रुटी: " + e.message)));
+$("logoutBtn").addEventListener("click", () => auth.signOut().then(()=> window.location.reload() ));
 
 let currentRetirementAge = 58;
 
+// Pay Matrix (7th Pay Commission)
 const payMatrix = {
     "S-1": [15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600],
     "S-2": [15300, 15800, 16300, 16800, 17300, 17800, 18300, 18800, 19400, 20000, 20600, 21200, 21800, 22500, 23200, 23900, 24600, 25300, 26100, 26900, 27700, 28500, 29400, 30300, 31200, 32100, 33100, 34100, 35100, 36200, 37300, 38400, 39600, 40800, 42000, 43300, 44600, 45900, 47300, 48700],
@@ -109,39 +103,41 @@ function updateBasicPay() {
     const selectedLevel = payLevelDropdown.value;
     
     basicPayDropdown.innerHTML = '<option value="">बेसिक पे निवडा...</option>';
-    
     if (selectedLevel && payMatrix[selectedLevel]) {
-        const basicPayValues = payMatrix[selectedLevel];
-        basicPayValues.forEach(function(value) {
+        payMatrix[selectedLevel].forEach(function(value) {
             const option = document.createElement("option");
             option.value = value;
             option.textContent = value;
             basicPayDropdown.appendChild(option);
         });
     }
+    calculateRealtimeLeave();
 }
+
+window.calculateRealtimeLeave = function() {
+    const basic = val("basicPay");
+    const da = val("daPercent");
+    const daAmount = basic * (da / 100);
+    const elDays = Math.min(300, Math.max(0, val("earnedLeaveDays")));
+    const leave = Math.round(((basic + daAmount) / 30) * elDays);
+    $("leaveEncashment").value = leave;
+}
+
+$("basicPay").addEventListener("change", calculateRealtimeLeave);
 
 function calculateRetirementDate() {
     const dobVal = $("dob").value;
     const groupVal = $("group").value;
-    
     if (!dobVal || !groupVal) return;
     
-    let retAge = 58;
-    if (groupVal === "D" || groupVal === "गट ड") {
-        retAge = 60;
-    }
+    let retAge = (groupVal === "D" || groupVal === "गट ड") ? 60 : 58;
     currentRetirementAge = retAge;
     
     const dob = new Date(dobVal);
-    let retYear = dob.getFullYear() + retAge;
     let retMonth = dob.getMonth();
+    if (dob.getDate() === 1) retMonth -= 1;
     
-    if (dob.getDate() === 1) {
-        retMonth = retMonth - 1;
-    }
-    const retDate = new Date(retYear, retMonth + 1, 0); 
-    
+    const retDate = new Date(dob.getFullYear() + retAge, retMonth + 1, 0); 
     const yyyy = retDate.getFullYear();
     const mm = String(retDate.getMonth() + 1).padStart(2, '0');
     const dd = String(retDate.getDate()).padStart(2, '0');
@@ -155,7 +151,7 @@ function calculateRetirementDate() {
     if($("joiningDate").value) {
          const p = sixMonthlyPeriods();
          $("serviceHalfYears").value = p;
-         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
+         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने`;
     }
 }
 
@@ -170,51 +166,28 @@ document.querySelectorAll(".tab").forEach(btn=>{
 
 function toggleRozandari() {
     const est = $("establishment").value;
-    const rDateBlock = $("rozandariDateBlock");
-    const rHint = $("rozandariHint");
-    const jLabel = $("joiningDateLabel");
-    
-    if (est === "rozandari") {
-        rDateBlock.style.display = "block";
-        rHint.style.display = "block";
-        jLabel.textContent = "नियमित रुजू दिनांक (Automatic)";
-        $("joiningDate").readOnly = true; 
-        $("joiningDate").style.backgroundColor = "#e9ecef";
-    } else {
-        rDateBlock.style.display = "none";
-        rHint.style.display = "none";
-        jLabel.textContent = "सेवेत रुजू दिनांक";
-        $("joiningDate").readOnly = false;
-        $("joiningDate").style.backgroundColor = "";
-        $("rozandariDate").value = "";
-    }
+    const isRoz = (est === "rozandari");
+    $("rozandariDateBlock").style.display = isRoz ? "block" : "none";
+    $("rozandariHint").style.display = isRoz ? "block" : "none";
+    $("joiningDateLabel").textContent = isRoz ? "नियमित रुजू दिनांक (Automatic)" : "सेवेत रुजू दिनांक";
+    $("joiningDate").readOnly = isRoz;
+    $("joiningDate").style.backgroundColor = isRoz ? "#e9ecef" : "";
+    if(!isRoz) $("rozandariDate").value = "";
 }
 
 function calculateRegularDate() {
     const rDateVal = $("rozandariDate").value;
     if (!rDateVal) return;
-    
     const rozDate = new Date(rDateVal);
     rozDate.setFullYear(rozDate.getFullYear() + 5); 
-    
-    const yyyy = rozDate.getFullYear();
-    const mm = String(rozDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(rozDate.getDate()).padStart(2, '0');
-    
-    $("joiningDate").value = `${yyyy}-${mm}-${dd}`;
-    
-    if($("retirementDate").value) {
-         const p = sixMonthlyPeriods();
-         $("serviceHalfYears").value = p;
-         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
-    }
+    $("joiningDate").value = rozDate.toISOString().split('T')[0];
+    if($("retirementDate").value) $("serviceHalfYears").value = sixMonthlyPeriods();
 }
 
 function sixMonthlyPeriods() {
     const r = $("retirementDate").value;
     let j = $("joiningDate").value;
     const est = $("establishment").value;
-    
     if (!r) return 0;
     const b = new Date(r);
     let totalMonths = 0;
@@ -248,12 +221,98 @@ function sixMonthlyPeriods() {
     return Math.floor(totalMonths / 6);
 }
 
-$("calcService").addEventListener("click",()=>{
+$("calcService").addEventListener("click",()=> {
   const p = sixMonthlyPeriods();
   $("serviceHalfYears").value = p;
-  $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने (${p} सहामाही)`;
+  $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने`;
 });
 
+// ==========================================
+// ADVANCED GIS MODULE
+// ==========================================
+window.toggleGisMode = function() {
+    const isManual = $("manualGisToggle").checked;
+    if(isManual) {
+        $("gisAutoSection").style.display = "none";
+        $("gis").readOnly = false;
+        $("gis").style.backgroundColor = "";
+    } else {
+        $("gisAutoSection").style.display = "block";
+        $("gis").readOnly = true;
+        $("gis").style.backgroundColor = "#e9ecef";
+    }
+}
+
+window.addGISRow = function() {
+    const table = $("gisTable");
+    const row = table.insertRow();
+    row.innerHTML = `
+        <td><input type="month" class="gis-date" required></td>
+        <td><select class="gis-group" onchange="setGisAmount(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+        <td><input type="number" class="gis-sub" required></td>
+        <td><button type="button" onclick="this.parentNode.parentNode.remove()" style="color:red; font-weight:bold; cursor:pointer; border:none; background:none; font-size:16px;">❌</button></td>
+    `;
+}
+
+window.setGisAmount = function(selectElem) {
+    const rates = {"D": 120, "C": 240, "B": 360, "A": 480}; 
+    const val = selectElem.value;
+    const input = selectElem.parentNode.nextElementSibling.querySelector('input');
+    if(rates[val]) input.value = rates[val];
+}
+
+window.uploadGISChart = function() {
+    const fileInput = $("gisChartInput");
+    if(!fileInput.files.length) { alert("कृपया प्रथम फाईल (JSON) निवडा."); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            gisUnitChart = JSON.parse(e.target.result);
+            if(currentUser) db.ref('users/' + currentUser.uid + '/gisSettings').set(gisUnitChart);
+            $("gisUploadStatus").textContent = "चार्ट यशस्वीरीत्या अपलोड झाला!";
+            setTimeout(()=> { $("gisUploadStatus").textContent = ""; }, 3000);
+        } catch(err) { alert("फाईल चुकीची आहे."); }
+    };
+    reader.readAsText(fileInput.files[0]);
+}
+
+function loadGISChartFromCloud() {
+    if(currentUser) {
+        db.ref('users/' + currentUser.uid + '/gisSettings').once('value', snap => {
+            if(snap.val()) gisUnitChart = snap.val();
+        });
+    }
+}
+
+window.calculateAutoGIS = function() {
+    if(Object.keys(gisUnitChart).length === 0) {
+        alert("कृपया आधी महाकोशचा JSON युनिट चार्ट अपलोड करा."); return;
+    }
+    let totalGisAmount = 0;
+    const rows = document.querySelectorAll("#gisTable tr");
+    let previousSub = 0;
+    
+    for(let i=1; i < rows.length; i++) {
+        const dateInput = rows[i].querySelector('.gis-date').value;
+        const subInput = Number(rows[i].querySelector('.gis-sub').value);
+        if(!dateInput || !subInput) continue;
+        
+        let diffSub = subInput - previousSub;
+        if(diffSub <= 0) continue; 
+        
+        let units = diffSub / 10; 
+        let unitValue = gisUnitChart[dateInput] || 0; 
+        
+        totalGisAmount += (units * unitValue);
+        previousSub = subInput;
+    }
+    $("gis").value = Math.round(totalGisAmount);
+    alert("GIS गणना पूर्ण: ₹ " + Math.round(totalGisAmount));
+}
+
+// ==========================================
+// MAIN CALCULATE FUNCTION
+// ==========================================
 function calculate(){
   const basic=val("basicPay");
   const halfYears=Math.max(0,Math.floor(val("serviceHalfYears")));
@@ -267,16 +326,13 @@ function calculate(){
   const cp=Math.min(40,Math.max(0,val("commutePercent")));
   
   let ageNextBirthday = currentRetirementAge + 1;
-  let factor = val("commuteFactor");
-  if(commutationFactors[ageNextBirthday]) {
-      factor = commutationFactors[ageNextBirthday];
-      $("commuteFactor").value = factor;
-  }
+  let factor = val("commuteFactor") || 8.194;
   
   const commuted=commute ? pension*cp/100 : 0;
   const reduced=Math.max(0,pension-commuted);
   const commutationValue=commute ? commuted * 12 * factor : 0;
   
+  calculateRealtimeLeave();
   const leave=val("leaveEncashment"), gpf=val("gpf"), gis=val("gis");
   const recovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
   const other=val("otherDeduction");
@@ -295,57 +351,32 @@ function calculate(){
   $("lumpSum").textContent=money(lump);
   $("reportDate").textContent=new Date().toLocaleDateString("en-IN");
   
-  const typeText = $("retirementType").options[$("retirementType").selectedIndex].text;
-  let deptText = "-";
-  if($("department").selectedIndex > 0) {
-      deptText = $("department").options[$("department").selectedIndex].text;
-  }
+  let deptText = $("department").selectedIndex > 0 ? $("department").options[$("department").selectedIndex].text : "-";
   
   $("summary").innerHTML=`<p><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
   <p>विभाग: <b>${deptText}</b></p>
-  <p>निवृत्ती प्रकार: ${typeText}</p>
   <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
   
-  $("result").classList.remove("hidden");
-  $("printBtn").style.display = "inline-block"; 
+  $("resultModal").style.display = "block";
   
   return {
-    name:$("employeeName").value,
-    department:$("department").value,
-    office:$("officeName").value,
-    designation:$("designation").value,
-    group:$("group").value,
-    dob:$("dob").value,
-    retirementType:$("retirementType").value,
-    establishment:$("establishment").value,
-    joiningDate:$("joiningDate").value, 
-    rozandariDate:$("rozandariDate").value, 
-    retirementDate:$("retirementDate").value,
-    serviceHalfYears:halfYears,
-    payLevel:$("payLevel").value,
-    basicPay:basic,
-    daPercent:da,
-    commute:commute,
-    commutePercent:cp,
-    commuteFactor:factor,
-    recovery,
-    recoveryAmount:recovery,
-    otherDeduction:other,
-    gpf, 
-    gis, 
-    leaveEncashment:leave, 
+    name:$("employeeName").value, department:$("department").value, office:$("officeName").value,
+    designation:$("designation").value, group:$("group").value, dob:$("dob").value,
+    retirementType:$("retirementType").value, establishment:$("establishment").value,
+    joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,
+    serviceHalfYears:halfYears, payLevel:$("payLevel").value, basicPay:basic, daPercent:da,
+    commute:commute, commutePercent:cp, commuteFactor:factor, earnedLeaveDays: val("earnedLeaveDays"),
+    recovery, recoveryAmount:recovery, otherDeduction:other, gpf, gis, leaveEncashment:leave, 
     savedAt:new Date().toISOString()
   };
 }
 
-// Data saving logic to Firebase
+$("closeModal").addEventListener("click", () => $("resultModal").style.display = "none");
+window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal").style.display = "none"; }
+
 $("pensionForm").addEventListener("submit", async e=>{
   e.preventDefault();
-  
-  if(!currentUser) {
-      alert("माहिती सेव्ह करण्यासाठी कृपया आधी वरती 'Google ने Login करा' बटणावर क्लिक करा!");
-      return;
-  }
+  if(!currentUser) return;
   
   const data = calculate();
   const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
@@ -354,73 +385,45 @@ $("pensionForm").addEventListener("submit", async e=>{
       if(currentEditId !== null) {
           await dbRef.child(currentEditId).set(data);
           currentEditId = null;
-          $("submitBtn").innerHTML = "माहिती सेव्ह करा व गणना करा";
-          $("submitBtn").style.backgroundColor = "";
-          $("submitBtn").style.color = "";
-          alert("माहिती यशस्वीरीत्या अपडेट (Edit) झाली.");
+          $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
+          $("submitBtn").style.backgroundColor = ""; $("submitBtn").style.color = "";
       } else {
           await dbRef.push(data);
-          alert("माहिती क्लाउडवर सेव्ह झाली व गणना पूर्ण झाली.");
       }
       fetchDataFromFirebase();
-  } catch(error) {
-      alert("माहिती सेव्ह करताना त्रुटी: " + error.message);
-  }
-});
-
-$("printBtn").addEventListener("click",()=>{
-    if($("result").classList.contains("hidden")) calculate(); 
-    window.print();
+  } catch(error) { alert("त्रुटी: " + error.message); }
 });
 
 $("resetBtn").addEventListener("click",()=>{
-    $("result").classList.add("hidden");
-    $("serviceOutput").textContent="";
-    $("submitBtn").innerHTML = "माहिती सेव्ह करा व गणना करा";
-    $("submitBtn").style.backgroundColor = "";
-    $("submitBtn").style.color = "";
-    $("printBtn").style.display = "none";
+    $("resultModal").style.display = "none";
     currentEditId = null;
-    if(window.jQuery && $('#department').length) {
-        $('#department').val('').trigger('change');
-    }
+    $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
+    $("submitBtn").style.backgroundColor = ""; $("submitBtn").style.color = "";
+    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
     toggleRozandari();
 });
 
-// Fetch Data from Firebase
 function fetchDataFromFirebase() {
     if(!currentUser) return;
-    const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
-    
-    dbRef.on('value', (snapshot) => {
+    db.ref('users/' + currentUser.uid + '/pensionRecords').on('value', (snapshot) => {
         fetchedRecords = [];
-        snapshot.forEach((childSnapshot) => {
-            fetchedRecords.push({
-                id: childSnapshot.key,
-                data: childSnapshot.val()
-            });
-        });
+        snapshot.forEach((child) => fetchedRecords.push({id: child.key, data: child.val()}));
         fetchedRecords.reverse(); 
         renderSaved();
     });
 }
 
 function renderSaved(){
-  if(!currentUser){
-      $("savedList").innerHTML="<p>माहिती पाहण्यासाठी लॉगिन करा.</p>";
-      return;
-  }
-  if(!fetchedRecords.length){
-      $("savedList").innerHTML="<p>अद्याप कोणतीही माहिती सेव्ह केलेली नाही.</p>";
-      return;
-  }
-  $("savedList").innerHTML = fetchedRecords.map((recordObj, i)=>{
-      let r = recordObj.data;
+  if(!currentUser) return;
+  if(!fetchedRecords.length){ $("savedList").innerHTML="<p>कोणतीही माहिती जतन केलेली नाही.</p>"; return; }
+  
+  $("savedList").innerHTML = fetchedRecords.map((rObj, i)=>{
+      let r = rObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      return `<div class="savedcard"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | ${r.serviceHalfYears||0} सहामाही<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><br>
-      <button onclick="loadRecord(${i})" style="margin-right:10px;">उघडा / एडिट करा</button>
-      <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; margin-right:10px;">🖨️ प्रिंट</button>
-      <button style="background-color:#d9534f; color:white;" onclick="deleteRecord(${i})">हटवा</button></div>`;
+      return `<div class="section" style="padding:15px; margin-bottom:15px;"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")}<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><br>
+      <button onclick="loadRecord(${i})" style="margin-right:10px; background-color:#ffc107; color:black; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;">✏️ माहिती सुधारा</button>
+      <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; margin-right:10px; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;">🖨️ अहवाल प्रिंट</button>
+      <button style="background-color:#d9534f; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;" onclick="deleteRecord(${i})">🗑️ डिलीट</button></div>`;
   }).join("");
 }
 
@@ -428,58 +431,34 @@ window.loadRecord = function(i){
   const r = fetchedRecords[i].data;
   if(!r) return;
   
-  Object.keys(r).forEach(k=>{
-      if($(k)) $(k).value=r[k]
-  });
-  
-  if(r.department && window.jQuery && $('#department').length) {
-      $('#department').val(r.department).trigger('change');
-  }
-
-  if(r.establishment) {
-      $("establishment").value = r.establishment;
-      toggleRozandari();
-      if(r.establishment === "rozandari" && r.rozandariDate) {
-          $("rozandariDate").value = r.rozandariDate;
-      }
-  }
-
-  if(r.payLevel){
-      updateBasicPay();
-      if(r.basicPay) $("basicPay").value = r.basicPay;
-  }
+  Object.keys(r).forEach(k=>{ if($(k)) $(k).value=r[k]; });
+  if(r.department && window.jQuery) $('#department').val(r.department).trigger('change');
+  if(r.establishment) { $("establishment").value = r.establishment; toggleRozandari(); if(r.establishment==="rozandari" && r.rozandariDate) $("rozandariDate").value = r.rozandariDate; }
+  if(r.payLevel){ updateBasicPay(); if(r.basicPay) $("basicPay").value = r.basicPay; }
+  calculateRealtimeLeave();
 
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
   document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
   
   currentEditId = fetchedRecords[i].id; 
   document.querySelector('[data-tab="calculator"]').click(); 
-  calculate();
   
-  // Change submit button to Edit mode
-  $("submitBtn").innerHTML = "💾 बदल सेव्ह करा (Update)";
-  $("submitBtn").style.backgroundColor = "#ffc107";
-  $("submitBtn").style.color = "black";
+  $("submitBtn").innerHTML = "💾 बदल जतन करा (Update)";
+  $("submitBtn").style.backgroundColor = "#ffc107"; $("submitBtn").style.color = "black";
   
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  $("resultModal").style.display = "none";
+  setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
 }
 
 window.printRecord = function(i) {
     loadRecord(i);
-    setTimeout(() => {
-        window.print();
-    }, 500);
+    setTimeout(() => { calculate(); setTimeout(() => { window.print(); }, 500); }, 500);
 }
 
 window.deleteRecord = function(i){
   if(confirm("ही माहिती कायमची डिलीट करायची आहे का?")) {
-      const recordId = fetchedRecords[i].id;
-      db.ref('users/' + currentUser.uid + '/pensionRecords/' + recordId).remove()
-      .then(() => {
-          alert("माहिती डिलीट झाली.");
-      })
-      .catch(error => {
-          alert("त्रुटी: " + error.message);
-      });
+      db.ref('users/' + currentUser.uid + '/pensionRecords/' + fetchedRecords[i].id).remove()
+      .then(() => alert("माहिती कायमची डिलीट झाली.")).catch(e => alert(e.message));
   }
 }
+
