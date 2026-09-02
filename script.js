@@ -130,7 +130,8 @@ const GIS_RATES_2026 = {
     "2002-01": 26731,
     "2010-01": 16530,
     "2016-01": 7903,
-    "2018-01": 5877, 
+    "2018-01": 6333,
+    "2018-07": 5877, 
     "2026-01": 42
 };
 
@@ -264,7 +265,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE (Timeline Logic)
+// ADVANCED AUTO GIS MODULE (100% Correct Timeline)
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -310,16 +311,15 @@ window.calculateAutoGIS = function() {
     const rows = document.querySelectorAll("#gisTable tr");
     
     let events = [];
-    // Gather user input events
+    // 1. Gather all user inputs
     for(let i=1; i < rows.length; i++) {
         const dateInput = rows[i].querySelector('.gis-date').value;
         const groupInput = rows[i].querySelector('.gis-group').value;
         if(dateInput && groupInput) {
             events.push({ date: dateInput, group: groupInput, type: 'user' });
-            
-            // Auto fill subscription amount for display
+            // Auto fill approx subscription amount visually
             let units = getGisUnits(dateInput, groupInput);
-            rows[i].querySelector('.gis-sub').value = units * 10; // Base 10 rs per unit (approx representation)
+            rows[i].querySelector('.gis-sub').value = units * 10; 
         }
     }
     
@@ -328,11 +328,13 @@ window.calculateAutoGIS = function() {
         return;
     }
 
+    // Sort by date
     events.sort((a, b) => a.date.localeCompare(b.date));
     const startYear = parseInt(events[0].date.split('-')[0]);
     
-    // Inject automatic rule changes that affect units
+    // 2. Inject Automatic Rule Changes that affected units
     if (startYear < 2002) events.push({ date: "2002-01", group: null, type: 'auto' });
+    if (startYear < 2010) events.push({ date: "2010-01", group: null, type: 'auto' });
     if (startYear < 2016) events.push({ date: "2016-01", group: null, type: 'auto' });
     
     events.sort((a, b) => a.date.localeCompare(b.date));
@@ -340,12 +342,13 @@ window.calculateAutoGIS = function() {
     let currentGroup = events[0].group;
     let previousUnits = 0;
     
+    // 3. Process events chronologically
     for(let i=0; i < events.length; i++) {
         let ev = events[i];
         if(ev.type === 'user') {
-            currentGroup = ev.group;
+            currentGroup = ev.group; // Update current group if user entered promotion
         } else {
-            ev.group = currentGroup;
+            ev.group = currentGroup; // Auto event inherits the current group
         }
         
         let currentUnits = getGisUnits(ev.date, currentGroup);
@@ -357,9 +360,9 @@ window.calculateAutoGIS = function() {
                 let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर (Maturity Value of 1 Unit) येथे टाईप करा:\n(उदा. 38315)`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
-                    GIS_RATES_2026[ev.date] = rate; // Save for this session
+                    GIS_RATES_2026[ev.date] = rate; // Save for session
                 } else {
-                    return; 
+                    return; // Cancel calculation
                 }
             }
             totalGisAmount += (diffUnits * rate);
@@ -369,6 +372,7 @@ window.calculateAutoGIS = function() {
     
     $("gis").value = Math.round(totalGisAmount);
     
+    // Visual Success Feedback
     $("gisAutoSection").style.border = "2px solid #28a745";
     setTimeout(() => { $("gisAutoSection").style.border = "none"; }, 1500);
 }
@@ -399,11 +403,16 @@ function calculate(){
   const leave=val("leaveEncashment"), gpf=val("gpf"), gis=val("gis");
   const recovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
   const other=val("otherDeduction");
-  const pensionDA=reduced*da/100;
+  
+  // DA is calculated on original basic pension
+  const pensionDA = pension * (da/100);
+  const totalMonthlyPension = pension + pensionDA; // Added new calculation
+  
   const lump=Math.max(0,commutationValue+gratuity+leave+gpf+gis-recovery-other);
 
   $("pension").textContent=money(pension);
   $("pensionDA").textContent=money(pensionDA);
+  $("totalMonthlyPension").textContent=money(totalMonthlyPension); // Display new field
   $("commuted").textContent=money(commuted);
   $("reducedPension").textContent=money(reduced);
   $("commutationValue").textContent=money(commutationValue);
