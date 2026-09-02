@@ -6,8 +6,6 @@
   <meta name="theme-color" content="#0b5d3b">
   <title>राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</title>
   <link rel="stylesheet" href="style.css">
-  
-  <!-- Select2 CSS for Searchable Dropdown -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   
   <style>
@@ -16,73 +14,50 @@
        ========================================= */
     body {
         background-color: #f4f7f6;
-        /* लहान '₹' ची सुंदर आणि फिकट नक्षी (Pattern) */
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.04' font-family='Arial' font-size='28' font-weight='bold' fill='%230b5d3b'%3E%3Ctext x='20' y='40'%3E%E2%82%B9%3C/text%3E%3Ctext x='70' y='90'%3E%E2%82%B9%3C/text%3E%3C/svg%3E");
-        background-attachment: fixed;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0; padding: 0;
+        background-attachment: fixed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;
     }
-
-    /* Floating Card Effect for Sections */
-    .section {
-        background: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 20px;
-        margin-bottom: 25px; border-top: 4px solid #0b5d3b; transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+    .section { background: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 20px; margin-bottom: 25px; border-top: 4px solid #0b5d3b; transition: transform 0.3s ease; }
     .section:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
     .section h3 { color: #0b5d3b; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 0; font-size: 16px; }
-
-    /* Modern Inputs & Buttons */
-    input, select { border-radius: 6px; border: 1px solid #ced4da; padding: 10px; transition: border-color 0.3s, box-shadow 0.3s; }
+    input, select { border-radius: 6px; border: 1px solid #ced4da; padding: 10px; transition: border-color 0.3s; }
     input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
     button { transition: all 0.3s ease; border-radius: 6px; font-weight: bold; cursor: pointer; }
     button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-
-    /* Select2 Dropdown Styling Fixes */
+    
     .select2-container .select2-selection--single { height: 40px; border: 1px solid #ced4da; border-radius: 6px; }
     .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 40px; }
     .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
     
     /* Login Screen Setup */
-    #loginScreen {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000;
-        background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%);
-        display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px);
-    }
-    .login-box {
-        background: white; padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #0b5d3b;
-    }
+    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+    .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #0b5d3b; }
     .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 22px; }
     .login-box p { color: #555; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
     .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 12px 25px; font-size: 16px; width: 100%; }
     
-    /* Inside App Logout Section */
     .auth-section { position: absolute; top: 15px; right: 15px; z-index: 1001; display: flex; align-items: center; }
     .logout-btn { background-color: #d9534f; color: white; border: none; padding: 8px 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .user-name { color: white; margin-right: 15px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
     
-    /* Modal Pop-up Styling */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(5px); }
     .modal-content { background-color: #fff; margin: auto; padding: 30px; border-radius: 12px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; margin-bottom: 50px; border-top: 5px solid #0b5d3b; }
     .close-modal { color: #d9534f; float: right; font-size: 35px; cursor: pointer; line-height: 1; transition: color 0.3s; }
     
-    /* GIS Table Styling */
     .gis-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
     .gis-table th { background-color: #0b5d3b; color: white; padding: 8px; }
     .gis-table td { border: 1px solid #ccc; padding: 8px; text-align: center; background-color: white;}
-    .gis-table input, .gis-table select { width: 90%; padding: 5px; font-size: 13px; }
+    .gis-table input, .gis-table select { width: 95%; padding: 5px; font-size: 13px; }
     
     @media print {
         body * { visibility: hidden; }
         #resultModal, #resultModal * { visibility: visible; }
-        #resultModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; overflow: visible; padding: 0; backdrop-filter: none; }
+        #resultModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; overflow: visible; padding: 0; }
         .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border-top: none; }
         .close-modal, #modalPrintBtn { display: none !important; }
         body { background-image: none !important; }
     }
-    @media (max-width: 600px) {
-        .user-name { display: none; }
-    }
+    @media (max-width: 600px) { .user-name { display: none; } }
   </style>
 </head>
 <body>
@@ -97,10 +72,8 @@
     </div>
 </div>
 
-<!-- ✅ MAIN APPLICATION (Hidden until logged in) -->
+<!-- ✅ MAIN APPLICATION -->
 <div id="mainApp" style="display: none;">
-    
-    <!-- Top Logout Section -->
     <div class="auth-section">
         <span id="userNameDisplay" class="user-name"></span>
         <button id="logoutBtn" class="logout-btn">🚪 लॉगआउट</button>
@@ -124,7 +97,6 @@
     <div class="section blue">
     <h3>👤 वैयक्तिक व पद माहिती</h3>
     <div class="grid3">
-
       <label>विभाग (Department)
         <select id="department" required style="width: 100%;">
           <option value="">विभाग निवडा / शोधा...</option>
@@ -154,17 +126,16 @@
           <option value="Women_Child_Development">महिला व बाल विकास विभाग</option>
         </select>
       </label>
-
       <label>कार्यालयाचे नाव <input id="officeName" placeholder="कार्यालयाचे नाव"></label>
       <label>कर्मचाऱ्याचे नाव <input id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर"></label>
       <label>पदनाम <input id="designation" placeholder="उदा. कनिष्ठ लिपिक"></label>
       <label>कर्मचारी वर्ग (Group)
         <select id="group" onchange="calculateRetirementDate()">
-          <option value="">निवडा...</option><option value="गट अ">गट अ</option><option value="गट ब (राजपत्रित)">गट ब (राजपत्रित)</option><option value="गट ब (अराजपत्रित)">गट ब (अराजपत्रित)</option><option value="गट क">गट क</option><option value="गट ड">गट ड</option>
+          <option value="">निवडा...</option><option value="A">गट अ</option><option value="B_Gaz">गट ब (राजपत्रित)</option><option value="B">गट ब (अराजपत्रित)</option><option value="C">गट क</option><option value="D">गट ड</option>
         </select>
       </label>
       <label>जन्म दिनांक (DOB) <input id="dob" type="date" onchange="calculateRetirementDate()"></label>
-      <label>निवृत्ती प्रकार (MCSR Rules 1982)
+      <label>निवृत्ती प्रकार
         <select id="retirementType">
           <option value="superannuation">नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
           <option value="voluntary">स्वेच्छानिवृत्ती (Voluntary)</option>
@@ -189,9 +160,7 @@
       <label>निवृत्त / सेवा समाप्ती दिनांक <input id="retirementDate" type="date"></label>
       <label>अर्हताकारी सेवा सहामाही <input id="serviceHalfYears" type="number" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
     </div>
-    <p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">
-      * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
-    </p>
+    <p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">* कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी ग्राह्य धरला जाईल.</p>
     <button type="button" class="smallbtn" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
     <span id="serviceOutput" class="serviceout" style="font-weight:bold; margin-left:10px; color:#6f42c1;"></span>
     </div>
@@ -202,21 +171,10 @@
       <label>वेतन स्तर (Pay Level)
         <select id="payLevel" onchange="updateBasicPay()" required>
           <option value="">वेतन स्तर निवडा...</option>
-          <option value="S-1">S-1</option><option value="S-2">S-2</option><option value="S-3">S-3</option>
-          <option value="S-4">S-4</option><option value="S-5">S-5</option><option value="S-6">S-6</option>
-          <option value="S-7">S-7</option><option value="S-8">S-8</option><option value="S-9">S-9</option>
-          <option value="S-10">S-10</option><option value="S-11">S-11</option><option value="S-12">S-12</option>
-          <option value="S-13">S-13</option><option value="S-14">S-14</option><option value="S-15">S-15</option>
-          <option value="S-16">S-16</option><option value="S-17">S-17</option><option value="S-18">S-18</option>
-          <option value="S-19">S-19</option><option value="S-20">S-20</option><option value="S-21">S-21</option>
-          <option value="S-22">S-22</option><option value="S-23">S-23</option><option value="S-24">S-24</option>
-          <option value="S-25">S-25</option><option value="S-26">S-26</option><option value="S-27">S-27</option>
-          <option value="S-28">S-28</option><option value="S-29">S-29</option><option value="S-30">S-30</option>
+          <option value="S-1">S-1</option><option value="S-2">S-2</option><option value="S-3">S-3</option><option value="S-4">S-4</option><option value="S-5">S-5</option><option value="S-6">S-6</option><option value="S-7">S-7</option><option value="S-8">S-8</option><option value="S-9">S-9</option><option value="S-10">S-10</option><option value="S-11">S-11</option><option value="S-12">S-12</option><option value="S-13">S-13</option><option value="S-14">S-14</option><option value="S-15">S-15</option><option value="S-16">S-16</option><option value="S-17">S-17</option><option value="S-18">S-18</option><option value="S-19">S-19</option><option value="S-20">S-20</option><option value="S-21">S-21</option><option value="S-22">S-22</option><option value="S-23">S-23</option><option value="S-24">S-24</option><option value="S-25">S-25</option><option value="S-26">S-26</option><option value="S-27">S-27</option><option value="S-28">S-28</option><option value="S-29">S-29</option><option value="S-30">S-30</option>
         </select>
       </label>
-      <label>वेतन रुपया / Basic Pay
-        <select id="basicPay" required onchange="calculateRealtimeLeave()"><option value="">प्रथम वेतन स्तर निवडा</option></select>
-      </label>
+      <label>वेतन रुपया / Basic Pay <select id="basicPay" required onchange="calculateRealtimeLeave()"><option value="">प्रथम वेतन स्तर निवडा</option></select></label>
       <label>महागाई भत्ता (DA) % <input id="daPercent" type="number" min="0" step="0.01" value="50" oninput="calculateRealtimeLeave()"></label>
     </div>
     </div>
@@ -226,7 +184,7 @@
     <div class="grid4">
       <label>हवे आहे का? <div class="radio"><label><input type="radio" name="commute" value="yes" checked> होय (%)</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
       <label>अंशराशीकरण % <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40"></label>
-      <label>अंशराशीकरण गुणक (वाढदिवसानुसार) <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled></label>
+      <label>अंशराशीकरण गुणक <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled></label>
       <label>टीप <input value="वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled></label>
     </div>
     </div>
@@ -243,37 +201,28 @@
     <div class="section green">
     <h3>💸 रजा रोखीकरण / GPF / GIS</h3>
     <div class="grid4">
-      <label>शिल्लक अर्जित रजा (३०० पर्यंत) <input id="earnedLeaveDays" type="number" min="0" max="300" value="0" placeholder="उदा. 300" oninput="calculateRealtimeLeave()"></label>
+      <label>शिल्लक अर्जित रजा (३०० पर्यंत) <input id="earnedLeaveDays" type="number" min="0" max="300" value="0" oninput="calculateRealtimeLeave()"></label>
       <label>रजा रोखीकरण रक्कम (₹) <input id="leaveEncashment" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold; color:#0b5d3b;"></label>
       <label>GPF रक्कम (₹) <input id="gpf" type="number" min="0" value="0"></label>
       <label>GIS रक्कम (₹) <input id="gis" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold;"></label>
     </div>
 
-    <!-- Advanced GIS Module -->
-    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);">
-       <h4 style="margin:0 0 10px 0; color:#0b5d3b;">📊 GIS गणना (प्रमोशन आणि आश्वासित प्रगती योजनेसह)</h4>
+    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb;">
+       <h4 style="margin:0 0 10px 0; color:#0b5d3b;">📊 महाकोश GIS गणना (प्रमोशन गट बदलासह)</h4>
        <label style="font-size: 13px; font-weight:bold; color:#d9534f;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
        
        <div id="gisAutoSection">
-           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची माहिती द्या. सॉफ्टवेअर 'युनिट फरकाच्या' (Difference of Units) सूत्रानुसार आपोआप गणना करेल.</p>
+           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची माहिती द्या. सॉफ्टवेअर 'युनिट फरकाच्या' सूत्रानुसार आपोआप गणना करेल.</p>
            <table class="gis-table" id="gisTable">
-               <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>मासिक वर्गणी (₹)</th><th>कृती</th></tr>
+               <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>कृती</th></tr>
                <tr>
                    <td><input type="month" class="gis-date" required></td>
-                   <td><select class="gis-group" onchange="setGisAmount(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
-                   <td><input type="number" class="gis-sub" required></td>
+                   <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
                    <td>-</td>
                </tr>
            </table>
            <button type="button" class="smallbtn" onclick="addGISRow()" style="margin-top:10px; background-color:#17a2b8; color:white;">➕ नवीन गट/प्रमोशन जोडा</button>
            <button type="button" class="smallbtn" onclick="calculateAutoGIS()" style="margin-top:10px; background-color: #0b5d3b; color:white;">📊 GIS रक्कम निश्चित करा</button>
-           
-           <div style="margin-top: 15px; border-top: 1px solid #ccc; padding-top:10px;">
-               <b style="font-size: 12px;">नवीन GIS युनिट चार्ट अपलोड करा (JSON फाईल):</b> 
-               <input type="file" id="gisChartInput" accept=".json" style="font-size: 12px;">
-               <button type="button" class="smallbtn" onclick="uploadGISChart()" style="padding: 4px 10px; font-size: 12px; background-color:#28a745; color:white;">📤 चार्ट अपलोड करा</button>
-               <span id="gisUploadStatus" style="color: green; font-size:12px; margin-left: 10px; font-weight:bold;"></span>
-           </div>
        </div>
     </div>
     </div>
@@ -303,31 +252,29 @@
             <div><span>GIS (अंदाजे)</span><b id="gisResult"></b></div>
             <div class="total"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
           </div>
-          <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
+          <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय लागू राहतील.</p>
           <div class="actions" style="margin-top:20px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 16px; padding: 10px 20px;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
         </div>
       </div>
     </div>
-
     </section>
 
     <section id="saved" class="tabpage">
-      <h2>📁 क्लाऊडवर जतन केलेली माहिती (Cloud Storage)</h2>
+      <h2>📁 क्लाऊडवर जतन केलेली माहिती</h2>
       <div id="savedList"></div>
     </section>
 
     <section id="help" class="tabpage">
       <h2>📖 मार्गदर्शिका (User Manual)</h2>
       <div class="helpbox" style="text-align: justify; line-height: 1.6;">
-        <h3 style="color:#0b5d3b; border-bottom: 2px solid #ccc; padding-bottom: 5px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये (Features)</h3>
+        <h3 style="color:#0b5d3b;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये</h3>
         <ul style="margin-left: 20px;">
-            <li><b>सक्तीचे सुरक्षित लॉगिन (Gatekeeper):</b> आता सॉफ्टवेअरमध्ये कोणीही प्रवेश करण्यापूर्वी अधिकृत गुगल लॉगिन करणे सक्तीचे आहे. यामुळे तुमचा डेटा सुरक्षित राहील.</li>
-            <li><b>आकर्षक UI आणि Watermark:</b> बॅकग्राऊंडमध्ये सर्वत्र '₹' ची सुंदर नक्षी (Pattern) आणि फॉर्मला फ्लोटिंग डिझाईन दिले आहे.</li>
-            <li><b>Pop-up अहवाल (Modal Report):</b> गणना पूर्ण झाल्यावर संपूर्ण अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
-            <li><b>ऑटोमॅटिक रजा रोखीकरण (Leave Encashment):</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
-            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> महाकोशच्या सूत्रानुसार, तुम्ही प्रमोशनच्या तारखा आणि वर्गणी टाकल्यास सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
+            <li><b>सक्तीचे सुरक्षित लॉगिन:</b> गुगल लॉगिन केल्याने तुमचा डेटा सुरक्षित राहतो.</li>
+            <li><b>Pop-up अहवाल:</b> गणना पूर्ण झाल्यावर अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
+            <li><b>ऑटोमॅटिक रजा रोखीकरण:</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
+            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> युनिटच्या फरकानुसार सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
         </ul>
       </div>
     </section>
@@ -336,19 +283,12 @@
 
 <footer>©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
 
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<!-- jQuery and Select2 JS for Searchable Dropdown -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-  $(document).ready(function() {
-      $('#department').select2({ placeholder: "विभाग निवडा / शोधा...", allowClear: true, dropdownParent: $('#pensionForm'), minimumResultsForSearch: 0 });
-  });
-</script>
+<script>$(document).ready(function() { $('#department').select2({ placeholder: "विभाग निवडा", allowClear: true }); });</script>
 <script src="script.js"></script>
 </body>
 </html>
