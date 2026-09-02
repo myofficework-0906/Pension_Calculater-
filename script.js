@@ -3,6 +3,26 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
+// SMART HIDE FIXED BOTTOM ON MOBILE (When Typing)
+// ==========================================
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        if(window.innerWidth <= 768) {
+            const footerArea = document.querySelector('.fixed-bottom-area');
+            if(footerArea) footerArea.style.display = 'none';
+        }
+    }
+});
+document.addEventListener('focusout', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        if(window.innerWidth <= 768) {
+            const footerArea = document.querySelector('.fixed-bottom-area');
+            if(footerArea) footerArea.style.display = 'block';
+        }
+    }
+});
+
+// ==========================================
 // FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
@@ -42,7 +62,7 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// Fixed Popup Login for Mobile
+// Fixed Popup Login
 $("loginBtnMain").addEventListener("click", () => {
     $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... पॉप-अप Allow करा";
     auth.signInWithPopup(provider).catch(error => {
@@ -428,7 +448,6 @@ $("pensionForm").addEventListener("submit", async e=>{
           await dbRef.child(currentEditId).set(data);
           currentEditId = null;
           $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
-          $("submitBtn").style.backgroundColor = ""; $("submitBtn").style.color = "";
       } else {
           await dbRef.push(data);
       }
@@ -437,10 +456,10 @@ $("pensionForm").addEventListener("submit", async e=>{
 });
 
 $("resetBtn").addEventListener("click",()=>{
+    $("pensionForm").reset(); // Explicitly reset form
     $("resultModal").style.display = "none";
     currentEditId = null;
     $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
-    $("submitBtn").style.backgroundColor = ""; $("submitBtn").style.color = "";
     if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
     toggleRozandari();
 });
@@ -486,7 +505,6 @@ window.loadRecord = function(i){
   document.querySelector('[data-tab="calculator"]').click(); 
   
   $("submitBtn").innerHTML = "💾 बदल जतन करा (Update)";
-  $("submitBtn").style.backgroundColor = "#ffc107"; $("submitBtn").style.color = "black";
   
   $("resultModal").style.display = "none";
   setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
