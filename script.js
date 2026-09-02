@@ -24,7 +24,7 @@ let currentUser = null;
 let fetchedRecords = []; 
 let currentEditId = null; 
 
-// Authentication State Listener (The Gatekeeper)
+// Gatekeeper
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
@@ -42,7 +42,7 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// ✅ FIXED LOGIN LOGIC (Uses Popup to prevent Mobile Loop)
+// Fixed Popup Login for Mobile
 $("loginBtnMain").addEventListener("click", () => {
     $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... पॉप-अप Allow करा";
     auth.signInWithPopup(provider).catch(error => {
@@ -101,17 +101,21 @@ const commutationFactors = {
 };
 
 // ==========================================
-// 📊 GIS RATES 2026 (Hardcoded from Image)
+// 📊 GIS RATES 2026 (Maturity Value per 1 Unit)
 // ==========================================
-// हे २०२६ मध्ये निवृत्त होणाऱ्या कर्मचाऱ्यांसाठी महाकोशचे अंदाजे दर आहेत (प्रति युनिट)
+// २०२६ च्या निवृत्तीनुसार प्रत्येक महिन्याचे 'प्रति युनिट' मूल्य. 
 const GIS_RATES_2026 = {
+    "1982-05": 75881, // Jan to May 1982 generally taken as 75881
+    "1990-01": 50066,
     "1994-01": 38315,
     "2002-01": 26731,
     "2010-01": 16530,
+    "2016-01": 7641,
     "2016-06": 7903,
+    "2018-01": 6333,
     "2018-07": 5877,
-    // तुम्ही इथे आवश्यकतेनुसार महिन्यांचे नवीन दर (Rates) Add करू शकता.
-    // "YYYY-MM" : Amount
+    "2026-01": 42
+    // जर एखादा महिना नसेल, तर फॉर्ममध्ये मॅन्युअली टाईप करता येईल.
 };
 
 function updateBasicPay() {
@@ -263,35 +267,58 @@ window.addGISRow = function() {
     const table = $("gisTable");
     const row = table.insertRow();
     row.innerHTML = `
-        <td><input type="month" class="gis-date" required></td>
-        <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+        <td><input type="month" class="gis-date" required onchange="autoFillGisRow(this)"></td>
+        <td><select class="gis-group" onchange="autoFillGisRow(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+        <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef;"></td>
         <td><button type="button" onclick="this.parentNode.parentNode.remove()" style="color:red; font-weight:bold; cursor:pointer; border:none; background:none; font-size:16px;">❌</button></td>
     `;
 }
 
-// Get Units based on Date and Group (Mahakosh Rules)
-function getGisUnits(dateStr, group) {
-    if(!dateStr || !group) return 0;
+// Get Details based on Date and Group (Mahakosh Rules)
+function getGisDetails(dateStr, group) {
+    if(!dateStr || !group) return { amount: 0, units: 0 };
     const d = new Date(dateStr);
     const year = d.getFullYear();
-    
-    if (year < 2004) {
-        if (group === "D") return 1;
-        if (group === "C") return 2;
-        if (group === "B") return 4;
-        if (group === "A") return 8;
-    } else if (year >= 2004 && year <= 2015) {
-        if (group === "D") return 1;
-        if (group === "C") return 2;
-        if (group === "B") return 8;
-        if (group === "A") return 16;
-    } else { // 2016 onwards
-        if (group === "D") return 4;
-        if (group === "C") return 6;
-        if (group === "B") return 8;
-        if (group === "A") return 16;
+    const month = d.getMonth() + 1; 
+
+    // Time periods based on provided image
+    if (year < 1990 || (year === 1990 && month < 1)) { 
+        if (group === "D") return { amount: 10, units: 1 };
+        if (group === "C") return { amount: 20, units: 2 };
+        if (group === "B") return { amount: 40, units: 4 };
+        if (group === "A") return { amount: 80, units: 8 };
+    } else if (year < 2002) { 
+        if (group === "D") return { amount: 15, units: 1 };
+        if (group === "C") return { amount: 30, units: 2 };
+        if (group === "B") return { amount: 60, units: 4 };
+        if (group === "A") return { amount: 120, units: 8 };
+    } else if (year < 2010) { 
+        if (group === "D") return { amount: 30, units: 1 };
+        if (group === "C") return { amount: 60, units: 2 };
+        if (group === "B") return { amount: 240, units: 8 };
+        if (group === "A") return { amount: 480, units: 16 };
+    } else if (year < 2016) { 
+        if (group === "D") return { amount: 60, units: 1 };
+        if (group === "C") return { amount: 120, units: 2 };
+        if (group === "B") return { amount: 480, units: 8 };
+        if (group === "A") return { amount: 960, units: 16 };
+    } else { 
+        if (group === "D") return { amount: 240, units: 4 };
+        if (group === "C") return { amount: 360, units: 6 };
+        if (group === "B") return { amount: 480, units: 8 };
+        if (group === "A") return { amount: 960, units: 16 };
     }
-    return 0;
+    return { amount: 0, units: 0 };
+}
+
+window.autoFillGisRow = function(elem) {
+    const tr = elem.closest('tr');
+    const dateVal = tr.querySelector('.gis-date').value;
+    const groupVal = tr.querySelector('.gis-group').value;
+    if (dateVal && groupVal) {
+        const details = getGisDetails(dateVal, groupVal);
+        tr.querySelector('.gis-sub').value = details.amount;
+    }
 }
 
 window.calculateAutoGIS = function() {
@@ -302,24 +329,32 @@ window.calculateAutoGIS = function() {
     for(let i=1; i < rows.length; i++) {
         const dateInput = rows[i].querySelector('.gis-date').value;
         const groupInput = rows[i].querySelector('.gis-group').value;
+
         if(!dateInput || !groupInput) continue;
-        
-        let currentUnits = getGisUnits(dateInput, groupInput);
+
+        let details = getGisDetails(dateInput, groupInput);
+        let currentUnits = details.units;
         let diffUnits = currentUnits - previousUnits;
-        
+
         if(diffUnits > 0) {
-            // Find rate in Hardcoded 2026 table
             let rate = GIS_RATES_2026[dateInput]; 
             if(!rate) {
-                alert(`⚠️ त्रुटी: ${dateInput} या महिन्याचा GIS दर उपलब्ध नाही. कृपया मॅन्युअली रक्कम टाका किंवा कोड अपडेट करा.`);
-                return;
+                // जर दर उपलब्ध नसेल तर युझरला मॅन्युअल दर विचारणे
+                let manualRate = prompt(`⚠️ त्रुटी: ${dateInput} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर येथे टाईप करा:`);
+                if(manualRate && !isNaN(manualRate)) {
+                    rate = Number(manualRate);
+                } else {
+                    return; // जर रद्द केले तर गणना थांबवा
+                }
             }
             totalGisAmount += (diffUnits * rate);
             previousUnits = currentUnits;
         }
     }
     $("gis").value = Math.round(totalGisAmount);
-    alert("GIS गणना पूर्ण: ₹ " + Math.round(totalGisAmount));
+    
+    $("gisAutoSection").style.border = "2px solid #28a745";
+    setTimeout(() => { $("gisAutoSection").style.border = "none"; }, 1500);
 }
 
 // ==========================================
