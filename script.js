@@ -103,9 +103,8 @@ const commutationFactors = {
 // ==========================================
 // 📊 GIS RATES 2026 (Maturity Value per 1 Unit)
 // ==========================================
-// २०२६ च्या निवृत्तीनुसार प्रत्येक महिन्याचे 'प्रति युनिट' मूल्य. 
 const GIS_RATES_2026 = {
-    "1982-05": 75881, // Jan to May 1982 generally taken as 75881
+    "1982-05": 75881, 
     "1990-01": 50066,
     "1994-01": 38315,
     "2002-01": 26731,
@@ -115,7 +114,6 @@ const GIS_RATES_2026 = {
     "2018-01": 6333,
     "2018-07": 5877,
     "2026-01": 42
-    // जर एखादा महिना नसेल, तर फॉर्ममध्ये मॅन्युअली टाईप करता येईल.
 };
 
 function updateBasicPay() {
@@ -248,7 +246,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE (Mahakosh Logic)
+// ADVANCED AUTO GIS MODULE
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -274,14 +272,12 @@ window.addGISRow = function() {
     `;
 }
 
-// Get Details based on Date and Group (Mahakosh Rules)
 function getGisDetails(dateStr, group) {
     if(!dateStr || !group) return { amount: 0, units: 0 };
     const d = new Date(dateStr);
     const year = d.getFullYear();
     const month = d.getMonth() + 1; 
 
-    // Time periods based on provided image
     if (year < 1990 || (year === 1990 && month < 1)) { 
         if (group === "D") return { amount: 10, units: 1 };
         if (group === "C") return { amount: 20, units: 2 };
@@ -339,12 +335,11 @@ window.calculateAutoGIS = function() {
         if(diffUnits > 0) {
             let rate = GIS_RATES_2026[dateInput]; 
             if(!rate) {
-                // जर दर उपलब्ध नसेल तर युझरला मॅन्युअल दर विचारणे
                 let manualRate = prompt(`⚠️ त्रुटी: ${dateInput} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर येथे टाईप करा:`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
                 } else {
-                    return; // जर रद्द केले तर गणना थांबवा
+                    return; 
                 }
             }
             totalGisAmount += (diffUnits * rate);
