@@ -27,6 +27,42 @@ document.addEventListener('focusout', function(e) {
 });
 
 // ==========================================
+// ✅ TOGGLE COMMUTE & RECOVERY LOGIC
+// ==========================================
+function toggleCommute() {
+    const isYes = document.querySelector('input[name="commute"]:checked').value === "yes";
+    const cp = $("commutePercent");
+    cp.readOnly = !isYes;
+    cp.style.backgroundColor = isYes ? "" : "#e9ecef";
+    if (!isYes) {
+        cp.value = "0";
+    } else if (cp.value === "0" || cp.value === "") {
+        cp.value = "40"; // Default back to 40
+    }
+}
+
+function toggleRecovery() {
+    const isYes = document.querySelector('input[name="recovery"]:checked').value === "yes";
+    const rec = $("recovery");
+    const oth = $("otherDeduction");
+    
+    rec.readOnly = !isYes;
+    oth.readOnly = !isYes;
+    
+    rec.style.backgroundColor = isYes ? "" : "#e9ecef";
+    oth.style.backgroundColor = isYes ? "" : "#e9ecef";
+    
+    if (!isYes) {
+        rec.value = "0";
+        oth.value = "0";
+    }
+}
+
+document.querySelectorAll('input[name="commute"]').forEach(r => r.addEventListener('change', toggleCommute));
+document.querySelectorAll('input[name="recovery"]').forEach(r => r.addEventListener('change', toggleRecovery));
+
+
+// ==========================================
 // FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
@@ -281,7 +317,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE (100% Correct Timeline)
+// ADVANCED AUTO GIS MODULE
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -388,20 +424,32 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// VALIDATION & MAIN CALCULATE FUNCTION (Fix for Save Bug)
+// VALIDATION & MAIN CALCULATE FUNCTION
 // ==========================================
-$("calcBtn").addEventListener("click", () => {
-    if($("pensionForm").reportValidity()) calculate(true);
-});
+window.handleCalc = function() {
+    const form = document.getElementById("pensionForm");
+    if(!form.checkValidity()) {
+        form.reportValidity();
+        alert("कृपया सर्व आवश्यक माहिती (उदा. नाव, बेसिक पे, जन्म दिनांक इत्यादी) भरा!");
+        return;
+    }
+    calculate(true);
+};
 
-$("saveBtn").addEventListener("click", () => {
-    if(!$("pensionForm").reportValidity()) return;
+window.handleSave = async function() {
+    const form = document.getElementById("pensionForm");
+    if(!form.checkValidity()) {
+        form.reportValidity();
+        alert("कृपया सर्व आवश्यक माहिती (उदा. नाव, बेसिक पे, जन्म दिनांक इत्यादी) भरा!");
+        return;
+    }
+    
     if(!currentUser) { 
         alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
         return; 
     }
     
-    const saveBtn = $("saveBtn");
+    const saveBtn = document.getElementById("saveBtn");
     saveBtn.innerHTML = "⏳ जतन होत आहे...";
     
     try {
@@ -409,40 +457,39 @@ $("saveBtn").addEventListener("click", () => {
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
         if(currentEditId !== null) {
-            dbRef.child(currentEditId).set(data).catch(e => console.error(e));
+            await dbRef.child(currentEditId).set(data);
             currentEditId = null;
         } else {
-            dbRef.push(data).catch(e => console.error(e));
+            await dbRef.push(data);
         }
-
-        // Firebase syncs locally instantly, no need to await network
-        setTimeout(() => {
-            saveBtn.innerHTML = "💾 जतन करा";
-            alert("माहिती यशस्वीरित्या जतन झाली!");
-            
-            document.querySelector('.tab[data-tab="saved"]').click();
-            if(window.innerWidth <= 768) {
-                const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
-                if(mobTab) mobTab.click();
-            }
-        }, 500);
         
+        fetchDataFromFirebase();
+        
+        saveBtn.innerHTML = "💾 जतन करा";
+        alert("माहिती यशस्वीरित्या जतन झाली!");
+        
+        document.querySelector('.tab[data-tab="saved"]').click();
+        if(window.innerWidth <= 768) {
+            const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
+            if(mobTab) mobTab.click();
+        }
     } catch(error) { 
         saveBtn.innerHTML = "💾 जतन करा";
         alert("त्रुटी: " + error.message); 
     }
-});
-
-window.resetApp = function() {
-    $("pensionForm").reset(); 
-    $("resultModal").style.display = "none";
-    currentEditId = null;
-    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
-    toggleRozandari();
-    window.scrollTo(0,0);
 };
 
-$("resetBtn").addEventListener("click", resetApp);
+window.handleReset = function() {
+    document.getElementById("pensionForm").reset(); 
+    document.getElementById("resultModal").style.display = "none";
+    currentEditId = null;
+    document.getElementById("saveBtn").innerHTML = "💾 जतन करा";
+    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
+    toggleRozandari();
+    toggleCommute();
+    toggleRecovery();
+    window.scrollTo(0,0);
+};
 
 function calculate(showModal = true){
   const basic=val("basicPay");
@@ -453,28 +500,29 @@ function calculate(showModal = true){
   if(halfYears>0 && halfYears<40) pension=basic*0.50*(halfYears/66);
   
   const gratuity=Math.min(basic*0.25*halfYears, basic*16.5, 1400000);
-  const commute=document.querySelector('input[name="commute"]:checked').value==="yes";
-  const cp=Math.min(40,Math.max(0,val("commutePercent")));
+  
+  const isCommute = document.querySelector('input[name="commute"]:checked').value==="yes";
+  const cp = Math.min(40,Math.max(0,val("commutePercent")));
   
   let ageNextBirthday = currentRetirementAge + 1;
   let factor = val("commuteFactor") || 8.194;
   
-  const commuted=commute ? pension*cp/100 : 0;
-  const reduced=Math.max(0,pension-commuted);
-  const commutationValue=commute ? commuted * 12 * factor : 0;
+  const commuted = isCommute ? pension*cp/100 : 0;
+  const reduced = Math.max(0,pension-commuted);
+  const commutationValue = isCommute ? commuted * 12 * factor : 0;
   
   calculateRealtimeLeave();
   
-  const amtLeave=val("leaveEncashment");
-  const amtGpf=val("gpf");
-  const amtGis=val("gis");
-  const amtRecovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
-  const amtOther=val("otherDeduction");
+  const amtLeave = val("leaveEncashment");
+  const amtGpf = val("gpf");
+  const amtGis = val("gis");
   
-  // DA is ALWAYS on Basic Pension
+  const hasRecovery = document.querySelector('input[name="recovery"]:checked').value==="yes";
+  const amtRecovery = hasRecovery ? val("recovery") : 0;
+  const amtOther = hasRecovery ? val("otherDeduction") : 0;
+  
+  // DA on Basic Pension
   const pensionDA = pension * (da/100);
-  
-  // ✅ एकूण मासिक पेन्शन: जर अंशराशीकरण केले असेल तर (Reduced + DA), नसेल तर (Basic + DA).
   const totalMonthlyPension = reduced + pensionDA; 
   
   const lump=Math.max(0,commutationValue+gratuity+amtLeave+amtGpf+amtGis-amtRecovery-amtOther);
@@ -527,7 +575,7 @@ function calculate(showModal = true){
     retirementType:$("retirementType").value, establishment:$("establishment").value,
     joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,
     serviceHalfYears:halfYears, payLevel:$("payLevel").value, basicPay:basic, daPercent:da,
-    commute:commute, commutePercent:cp, commuteFactor:factor, earnedLeaveDays: val("earnedLeaveDays"),
+    commute: isCommute, commutePercent:cp, commuteFactor:factor, earnedLeaveDays: val("earnedLeaveDays"),
     recovery: amtRecovery, recoveryAmount: amtRecovery, otherDeduction: amtOther, gpf: amtGpf, gis: amtGis, leaveEncashment: amtLeave, 
     savedAt:new Date().toISOString()
   };
@@ -580,7 +628,14 @@ window.loadRecord = function(i){
   calculateRealtimeLeave();
 
   document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
-  document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
+  
+  // Backward compatibility check for older saved data
+  let hasRec = (r.recoveryAmount > 0 || r.otherDeduction > 0) ? "yes" : "no";
+  let recRadio = document.querySelector(`input[name="recovery"][value="${hasRec}"]`);
+  if(recRadio) recRadio.checked = true;
+  
+  toggleCommute();
+  toggleRecovery();
   
   currentEditId = fetchedRecords[i].id; 
   document.querySelector('.tab[data-tab="calculator"]').click(); 
@@ -588,6 +643,7 @@ window.loadRecord = function(i){
       document.querySelector('.mobile-tab[data-tab="calculator"]').click();
   }
   
+  document.getElementById("saveBtn").innerHTML = "💾 बदल जतन करा";
   $("resultModal").style.display = "none";
   setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
 }
@@ -603,3 +659,9 @@ window.deleteRecord = function(i){
       .then(() => alert("माहिती कायमची डिलीट झाली.")).catch(e => alert(e.message));
   }
 }
+
+// Ensure initial UI state matches default radio button selection
+document.addEventListener("DOMContentLoaded", () => {
+    toggleCommute();
+    toggleRecovery();
+});
