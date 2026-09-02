@@ -9,321 +9,334 @@
   
   <!-- Select2 CSS for Searchable Dropdown -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  
   <style>
-    .select2-container .select2-selection--single {
-        height: 38px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+    /* =========================================
+       ✨ ATTRACTIVE UI & REPEATING WATERMARK ✨
+       ========================================= */
+    body {
+        background-color: #f4f7f6;
+        /* लहान '₹' ची सुंदर आणि फिकट नक्षी (Pattern) */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.04' font-family='Arial' font-size='28' font-weight='bold' fill='%230b5d3b'%3E%3Ctext x='20' y='40'%3E%E2%82%B9%3C/text%3E%3Ctext x='70' y='90'%3E%E2%82%B9%3C/text%3E%3C/svg%3E");
+        background-attachment: fixed;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0; padding: 0;
     }
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 38px;
+
+    /* Floating Card Effect for Sections */
+    .section {
+        background: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 20px;
+        margin-bottom: 25px; border-top: 4px solid #0b5d3b; transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
+    .section:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .section h3 { color: #0b5d3b; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 0; font-size: 16px; }
+
+    /* Modern Inputs & Buttons */
+    input, select { border-radius: 6px; border: 1px solid #ced4da; padding: 10px; transition: border-color 0.3s, box-shadow 0.3s; }
+    input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
+    button { transition: all 0.3s ease; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    /* Select2 Dropdown Styling Fixes */
+    .select2-container .select2-selection--single { height: 40px; border: 1px solid #ced4da; border-radius: 6px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 40px; }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
+    
+    /* Login Screen Setup */
+    #loginScreen {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000;
+        background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%);
+        display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px);
     }
-    /* Google Login Buttons Styling */
-    .auth-section {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        z-index: 1001;
+    .login-box {
+        background: white; padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #0b5d3b;
     }
-    .login-btn {
-        background-color: #4285F4; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .logout-btn {
-        background-color: #d9534f; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .user-name {
-        color: white; margin-right: 10px; font-weight: bold; font-size: 14px;
+    .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 22px; }
+    .login-box p { color: #555; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
+    .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 12px 25px; font-size: 16px; width: 100%; }
+    
+    /* Inside App Logout Section */
+    .auth-section { position: absolute; top: 15px; right: 15px; z-index: 1001; display: flex; align-items: center; }
+    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 8px 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .user-name { color: white; margin-right: 15px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    
+    /* Modal Pop-up Styling */
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(5px); }
+    .modal-content { background-color: #fff; margin: auto; padding: 30px; border-radius: 12px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; margin-bottom: 50px; border-top: 5px solid #0b5d3b; }
+    .close-modal { color: #d9534f; float: right; font-size: 35px; cursor: pointer; line-height: 1; transition: color 0.3s; }
+    
+    /* GIS Table Styling */
+    .gis-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    .gis-table th { background-color: #0b5d3b; color: white; padding: 8px; }
+    .gis-table td { border: 1px solid #ccc; padding: 8px; text-align: center; background-color: white;}
+    .gis-table input, .gis-table select { width: 90%; padding: 5px; font-size: 13px; }
+    
+    @media print {
+        body * { visibility: hidden; }
+        #resultModal, #resultModal * { visibility: visible; }
+        #resultModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; overflow: visible; padding: 0; backdrop-filter: none; }
+        .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border-top: none; }
+        .close-modal, #modalPrintBtn { display: none !important; }
+        body { background-image: none !important; }
     }
     @media (max-width: 600px) {
-        .auth-section { top: 5px; right: 5px; }
         .user-name { display: none; }
-        .login-btn, .logout-btn { padding: 5px 10px; font-size: 12px;}
     }
   </style>
 </head>
 <body>
 
-<!-- Google Login Section -->
-<div class="auth-section">
-    <span id="userNameDisplay" class="user-name"></span>
-    <button id="loginBtn" class="login-btn">Google ने Login करा</button>
-    <button id="logoutBtn" class="logout-btn" style="display:none;">Logout</button>
+<!-- 🛑 LOGIN SCREEN (Gatekeeper) -->
+<div id="loginScreen">
+    <div class="login-box">
+        <h2 style="font-size: 30px; margin-bottom: 10px;">🏛️</h2>
+        <h2>निवृत्तीवेतन गणना सॉफ्टवेअर</h2>
+        <p>महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांसाठी प्रगत पेन्शन आणि लाभ कॅल्क्युलेटर.<br><br><b>सॉफ्टवेअर सुरू करण्यासाठी व आपली माहिती सुरक्षित क्लाउडवर जतन करण्यासाठी कृपया अधिकृत लॉगिन करा.</b></p>
+        <button id="loginBtnMain" class="btn-main-login">🔐 Google ने Login करा</button>
+    </div>
 </div>
 
-<header class="topbar">
-  <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
-  <div class="sub">Maharashtra Government Pension Calculator</div>
-</header>
+<!-- ✅ MAIN APPLICATION (Hidden until logged in) -->
+<div id="mainApp" style="display: none;">
+    
+    <!-- Top Logout Section -->
+    <div class="auth-section">
+        <span id="userNameDisplay" class="user-name"></span>
+        <button id="logoutBtn" class="logout-btn">🚪 लॉगआउट</button>
+    </div>
 
-<nav class="tabs">
-  <button class="tab active" data-tab="calculator">🧮 निवृत्तीवेतन कॅल्क्युलेटर</button>
-  <button class="tab" data-tab="saved">📁 सेव्ह केलेली माहिती</button>
-  <button class="tab" data-tab="help">📖 वापरकर्ता मदत</button>
-</nav>
+    <header class="topbar">
+      <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+      <div class="sub">Maharashtra Government Pension Calculator</div>
+    </header>
 
-<main class="container">
-<section id="calculator" class="tabpage active">
-<form id="pensionForm">
+    <nav class="tabs">
+      <button class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</button>
+      <button class="tab" data-tab="saved">📁 जतन केलेली माहिती</button>
+      <button class="tab" data-tab="help">📖 मार्गदर्शिका</button>
+    </nav>
 
-<div class="section blue">
-<h3>माहिती भरा</h3>
-<div class="grid3">
+    <main class="container">
+    <section id="calculator" class="tabpage active">
+    <form id="pensionForm">
 
-  <label>विभाग (Department)
-    <select id="department" required style="width: 100%;">
-      <option value="">विभाग निवडा / शोधा...</option>
-      <option value="Agriculture_ADF">कृषि, पशुसंवर्धन, दुग्धव्यवसाय विकास व मत्स्यव्यवसाय विभाग</option>
-      <option value="Cooperation_Marketing_Textile">सहकार, पणन व वस्त्रोद्योग विभाग</option>
-      <option value="Environment">पर्यावरण विभाग</option>
-      <option value="Finance">वित्त विभाग</option>
-      <option value="Food_Civil_Supplies">अन्न, नागरी पुरवठा व ग्राहक संरक्षण विभाग</option>
-      <option value="General_Administration">सामान्य प्रशासन विभाग</option>
-      <option value="Higher_Technical_Education">उच्च व तंत्र शिक्षण विभाग</option>
-      <option value="Home">गृह विभाग</option>
-      <option value="Housing">गृहनिर्माण विभाग</option>
-      <option value="Industries_Energy_Labour">उद्योग, ऊर्जा व कामगार विभाग</option>
-      <option value="Law_Judiciary">विधि व न्याय विभाग</option>
-      <option value="Medical_Education_Drugs">वैद्यकीय शिक्षण व औषधी द्रव्ये विभाग</option>
-      <option value="Planning">नियोजन विभाग</option>
-      <option value="Public_Health">सार्वजनिक आरोग्य विभाग</option>
-      <option value="Public_Works">सार्वजनिक बांधकाम विभाग</option>
-      <option value="Revenue_Forest">महसूल व वन विभाग</option>
-      <option value="Rural_Development_Water">ग्रामविकास व जलसंधारण विभाग</option>
-      <option value="School_Education_Sports">शालेय शिक्षण व क्रीडा विभाग</option>
-      <option value="Skill_Development_Entrepreneurship">कौशल्य विकास व उद्योजगता विभाग</option>
-      <option value="Social_Justice_Special_Assistance">सामाजिक न्याय, सांस्कृतिक कार्य व विशेष सहाय्य विभाग</option>
-      <option value="Urban_Development">नगरविकास विभाग</option>
-      <option value="Water_Resources">जलसंपदा विभाग</option>
-      <option value="Water_Supply_Sanitation">पाणीपुरवठा व स्वच्छता विभाग</option>
-      <option value="Women_Child_Development">महिला व बाल विकास विभाग</option>
-    </select>
-  </label>
+    <div class="section blue">
+    <h3>👤 वैयक्तिक व पद माहिती</h3>
+    <div class="grid3">
 
-  <label>कार्यालयाचे नाव
-    <input id="officeName" placeholder="कार्यालयाचे नाव">
-  </label>
-  <label>कर्मचाऱ्याचे नाव
-    <input id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर">
-  </label>
-  <label>पदनाम
-    <input id="designation" placeholder="उदा. कनिष्ठ लिपिक">
-  </label>
-  <label>कर्मचारी वर्ग (Group)
-    <select id="group" onchange="calculateRetirementDate()">
-      <option value="">निवडा...</option>
-      <option value="गट अ">गट अ</option>
-      <option value="गट ब (राजपत्रित)">गट ब (राजपत्रित)</option>
-      <option value="गट ब (अराजपत्रित)">गट ब (अराजपत्रित)</option>
-      <option value="गट क">गट क</option>
-      <option value="गट ड">गट ड</option>
-    </select>
-  </label>
-  <label>जन्म दिनांक (DOB)
-    <input id="dob" type="date" onchange="calculateRetirementDate()">
-  </label>
-  <label>निवृत्ती प्रकार (MCSR Rules 1982)
-    <select id="retirementType">
-      <option value="superannuation">नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
-      <option value="voluntary">स्वेच्छानिवृत्ती (Voluntary - Rule 65/66)</option>
-      <option value="invalid">रुग्णता निवृत्ती (Invalid Pension - Rule 68)</option>
-      <option value="compensation">नुकसान भरपाई निवृत्तीवेतन (Compensation - Rule 77)</option>
-      <option value="compulsory">सक्तीची निवृत्ती (Compulsory - Rule 100)</option>
-      <option value="compassionate">अनुकंपा भत्ता (Compassionate Allowance - Rule 101)</option>
-      <option value="family">कुटुंब निवृत्तीवेतन (Family Pension)</option>
-      <option value="other">इतर (Other)</option>
-    </select>
-  </label>
-</div>
-</div>
+      <label>विभाग (Department)
+        <select id="department" required style="width: 100%;">
+          <option value="">विभाग निवडा / शोधा...</option>
+          <option value="Agriculture_ADF">कृषि, पशुसंवर्धन, दुग्धव्यवसाय विकास व मत्स्यव्यवसाय विभाग</option>
+          <option value="Cooperation_Marketing_Textile">सहकार, पणन व वस्त्रोद्योग विभाग</option>
+          <option value="Environment">पर्यावरण विभाग</option>
+          <option value="Finance">वित्त विभाग</option>
+          <option value="Food_Civil_Supplies">अन्न, नागरी पुरवठा व ग्राहक संरक्षण विभाग</option>
+          <option value="General_Administration">सामान्य प्रशासन विभाग</option>
+          <option value="Higher_Technical_Education">उच्च व तंत्र शिक्षण विभाग</option>
+          <option value="Home">गृह विभाग</option>
+          <option value="Housing">गृहनिर्माण विभाग</option>
+          <option value="Industries_Energy_Labour">उद्योग, ऊर्जा व कामगार विभाग</option>
+          <option value="Law_Judiciary">विधि व न्याय विभाग</option>
+          <option value="Medical_Education_Drugs">वैद्यकीय शिक्षण व औषधी द्रव्ये विभाग</option>
+          <option value="Planning">नियोजन विभाग</option>
+          <option value="Public_Health">सार्वजनिक आरोग्य विभाग</option>
+          <option value="Public_Works">सार्वजनिक बांधकाम विभाग</option>
+          <option value="Revenue_Forest">महसूल व वन विभाग</option>
+          <option value="Rural_Development_Water">ग्रामविकास व जलसंधारण विभाग</option>
+          <option value="School_Education_Sports">शालेय शिक्षण व क्रीडा विभाग</option>
+          <option value="Skill_Development_Entrepreneurship">कौशल्य विकास व उद्योजगता विभाग</option>
+          <option value="Social_Justice_Special_Assistance">सामाजिक न्याय, सांस्कृतिक कार्य व विशेष सहाय्य विभाग</option>
+          <option value="Urban_Development">नगरविकास विभाग</option>
+          <option value="Water_Resources">जलसंपदा विभाग</option>
+          <option value="Water_Supply_Sanitation">पाणीपुरवठा व स्वच्छता विभाग</option>
+          <option value="Women_Child_Development">महिला व बाल विकास विभाग</option>
+        </select>
+      </label>
 
-<div class="section purple">
-<h3>सेवा कालावधी तपशील</h3>
-<div class="grid4">
-  <label>आस्थापना (Establishment)
-    <select id="establishment" onchange="toggleRozandari()">
-      <option value="permanent">कायम (Permanent)</option>
-      <option value="temporary">तात्पुरती (Temporary)</option>
-      <option value="officiating">स्थानापन्न (Officiating)</option>
-      <option value="rozandari">रोजंदारीवरून नियमित (५०% ग्राह्य)</option>
-    </select>
-  </label>
-  
-  <label id="rozandariDateBlock" style="display: none; color: #d9534f;">रोजंदारी रुजू दिनांक
-    <input id="rozandariDate" type="date" onchange="calculateRegularDate()">
-  </label>
+      <label>कार्यालयाचे नाव <input id="officeName" placeholder="कार्यालयाचे नाव"></label>
+      <label>कर्मचाऱ्याचे नाव <input id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर"></label>
+      <label>पदनाम <input id="designation" placeholder="उदा. कनिष्ठ लिपिक"></label>
+      <label>कर्मचारी वर्ग (Group)
+        <select id="group" onchange="calculateRetirementDate()">
+          <option value="">निवडा...</option><option value="गट अ">गट अ</option><option value="गट ब (राजपत्रित)">गट ब (राजपत्रित)</option><option value="गट ब (अराजपत्रित)">गट ब (अराजपत्रित)</option><option value="गट क">गट क</option><option value="गट ड">गट ड</option>
+        </select>
+      </label>
+      <label>जन्म दिनांक (DOB) <input id="dob" type="date" onchange="calculateRetirementDate()"></label>
+      <label>निवृत्ती प्रकार (MCSR Rules 1982)
+        <select id="retirementType">
+          <option value="superannuation">नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
+          <option value="voluntary">स्वेच्छानिवृत्ती (Voluntary)</option>
+          <option value="invalid">रुग्णता निवृत्ती (Invalid Pension)</option>
+          <option value="family">कुटुंब निवृत्तीवेतन (Family Pension)</option>
+          <option value="other">इतर (Other)</option>
+        </select>
+      </label>
+    </div>
+    </div>
 
-  <label><span id="joiningDateLabel">सेवेत रुजू दिनांक</span>
-    <input id="joiningDate" type="date">
-  </label>
-  
-  <label>निवृत्त / सेवा समाप्ती दिनांक
-    <input id="retirementDate" type="date">
-  </label>
-  
-  <label>अर्हताकारी सेवा सहामाही
-    <input id="serviceHalfYears" type="number" min="0" value="0" placeholder="उदा. 66">
-  </label>
-</div>
-<p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">
-  * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
-</p>
-<button type="button" class="smallbtn" id="calcService">सेवा कालावधी गणना करा</button>
-<span id="serviceOutput" class="serviceout"></span>
-</div>
+    <div class="section purple">
+    <h3>📅 सेवा कालावधी तपशील</h3>
+    <div class="grid4">
+      <label>आस्थापना (Establishment)
+        <select id="establishment" onchange="toggleRozandari()">
+          <option value="permanent">कायम (Permanent)</option><option value="temporary">तात्पुरती (Temporary)</option><option value="rozandari">रोजंदारीवरून नियमित (५०% ग्राह्य)</option>
+        </select>
+      </label>
+      <label id="rozandariDateBlock" style="display: none; color: #d9534f;">रोजंदारी रुजू दिनांक <input id="rozandariDate" type="date" onchange="calculateRegularDate()"></label>
+      <label><span id="joiningDateLabel">सेवेत रुजू दिनांक</span> <input id="joiningDate" type="date"></label>
+      <label>निवृत्त / सेवा समाप्ती दिनांक <input id="retirementDate" type="date"></label>
+      <label>अर्हताकारी सेवा सहामाही <input id="serviceHalfYears" type="number" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
+    </div>
+    <p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">
+      * कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी अर्हताकारी सेवेसाठी ग्राह्य धरला जाईल.
+    </p>
+    <button type="button" class="smallbtn" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
+    <span id="serviceOutput" class="serviceout" style="font-weight:bold; margin-left:10px; color:#6f42c1;"></span>
+    </div>
 
-<div class="section teal">
-<h3>वेतन तपशील (7th Pay Commission)</h3>
-<div class="grid3">
-  <label>वेतन स्तर (Pay Level)
-    <select id="payLevel" onchange="updateBasicPay()" required>
-      <option value="">वेतन स्तर निवडा...</option>
-      <option value="S-1">S-1</option><option value="S-2">S-2</option><option value="S-3">S-3</option>
-      <option value="S-4">S-4</option><option value="S-5">S-5</option><option value="S-6">S-6</option>
-      <option value="S-7">S-7</option><option value="S-8">S-8</option><option value="S-9">S-9</option>
-      <option value="S-10">S-10</option><option value="S-11">S-11</option><option value="S-12">S-12</option>
-      <option value="S-13">S-13</option><option value="S-14">S-14</option><option value="S-15">S-15</option>
-      <option value="S-16">S-16</option><option value="S-17">S-17</option><option value="S-18">S-18</option>
-      <option value="S-19">S-19</option><option value="S-20">S-20</option><option value="S-21">S-21</option>
-      <option value="S-22">S-22</option><option value="S-23">S-23</option><option value="S-24">S-24</option>
-      <option value="S-25">S-25</option><option value="S-26">S-26</option><option value="S-27">S-27</option>
-      <option value="S-28">S-28</option><option value="S-29">S-29</option><option value="S-30">S-30</option>
-      <option value="S-31">S-31</option>
-    </select>
-  </label>
-  <label>वेतन रुपया / Basic Pay
-    <select id="basicPay" required>
-        <option value="">प्रथम वेतन स्तर निवडा</option>
-    </select>
-  </label>
-  <label>महागाई भत्ता (DA) %
-    <input id="daPercent" type="number" min="0" step="0.01" value="50">
-  </label>
-</div>
-</div>
+    <div class="section teal">
+    <h3>💰 वेतन तपशील (7th Pay Commission)</h3>
+    <div class="grid3">
+      <label>वेतन स्तर (Pay Level)
+        <select id="payLevel" onchange="updateBasicPay()" required>
+          <option value="">वेतन स्तर निवडा...</option>
+          <option value="S-1">S-1</option><option value="S-2">S-2</option><option value="S-3">S-3</option>
+          <option value="S-4">S-4</option><option value="S-5">S-5</option><option value="S-6">S-6</option>
+          <option value="S-7">S-7</option><option value="S-8">S-8</option><option value="S-9">S-9</option>
+          <option value="S-10">S-10</option><option value="S-11">S-11</option><option value="S-12">S-12</option>
+          <option value="S-13">S-13</option><option value="S-14">S-14</option><option value="S-15">S-15</option>
+          <option value="S-16">S-16</option><option value="S-17">S-17</option><option value="S-18">S-18</option>
+          <option value="S-19">S-19</option><option value="S-20">S-20</option><option value="S-21">S-21</option>
+          <option value="S-22">S-22</option><option value="S-23">S-23</option><option value="S-24">S-24</option>
+          <option value="S-25">S-25</option><option value="S-26">S-26</option><option value="S-27">S-27</option>
+          <option value="S-28">S-28</option><option value="S-29">S-29</option><option value="S-30">S-30</option>
+        </select>
+      </label>
+      <label>वेतन रुपया / Basic Pay
+        <select id="basicPay" required onchange="calculateRealtimeLeave()"><option value="">प्रथम वेतन स्तर निवडा</option></select>
+      </label>
+      <label>महागाई भत्ता (DA) % <input id="daPercent" type="number" min="0" step="0.01" value="50" oninput="calculateRealtimeLeave()"></label>
+    </div>
+    </div>
 
-<div class="section orange">
-<h3>अंशराशीकरण (Commutation)</h3>
-<div class="grid4">
-  <label>हवे आहे का?
-    <div class="radio"><label><input type="radio" name="commute" value="yes" checked> होय (%)</label><label><input type="radio" name="commute" value="no"> नाही</label></div>
-  </label>
-  <label>अंशराशीकरण %
-    <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40">
-  </label>
-  <label>अंशराशीकरण गुणक (पुढील वाढदिवसानुसार)
-    <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled>
-  </label>
-  <label>टीप
-    <input value="अधिकृत वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled>
-  </label>
-</div>
-</div>
+    <div class="section orange">
+    <h3>📉 अंशराशीकरण (Commutation)</h3>
+    <div class="grid4">
+      <label>हवे आहे का? <div class="radio"><label><input type="radio" name="commute" value="yes" checked> होय (%)</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
+      <label>अंशराशीकरण % <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40"></label>
+      <label>अंशराशीकरण गुणक (वाढदिवसानुसार) <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled></label>
+      <label>टीप <input value="वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled></label>
+    </div>
+    </div>
 
-<div class="section red">
-<h3>शासकीय वसुली (Recovery)</h3>
-<div class="grid3">
-  <label>वसुली आहे का?
-    <div class="radio"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div>
-  </label>
-  <label>एकूण वसुली रक्कम
-    <input id="recovery" type="number" min="0" value="0">
-  </label>
-  <label>इतर वजावट
-    <input id="otherDeduction" type="number" min="0" value="0">
-  </label>
-</div>
-</div>
+    <div class="section red">
+    <h3>🛡️ शासकीय वसुली (Recovery)</h3>
+    <div class="grid3">
+      <label>वसुली आहे का? <div class="radio"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div></label>
+      <label>एकूण वसुली रक्कम <input id="recovery" type="number" min="0" value="0"></label>
+      <label>इतर वजावट <input id="otherDeduction" type="number" min="0" value="0"></label>
+    </div>
+    </div>
 
-<div class="section green">
-<h3>GPF / GIS</h3>
-<div class="grid3">
-  <label>GPF रक्कम (₹)
-    <input id="gpf" type="number" min="0" value="0">
-  </label>
-  <label>GIS रक्कम (₹)
-    <input id="gis" type="number" min="0" value="0">
-  </label>
-  <label>निवृत्ती रजा रोखीकरण (₹)
-    <input id="leaveEncashment" type="number" min="0" value="0">
-  </label>
-</div>
-</div>
+    <div class="section green">
+    <h3>💸 रजा रोखीकरण / GPF / GIS</h3>
+    <div class="grid4">
+      <label>शिल्लक अर्जित रजा (३०० पर्यंत) <input id="earnedLeaveDays" type="number" min="0" max="300" value="0" placeholder="उदा. 300" oninput="calculateRealtimeLeave()"></label>
+      <label>रजा रोखीकरण रक्कम (₹) <input id="leaveEncashment" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold; color:#0b5d3b;"></label>
+      <label>GPF रक्कम (₹) <input id="gpf" type="number" min="0" value="0"></label>
+      <label>GIS रक्कम (₹) <input id="gis" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold;"></label>
+    </div>
 
-<div class="actions">
-  <button type="submit" class="primary" id="submitBtn">माहिती सेव्ह करा व गणना करा</button>
-  <button type="button" class="print" id="printBtn" style="display:none;">🖨️ प्रिंट / PDF सेव्ह करा</button>
-  <button type="reset" class="secondary" id="resetBtn">रिकामा करा</button>
-</div>
-</form>
+    <!-- Advanced GIS Module -->
+    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);">
+       <h4 style="margin:0 0 10px 0; color:#0b5d3b;">📊 GIS गणना (प्रमोशन आणि आश्वासित प्रगती योजनेसह)</h4>
+       <label style="font-size: 13px; font-weight:bold; color:#d9534f;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
+       
+       <div id="gisAutoSection">
+           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची माहिती द्या. सॉफ्टवेअर 'युनिट फरकाच्या' (Difference of Units) सूत्रानुसार आपोआप गणना करेल.</p>
+           <table class="gis-table" id="gisTable">
+               <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>मासिक वर्गणी (₹)</th><th>कृती</th></tr>
+               <tr>
+                   <td><input type="month" class="gis-date" required></td>
+                   <td><select class="gis-group" onchange="setGisAmount(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+                   <td><input type="number" class="gis-sub" required></td>
+                   <td>-</td>
+               </tr>
+           </table>
+           <button type="button" class="smallbtn" onclick="addGISRow()" style="margin-top:10px; background-color:#17a2b8; color:white;">➕ नवीन गट/प्रमोशन जोडा</button>
+           <button type="button" class="smallbtn" onclick="calculateAutoGIS()" style="margin-top:10px; background-color: #0b5d3b; color:white;">📊 GIS रक्कम निश्चित करा</button>
+           
+           <div style="margin-top: 15px; border-top: 1px solid #ccc; padding-top:10px;">
+               <b style="font-size: 12px;">नवीन GIS युनिट चार्ट अपलोड करा (JSON फाईल):</b> 
+               <input type="file" id="gisChartInput" accept=".json" style="font-size: 12px;">
+               <button type="button" class="smallbtn" onclick="uploadGISChart()" style="padding: 4px 10px; font-size: 12px; background-color:#28a745; color:white;">📤 चार्ट अपलोड करा</button>
+               <span id="gisUploadStatus" style="color: green; font-size:12px; margin-left: 10px; font-weight:bold;"></span>
+           </div>
+       </div>
+    </div>
+    </div>
 
-<section id="result" class="result hidden">
-  <div class="resulthead"><h2>निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate"></span></div>
-  <div id="summary"></div>
-  <div class="resultgrid">
-    <div><span>मासिक मूळ निवृत्तीवेतन</span><b id="pension"></b></div>
-    <div><span>महागाई राहत (DA)</span><b id="pensionDA"></b></div>
-    <div><span>अंशराशीकरण रक्कम</span><b id="commuted"></b></div>
-    <div><span>अंशराशीकरणानंतर पेन्शन</span><b id="reducedPension"></b></div>
-    <div><span>अंशराशीकरण एकरकमी रक्कम</span><b id="commutationValue"></b></div>
-    <div><span>सेवानिवृत्ती उपदान (Gratuity)</span><b id="gratuity"></b></div>
-    <div><span>रजा रोखीकरण</span><b id="leaveResult"></b></div>
-    <div><span>GPF</span><b id="gpfResult"></b></div>
-    <div><span>GIS</span><b id="gisResult"></b></div>
-    <div class="total"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
-  </div>
-  <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
-</section>
-</section>
+    <div class="actions" style="margin-top: 30px;">
+      <button type="submit" class="primary" id="submitBtn" style="font-size: 16px; padding: 12px 25px;">💾 जतन करा आणि अहवाल पहा</button>
+      <button type="reset" class="secondary" id="resetBtn" style="font-size: 16px; padding: 12px 25px; background-color:#6c757d; color:white;">🧹 सर्व माहिती पुसा</button>
+    </div>
+    </form>
 
-<section id="saved" class="tabpage">
-  <h2>📁 क्लाऊडवर सेव्ह केलेली माहिती (Cloud Storage)</h2>
-  
-  <!-- Login Warning Box -->
-  <div id="loginWarning" style="color: #d9534f; background-color: #f9d6d5; padding: 10px; border-radius: 5px; font-weight: bold; margin-bottom: 15px; text-align: center;">
-      ⚠️ तुमची सेव्ह केलेली माहिती पाहण्यासाठी कृपया वरती 'Google ने Login करा' बटणावर क्लिक करा.
-  </div>
-  
-  <p style="font-size: 13px; color: #555; margin-bottom: 15px;">टीप: गुगल लॉगिन केल्याने तुमचा डेटा कायमस्वरूपी सुरक्षित राहतो. तुम्ही कोणत्याही डिव्हाईसवरून लॉगिन करून जुनी माहिती अपडेट (Edit) किंवा प्रिंट करू शकता.</p>
-  
-  <div id="savedList"></div>
-</section>
+    <!-- Result Pop-up (Modal) -->
+    <div id="resultModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div id="result" class="result">
+          <div class="resulthead"><h2>📜 निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate"></span></div>
+          <div id="summary"></div>
+          <div class="resultgrid">
+            <div><span>मासिक मूळ निवृत्तीवेतन</span><b id="pension"></b></div>
+            <div><span>महागाई राहत (DA)</span><b id="pensionDA"></b></div>
+            <div><span>अंशराशीकरण रक्कम</span><b id="commuted"></b></div>
+            <div><span>अंशराशीकरणानंतर पेन्शन</span><b id="reducedPension"></b></div>
+            <div><span>अंशराशीकरण एकरकमी रक्कम</span><b id="commutationValue"></b></div>
+            <div><span>सेवानिवृत्ती उपदान (Gratuity)</span><b id="gratuity"></b></div>
+            <div><span>रजा रोखीकरण</span><b id="leaveResult"></b></div>
+            <div><span>GPF</span><b id="gpfResult"></b></div>
+            <div><span>GIS (अंदाजे)</span><b id="gisResult"></b></div>
+            <div class="total"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
+          </div>
+          <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
+          <div class="actions" style="margin-top:20px; text-align:center;">
+             <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 16px; padding: 10px 20px;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<section id="help" class="tabpage">
-  <h2>📖 वापरकर्ता मदत आणि मार्गदर्शिका (User Manual)</h2>
-  <div class="helpbox" style="text-align: justify; line-height: 1.6;">
-    <h3 style="color:#0b5d3b; border-bottom: 2px solid #ccc; padding-bottom: 5px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये (Features)</h3>
-    <ul style="margin-left: 20px;">
-        <li><b>Google Login आणि Cloud Sync:</b> आता तुमची माहिती गुगलच्या सुरक्षित सर्व्हरवर सेव्ह होते. मोबाईलवर भरलेली माहिती तुम्ही पीसीवर लॉग-इन करून पाहू किंवा एडिट करू शकता. ब्राउझर हिस्ट्री डिलीट केल्याने तुमचा डेटा उडणार नाही.</li>
-        <li><b>ऑटोमॅटिक सेवानिवृत्ती दिनांक:</b> तुमची जन्म दिनांक आणि गट (उदा. गट क, गट ड) निवडल्यावर सेवानिवृत्तीची दिनांक आपोआप येते (गट ड साठी ६० वर्षे, इतरांसाठी ५८ वर्षे).</li>
-        <li><b>रोजंदारी सेवा गणना (कालेलकर समिती):</b> आस्थापना प्रकारात 'रोजंदारी' निवडल्यास, पहिली ५ वर्षे वगळून उर्वरित सेवेच्या ५०% कालावधी आपोआप 'अर्हताकारी सेवा' म्हणून ग्राह्य धरला जातो.</li>
-        <li><b>ऑटोमॅटिक बेसिक पे (७वा वेतन आयोग):</b> वेतन स्तर (S-1 ते S-31) निवडल्यास, त्या स्तरातील सर्व बेसिक पे चे पर्याय आपोआप ड्रॉपडाऊनमध्ये येतात.</li>
-        <li><b>अंशराशीकरण गुणक:</b> निवृत्तीच्या वयानुसार पुढील वाढदिवसाचा अंशराशीकरण गुणक (Commutation Factor) आपोआप निवडला जातो आणि एकरकमी रक्कम अचूक काढली जाते.</li>
-        <li><b>माहिती एडिट व प्रिंट:</b> सेव्ह केलेली माहिती 'उघडा / एडिट करा' बटणाने पुन्हा फॉर्ममध्ये घेता येते व अचूकपणे अपडेट किंवा थेट 'प्रिंट' करता येते.</li>
-    </ul>
+    </section>
 
-    <h3 style="color:#0b5d3b; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 20px;">माहिती कशी भरावी? (Step-by-Step Guide)</h3>
-    <ol style="margin-left: 20px;">
-        <li>सर्वात आधी सुरक्षिततेसाठी उजवीकडे वर असलेल्या <b>'Google ने Login करा'</b> बटणावर क्लिक करून लॉगिन करा.</li>
-        <li><b>विभाग आणि पदे:</b> 'विभाग' (Search box मध्ये शोधून) निवडा. त्यानंतर कार्यालयाचे नाव, स्वतःचे नाव, पदनाम आणि गट निवडा.</li>
-        <li><b>दिनांक नोंदवणे:</b> जन्म दिनांक टाकल्यास निवृत्तीची दिनांक आपोआप येईल. रुजू दिनांक टाकून 'सेवा कालावधी गणना करा' बटणावर क्लिक केल्यास तुमची एकूण 'अर्हताकारी सेवा (सहामाहीत)' आपोआप तयार होईल.</li>
-        <li><b>वेतन तपशील:</b> सातव्या वेतन आयोगानुसार तुमचा स्तर (उदा. S-6) निवडा, त्यानंतर तुमचे अचूक बेसिक पे आणि सध्याचा महागाई भत्ता (DA) टक्केवारीमध्ये टाका.</li>
-        <li><b>अंशराशीकरण (Commutation):</b> तुम्हाला अंशराशीकरण हवे असल्यास 'होय' निवडा आणि टक्केवारी टाका (जास्तीत जास्त ४०%). गुणक आपोआप घेतला जाईल.</li>
-        <li><b>वसुली आणि इतर रकमा:</b> काही शासकीय वसुली असल्यास ती नमूद करा. तसेच GPF, GIS आणि रजा रोखीकरण (Leave Encashment) च्या एकूण रकमा टाका.</li>
-        <li><b>गणना व सेव्ह:</b> सर्व माहिती भरून झाल्यावर <b>'माहिती सेव्ह करा व गणना करा'</b> बटणावर क्लिक करा. खाली संपूर्ण अहवाल तयार होईल आणि तुमची माहिती गुगल क्लाउडवर कायमची सेव्ह होईल.</li>
-    </ol>
+    <section id="saved" class="tabpage">
+      <h2>📁 क्लाऊडवर जतन केलेली माहिती (Cloud Storage)</h2>
+      <div id="savedList"></div>
+    </section>
 
-    <h3 style="color:#0b5d3b; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 20px;">महत्त्वाची कायदेशीर सूचना (Disclaimer)</h3>
-    <p>हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या कर्मचाऱ्यांच्या व अधिकाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी बनवण्यात आला आहे. अंतिम आणि अधिकृत देयकासाठी संबंधित शासन निर्णय, 'महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम १९८२', 'अंशराशीकरण नियम १९८४', लागू असलेले वेतन व महागाई राहत आदेश आणि सक्षम प्राधिकाऱ्याची पडताळणी व मंजुरी आवश्यक राहील.</p>
-  </div>
-</section>
-</main>
+    <section id="help" class="tabpage">
+      <h2>📖 मार्गदर्शिका (User Manual)</h2>
+      <div class="helpbox" style="text-align: justify; line-height: 1.6;">
+        <h3 style="color:#0b5d3b; border-bottom: 2px solid #ccc; padding-bottom: 5px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये (Features)</h3>
+        <ul style="margin-left: 20px;">
+            <li><b>सक्तीचे सुरक्षित लॉगिन (Gatekeeper):</b> आता सॉफ्टवेअरमध्ये कोणीही प्रवेश करण्यापूर्वी अधिकृत गुगल लॉगिन करणे सक्तीचे आहे. यामुळे तुमचा डेटा सुरक्षित राहील.</li>
+            <li><b>आकर्षक UI आणि Watermark:</b> बॅकग्राऊंडमध्ये सर्वत्र '₹' ची सुंदर नक्षी (Pattern) आणि फॉर्मला फ्लोटिंग डिझाईन दिले आहे.</li>
+            <li><b>Pop-up अहवाल (Modal Report):</b> गणना पूर्ण झाल्यावर संपूर्ण अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
+            <li><b>ऑटोमॅटिक रजा रोखीकरण (Leave Encashment):</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
+            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> महाकोशच्या सूत्रानुसार, तुम्ही प्रमोशनच्या तारखा आणि वर्गणी टाकल्यास सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
+        </ul>
+      </div>
+    </section>
+    </main>
+</div> <!-- End of Main App -->
 
 <footer>©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
 
-<!-- Firebase SDKs (v8 compat) -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -331,18 +344,11 @@
 <!-- jQuery and Select2 JS for Searchable Dropdown -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
   $(document).ready(function() {
-      $('#department').select2({
-          placeholder: "विभाग निवडा / शोधा...",
-          allowClear: true,
-          dropdownParent: $('#pensionForm'),
-          minimumResultsForSearch: 0
-      });
+      $('#department').select2({ placeholder: "विभाग निवडा / शोधा...", allowClear: true, dropdownParent: $('#pensionForm'), minimumResultsForSearch: 0 });
   });
 </script>
-
 <script src="script.js"></script>
 </body>
 </html>
