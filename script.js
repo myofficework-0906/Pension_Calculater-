@@ -3,6 +3,30 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
+// SMART HIDE FIXED BOTTOM ON MOBILE (When Typing)
+// ==========================================
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        if(window.innerWidth <= 768) {
+            const footerArea = document.querySelector('.fixed-bottom-area');
+            const mobileNav = document.querySelector('.mobile-bottom-nav');
+            if(footerArea) footerArea.style.display = 'none';
+            if(mobileNav) mobileNav.style.display = 'none';
+        }
+    }
+});
+document.addEventListener('focusout', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        if(window.innerWidth <= 768) {
+            const footerArea = document.querySelector('.fixed-bottom-area');
+            const mobileNav = document.querySelector('.mobile-bottom-nav');
+            if(footerArea) footerArea.style.display = 'block';
+            if(mobileNav) mobileNav.style.display = 'flex';
+        }
+    }
+});
+
+// ==========================================
 // FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
@@ -183,7 +207,6 @@ document.querySelectorAll(".tab, .mobile-tab").forEach(btn=>{
     
     const targetTab = btn.dataset.tab;
     
-    // Activate all matching tab buttons (desktop + mobile)
     document.querySelectorAll(`.tab[data-tab="${targetTab}"], .mobile-tab[data-tab="${targetTab}"]`).forEach(x=>x.classList.add("active"));
     $(targetTab).classList.add("active");
     
@@ -365,52 +388,50 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// VALIDATION & MAIN CALCULATE FUNCTION
+// VALIDATION & MAIN CALCULATE FUNCTION (Fix for Save Bug)
 // ==========================================
-window.validateAndProceed = function(action) {
-    if($("pensionForm").reportValidity()) {
-        if(action === 'calc') {
-            calculate(true); // Show Modal
-        } else if(action === 'save') {
-            saveData(); // Silent calculate and Save
-        }
-    }
-};
+$("calcBtn").addEventListener("click", () => {
+    if($("pensionForm").reportValidity()) calculate(true);
+});
 
-async function saveData() {
+$("saveBtn").addEventListener("click", () => {
+    if(!$("pensionForm").reportValidity()) return;
     if(!currentUser) { 
         alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
         return; 
     }
     
     const saveBtn = $("saveBtn");
-    const originalText = saveBtn.innerHTML;
     saveBtn.innerHTML = "⏳ जतन होत आहे...";
     
-    const data = calculate(false); 
-    const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
-
     try {
+        const data = calculate(false); 
+        const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+
         if(currentEditId !== null) {
-            await dbRef.child(currentEditId).set(data);
+            dbRef.child(currentEditId).set(data).catch(e => console.error(e));
             currentEditId = null;
         } else {
-            await dbRef.push(data);
+            dbRef.push(data).catch(e => console.error(e));
         }
-        fetchDataFromFirebase();
-        alert("माहिती यशस्वीरित्या जतन झाली!");
+
+        // Firebase syncs locally instantly, no need to await network
+        setTimeout(() => {
+            saveBtn.innerHTML = "💾 जतन करा";
+            alert("माहिती यशस्वीरित्या जतन झाली!");
+            
+            document.querySelector('.tab[data-tab="saved"]').click();
+            if(window.innerWidth <= 768) {
+                const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
+                if(mobTab) mobTab.click();
+            }
+        }, 500);
         
-        // Switch to saved tab
-        document.querySelector('.tab[data-tab="saved"]').click();
-        if(window.innerWidth <= 768) {
-            document.querySelector('.mobile-tab[data-tab="saved"]').click();
-        }
     } catch(error) { 
-        alert("त्रुटी: " + error.message); 
-    } finally {
         saveBtn.innerHTML = "💾 जतन करा";
+        alert("त्रुटी: " + error.message); 
     }
-}
+});
 
 window.resetApp = function() {
     $("pensionForm").reset(); 
@@ -420,6 +441,8 @@ window.resetApp = function() {
     toggleRozandari();
     window.scrollTo(0,0);
 };
+
+$("resetBtn").addEventListener("click", resetApp);
 
 function calculate(showModal = true){
   const basic=val("basicPay");
@@ -448,9 +471,11 @@ function calculate(showModal = true){
   const amtRecovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
   const amtOther=val("otherDeduction");
   
-  // DA on Basic Pension
+  // DA is ALWAYS on Basic Pension
   const pensionDA = pension * (da/100);
-  const totalMonthlyPension = pension + pensionDA; 
+  
+  // ✅ एकूण मासिक पेन्शन: जर अंशराशीकरण केले असेल तर (Reduced + DA), नसेल तर (Basic + DA).
+  const totalMonthlyPension = reduced + pensionDA; 
   
   const lump=Math.max(0,commutationValue+gratuity+amtLeave+amtGpf+amtGis-amtRecovery-amtOther);
 
