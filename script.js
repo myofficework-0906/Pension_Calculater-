@@ -26,11 +26,15 @@ let fetchedRecords = [];
 let currentEditId = null; 
 let gisUnitChart = {}; 
 
+// त्रुटी पकडण्यासाठी (Redirect झाल्यावर जर काही Error आला तर तो इथे दिसेल)
+auth.getRedirectResult().catch(function(error) {
+    alert("लॉगिन करताना त्रुटी: " + error.message + "\n(जर 'Unauthorized domain' असा एरर आला तर Firebase मध्ये तुमची GitHub लिंक Add करा.)");
+});
+
 // Authentication State Listener (The Gatekeeper)
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
-        // User logged in: Hide Login Screen, Show Main App
         $("loginScreen").style.display = "none";
         $("mainApp").style.display = "block";
         $("userNameDisplay").textContent = "Welcome, " + user.displayName;
@@ -39,15 +43,21 @@ auth.onAuthStateChanged(user => {
     } else {
         currentUser = null;
         fetchedRecords = [];
-        // User logged out: Show Login Screen, Hide Main App
         $("loginScreen").style.display = "flex";
         $("mainApp").style.display = "none";
         $("userNameDisplay").textContent = "";
     }
 });
 
-// Login / Logout Buttons attached
-$("loginBtnMain").addEventListener("click", () => auth.signInWithPopup(provider).catch(e => alert("त्रुटी: " + e.message)));
+// Login / Logout Buttons (Mobile Safe Method)
+const doLogin = () => {
+    // पॉप-अप ऐवजी रीडिरेक्ट पद्धत (मोबाईलसाठी सर्वोत्तम)
+    auth.signInWithRedirect(provider);
+};
+
+$("loginBtnMain").addEventListener("click", doLogin);
+if($("loginBtn")) $("loginBtn").addEventListener("click", doLogin);
+
 $("logoutBtn").addEventListener("click", () => auth.signOut().then(()=> window.location.reload() ));
 
 let currentRetirementAge = 58;
@@ -376,7 +386,7 @@ window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal")
 
 $("pensionForm").addEventListener("submit", async e=>{
   e.preventDefault();
-  if(!currentUser) return;
+  if(!currentUser) { alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); return; }
   
   const data = calculate();
   const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
@@ -414,7 +424,7 @@ function fetchDataFromFirebase() {
 }
 
 function renderSaved(){
-  if(!currentUser) return;
+  if(!currentUser){ $("savedList").innerHTML="<p>माहिती पाहण्यासाठी लॉगिन करा.</p>"; return; }
   if(!fetchedRecords.length){ $("savedList").innerHTML="<p>कोणतीही माहिती जतन केलेली नाही.</p>"; return; }
   
   $("savedList").innerHTML = fetchedRecords.map((rObj, i)=>{
@@ -461,4 +471,3 @@ window.deleteRecord = function(i){
       .then(() => alert("माहिती कायमची डिलीट झाली.")).catch(e => alert(e.message));
   }
 }
-
