@@ -377,7 +377,7 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// MAIN CALCULATE FUNCTION (With New Print Formatting)
+// MAIN CALCULATE FUNCTION
 // ==========================================
 $("calcBtn").addEventListener("click", () => {
     if($("pensionForm").reportValidity()) calculate(true);
