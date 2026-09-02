@@ -10,90 +10,104 @@
   
   <style>
     /* =========================================
-       ✨ PREMIUM UI & BACKGROUND ✨
+       ✨ PREMIUM UI & FIXED LAYOUT ✨
        ========================================= */
     body {
         background-color: #f4f7f6;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.04' font-family='Arial' font-size='28' font-weight='bold' fill='%230b5d3b'%3E%3Ctext x='20' y='40'%3E%E2%82%B9%3C/text%3E%3Ctext x='70' y='90'%3E%E2%82%B9%3C/text%3E%3C/svg%3E");
         background-attachment: fixed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;
         font-size: 14px;
+        padding-top: 150px; /* Space for Fixed Header */
+        padding-bottom: 100px; /* Space for Fixed Bottom Buttons */
     }
     
-    /* 🌟 DEFAULT FOR PC (FIXED LAYOUT) */
-    .fixed-top-area { position: fixed; top: 0; left: 0; width: 100%; z-index: 1005; background: #f4f7f6; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-    .topbar { background: #0b5d3b; color: white; padding: 15px 10px; text-align: center; position: relative; }
-    .brand { font-size: 18px; font-weight: bold; margin-top: 5px;}
-    .sub { font-size: 12px; color: #d1e7dd; margin-top: 3px; }
-    .tabs { display: flex; justify-content: center; gap: 8px; padding: 10px 5px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #ddd; }
-    .tab { background: #e9ecef; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; color: #444; font-size: 13px;}
-    .tab.active { background: #0b5d3b; color: white; border-color: #0b5d3b; }
+    /* 🌟 FIXED HEADER AREA */
+    .fixed-top-area { position: fixed; top: 0; left: 0; width: 100%; z-index: 1010; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .topbar { background-color: #0b5d3b; padding: 15px 10px; text-align: center; position: relative; border-bottom: 2px solid #06402b; }
     
-    .fixed-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: #0b5d3b; color: white; text-align: center; padding: 12px; font-size: 12px; z-index: 1005; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+    /* Software Name Color Fix */
+    .brand { font-size: 22px; font-weight: bold; color: #ffffff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); margin-top: 5px; letter-spacing: 0.5px;}
+    .sub { font-size: 13px; color: #e8f5e9 !important; margin-top: 4px; font-weight: 500;}
     
-    main.container { padding-top: 140px; padding-bottom: 60px; max-width: 900px; margin: 0 auto; padding-left: 10px; padding-right: 10px;}
+    /* Elegant Tabs */
+    .tabs-container { background-color: #ffffff; padding: 10px 0; border-bottom: 1px solid #ddd; }
+    .tabs { display: flex; justify-content: center; gap: 12px; padding: 0 10px; overflow-x: auto; white-space: nowrap; }
+    .tab { background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: #495057; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .tab:hover { background: #e2e6ea; transform: translateY(-1px); }
+    .tab.active { background: #0b5d3b; color: white; border-color: #0b5d3b; box-shadow: 0 4px 10px rgba(11,93,59,0.3); transform: translateY(-2px); }
+    
+    /* 🌟 FIXED BOTTOM ACTION BAR & FOOTER */
+    .fixed-bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1010; background: #ffffff; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
+    .action-bar { padding: 12px; display: flex; justify-content: center; gap: 15px; background: #e8f5e9; border-top: 2px solid #c3e6cb; }
+    .action-bar button { font-size: 15px; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .action-bar .primary { background-color: #0b5d3b; color: white; }
+    .action-bar .primary:hover { background-color: #094a2f; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .action-bar .secondary { background-color: #6c757d; color: white; }
+    .action-bar .secondary:hover { background-color: #5a6268; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .footer-text { background: #0b5d3b; color: white; padding: 8px; text-align: center; font-size: 12px; }
+    
+    main.container { max-width: 900px; margin: 0 auto; padding-left: 15px; padding-right: 15px; }
 
     /* Cards & Inputs */
-    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 15px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
-    .section:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
-    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 0; margin-bottom: 12px; font-size: 15px; }
-    input, select { border-radius: 4px; border: 1px solid #ced4da; padding: 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; box-sizing: border-box;}
-    input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 4px rgba(11,93,59,0.3); outline: none; }
-    button { transition: all 0.2s ease; border-radius: 4px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 13px;}
-    button:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
-    label { font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block; }
+    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 18px; margin-bottom: 20px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
+    .section:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; font-size: 16px; }
     
-    .select2-container .select2-selection--single { height: 34px; border: 1px solid #ced4da; border-radius: 4px; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 34px; font-size: 13px;}
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 32px; }
+    input, select { border-radius: 6px; border: 1px solid #ced4da; padding: 8px 10px; font-size: 14px; transition: border-color 0.3s; width: 100%; box-sizing: border-box;}
+    input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 4px rgba(11,93,59,0.3); outline: none; }
+    button.smallbtn { border-radius: 6px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 13px; border:none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    button.smallbtn:hover { transform: translateY(-1px); }
+    
+    label { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 5px; display: block; }
+    
+    .select2-container .select2-selection--single { height: 36px; border: 1px solid #ced4da; border-radius: 6px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 36px; font-size: 14px;}
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px; }
     
     /* Login Screen Setup */
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-    .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; max-width: 350px; width: 90%; border-top: 5px solid #0b5d3b; }
-    .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 20px; }
-    .login-box p { color: #555; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
-    .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 10px 20px; font-size: 15px; width: 100%; }
+    .login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; max-width: 380px; width: 90%; border-top: 5px solid #0b5d3b; }
+    .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 22px; margin-bottom: 15px;}
+    .login-box p { color: #555; margin-bottom: 25px; font-size: 14px; line-height: 1.6; }
+    .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     
     .auth-section { position: absolute; top: 15px; right: 15px; z-index: 1001; display: flex; align-items: center; }
-    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 6px 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .user-name { color: white; margin-right: 10px; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .user-name { color: #ffffff !important; margin-right: 12px; font-weight: bold; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
     
-    .grid3, .grid4 { display: grid; gap: 12px; }
-    .grid3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    .grid4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .grid3, .grid4 { display: grid; gap: 15px; }
+    .grid3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .grid4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
     
     /* Modal Pop-up Styling */
-    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 15px; backdrop-filter: blur(3px); }
-    .modal-content { background-color: #fff; margin: auto; padding: 20px; border-radius: 8px; width: 95%; max-width: 700px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; margin-bottom: 30px; border-top: 4px solid #0b5d3b; }
-    .close-modal { color: #d9534f; float: right; font-size: 28px; cursor: pointer; line-height: 1; transition: color 0.3s; margin-top: -5px;}
+    .modal { display: none; position: fixed; z-index: 2500; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(4px); }
+    .modal-content { background-color: #fff; margin: auto; padding: 25px; border-radius: 10px; width: 95%; max-width: 750px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; margin-bottom: 40px; border-top: 5px solid #0b5d3b; }
+    .close-modal { color: #d9534f; float: right; font-size: 30px; cursor: pointer; line-height: 1; transition: color 0.3s; margin-top: -10px; font-weight: bold;}
     
-    .gis-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
-    .gis-table th { background-color: #0b5d3b; color: white; padding: 6px; font-weight: normal;}
-    .gis-table td { border: 1px solid #ccc; padding: 5px; text-align: center; background-color: white;}
-    .gis-table input, .gis-table select { width: 95%; padding: 4px; font-size: 12px; }
+    .gis-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+    .gis-table th { background-color: #0b5d3b; color: white; padding: 8px; font-weight: normal;}
+    .gis-table td { border: 1px solid #ccc; padding: 6px; text-align: center; background-color: white;}
+    .gis-table input, .gis-table select { width: 95%; padding: 6px; font-size: 13px; }
     
-    /* Print Styles */
     @media print {
         body * { visibility: hidden; }
         #resultModal, #resultModal * { visibility: visible; }
         #resultModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; overflow: visible; padding: 0; }
         .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border-top: none; }
         .close-modal, #modalPrintBtn { display: none !important; }
-        body { background-image: none !important; }
-        .fixed-top-area, .fixed-bottom { display: none !important; }
+        body { background-image: none !important; padding: 0 !important; }
+        .fixed-top-area, .fixed-bottom-area { display: none !important; }
     }
 
-    /* 📱 MOBILE VIEW (Relative/Scrollable Layout to prevent keyboard block) */
+    /* Mobile Adjustments */
     @media (max-width: 768px) { 
-        .fixed-top-area { position: relative; box-shadow: none; border-bottom: 2px solid #0b5d3b; padding-bottom: 5px; }
-        .fixed-bottom { position: relative; margin-top: 20px; font-size: 11px; padding: 15px; }
-        main.container { padding-top: 15px; padding-bottom: 20px; }
+        body { padding-top: 135px; padding-bottom: 90px; }
         .user-name { display: none; } 
-        .brand { font-size: 16px; margin-top: 0; margin-right: 70px; text-align: left; padding-left: 5px;}
-        .sub { font-size: 11px; text-align: left; padding-left: 5px;}
-        .topbar { padding: 10px 5px; text-align: left;}
-        .auth-section { top: 8px; right: 8px; }
-        .logout-btn { padding: 5px 10px; font-size: 12px; }
-        .tab { padding: 6px 12px; font-size: 12px;}
+        .brand { font-size: 17px; margin-top: 2px; text-align: left; margin-right: 70px;}
+        .sub { font-size: 11px; text-align: left; }
+        .auth-section { top: 12px; right: 10px; }
+        .tab { padding: 8px 15px; font-size: 12px;}
+        .action-bar button { padding: 10px 15px; font-size: 14px; }
     }
   </style>
 </head>
@@ -102,7 +116,7 @@
 <!-- 🛑 LOGIN SCREEN (Gatekeeper) -->
 <div id="loginScreen">
     <div class="login-box">
-        <h2 style="font-size: 26px; margin-bottom: 5px;">🏛️</h2>
+        <h2 style="font-size: 32px; margin-bottom: 5px;">🏛️</h2>
         <h2>निवृत्तीवेतन गणना सॉफ्टवेअर</h2>
         <p>महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांसाठी प्रगत पेन्शन आणि लाभ कॅल्क्युलेटर.<br><br><b>सॉफ्टवेअर सुरू करण्यासाठी व माहिती सुरक्षित क्लाउडवर जतन करण्यासाठी अधिकृत लॉगिन करा.</b></p>
         <button id="loginBtnMain" class="btn-main-login">🔐 Google ने Login करा</button>
@@ -112,7 +126,7 @@
 <!-- ✅ MAIN APPLICATION -->
 <div id="mainApp" style="display: none;">
     
-    <!-- 🌟 TOP AREA (Fixed on PC, Relative on Mobile) -->
+    <!-- 🌟 FIXED TOP AREA -->
     <div class="fixed-top-area">
         <header class="topbar">
           <div class="auth-section">
@@ -123,11 +137,13 @@
           <div class="sub">Maharashtra Government Pension Calculator</div>
         </header>
 
-        <nav class="tabs">
-          <button class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</button>
-          <button class="tab" data-tab="saved">📁 जतन माहिती</button>
-          <button class="tab" data-tab="help">📖 मदत</button>
-        </nav>
+        <div class="tabs-container">
+            <nav class="tabs">
+              <button class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</button>
+              <button class="tab" data-tab="saved">📁 जतन माहिती</button>
+              <button class="tab" data-tab="help">📖 विस्तृत मदत</button>
+            </nav>
+        </div>
     </div>
 
     <!-- 🌟 MAIN CONTENT AREA -->
@@ -199,11 +215,11 @@
       <label id="rozandariDateBlock" style="display: none; color: #d9534f;">रोजंदारी रुजू दिनांक <input id="rozandariDate" type="date" onchange="calculateRegularDate()"></label>
       <label><span id="joiningDateLabel">सेवेत रुजू दिनांक</span> <input id="joiningDate" type="date"></label>
       <label>निवृत्त / सेवा समाप्ती दिनांक <input id="retirementDate" type="date"></label>
-      <label>अर्हताकारी सेवा सहामाही <input id="serviceHalfYears" type="number" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
+      <label>अर्हताकारी सेवा सहामाही <input id="serviceHalfYears" type="number" min="0" value="0" readonly style="background-color: #e9ecef; border-color:#ccc;"></label>
     </div>
-    <div style="margin-top: 8px;">
-        <button type="button" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
-        <span id="serviceOutput" style="font-weight:bold; margin-left:10px; color:#6f42c1; font-size:13px;"></span>
+    <div style="margin-top: 10px;">
+        <button type="button" class="smallbtn" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
+        <span id="serviceOutput" style="font-weight:bold; margin-left:12px; color:#6f42c1; font-size:14px;"></span>
     </div>
     </div>
 
@@ -224,17 +240,17 @@
     <div class="section orange">
     <h3>📉 अंशराशीकरण (Commutation)</h3>
     <div class="grid4">
-      <label>हवे आहे का? <div style="display:flex; gap:10px; margin-top:5px;"><label><input type="radio" name="commute" value="yes" checked> होय</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
+      <label>हवे आहे का? <div style="display:flex; gap:15px; margin-top:8px; font-weight:normal;"><label><input type="radio" name="commute" value="yes" checked> होय</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
       <label>अंशराशीकरण % <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40"></label>
-      <label>अंशराशीकरण गुणक <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled></label>
-      <label>टीप <input value="वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled></label>
+      <label>अंशराशीकरण गुणक <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled style="background-color: #f8f9fa;"></label>
+      <label>टीप <input value="वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled style="background-color: #f8f9fa;"></label>
     </div>
     </div>
 
     <div class="section red">
     <h3>🛡️ शासकीय वसुली (Recovery)</h3>
     <div class="grid3">
-      <label>वसुली आहे का? <div style="display:flex; gap:10px; margin-top:5px;"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div></label>
+      <label>वसुली आहे का? <div style="display:flex; gap:15px; margin-top:8px; font-weight:normal;"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div></label>
       <label>एकूण वसुली रक्कम <input id="recovery" type="number" min="0" value="0"></label>
       <label>इतर वजावट <input id="otherDeduction" type="number" min="0" value="0"></label>
     </div>
@@ -249,12 +265,12 @@
       <label>GIS रक्कम (₹) <input id="gis" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold;"></label>
     </div>
 
-    <div style="margin-top: 10px; padding: 10px; background: #f8fdf8; border-radius: 6px; border: 1px solid #c3e6cb;">
-       <h4 style="margin:0 0 5px 0; color:#0b5d3b; font-size:14px;">📊 गट विमा योजना (GIS) गणना</h4>
-       <label style="font-size: 12px; font-weight:bold; color:#d9534f; margin-bottom:5px;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
+    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb;">
+       <h4 style="margin:0 0 8px 0; color:#0b5d3b; font-size:15px;">📊 गट विमा योजना (GIS) गणना</h4>
+       <label style="font-size: 13px; font-weight:bold; color:#d9534f; margin-bottom:8px;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
        
        <div id="gisAutoSection">
-           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची (प्रमोशनची) माहिती द्या. वर्गणी रक्कम आपोआप निश्चित होईल.</p>
+           <p style="font-size: 13px; margin-bottom:8px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची (प्रमोशनची) माहिती द्या. वर्गणी रक्कम आपोआप निश्चित होईल.</p>
            <table class="gis-table" id="gisTable">
                <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>मासिक वर्गणी (₹)</th><th>कृती</th></tr>
                <tr>
@@ -264,18 +280,14 @@
                    <td>-</td>
                </tr>
            </table>
-           <div style="margin-top:8px;">
-               <button type="button" onclick="addGISRow()" style="background-color:#17a2b8; color:white; font-size:12px; padding: 5px 8px;">➕ गट/प्रमोशन जोडा</button>
-               <button type="button" onclick="calculateAutoGIS()" style="background-color: #0b5d3b; color:white; font-size:12px; padding: 5px 8px; margin-left:5px;">📊 GIS रक्कम निश्चित करा</button>
+           <div style="margin-top:10px;">
+               <button type="button" class="smallbtn" onclick="addGISRow()" style="background-color:#17a2b8; color:white;">➕ नवीन गट/प्रमोशन जोडा</button>
+               <button type="button" class="smallbtn" onclick="calculateAutoGIS()" style="background-color: #0b5d3b; color:white; margin-left:8px;">📊 GIS रक्कम निश्चित करा</button>
            </div>
        </div>
     </div>
     </div>
 
-    <div class="actions" style="margin-top: 15px; display:flex; gap:10px; justify-content:center;">
-      <button type="submit" class="primary" id="submitBtn" style="font-size: 14px; padding: 10px 20px;">💾 जतन करा आणि अहवाल पहा</button>
-      <button type="reset" class="secondary" id="resetBtn" style="font-size: 14px; padding: 10px 20px; background-color:#6c757d; color:white;">🧹 रिकामा करा</button>
-    </div>
     </form>
 
     <!-- Result Pop-up (Modal) -->
@@ -284,8 +296,8 @@
         <span class="close-modal" id="closeModal">&times;</span>
         <div id="result" class="result">
           <div class="resulthead"><h2>📜 निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate"></span></div>
-          <div id="summary" style="font-size:13px;"></div>
-          <div class="resultgrid" style="font-size:14px;">
+          <div id="summary" style="font-size:14px; background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #0b5d3b;"></div>
+          <div class="resultgrid" style="font-size:15px;">
             <div><span>मासिक मूळ निवृत्तीवेतन</span><b id="pension"></b></div>
             <div><span>महागाई राहत (DA)</span><b id="pensionDA"></b></div>
             <div><span>अंशराशीकरण रक्कम</span><b id="commuted"></b></div>
@@ -295,11 +307,11 @@
             <div><span>रजा रोखीकरण</span><b id="leaveResult"></b></div>
             <div><span>GPF</span><b id="gpfResult"></b></div>
             <div><span>GIS (अंदाजे)</span><b id="gisResult"></b></div>
-            <div class="total" style="font-size:16px;"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
+            <div class="total" style="font-size:18px; color: #0b5d3b; background:#e8f5e9;"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
           </div>
-          <p class="warning" style="font-size:11px; margin-top:10px;">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
-          <div class="actions" style="margin-top:15px; text-align:center;">
-             <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 14px; padding: 8px 15px;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
+          <p class="warning" style="font-size:12px; margin-top:15px; color:#d9534f; text-align:center;">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
+          <div class="actions" style="margin-top:20px; text-align:center;">
+             <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 16px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
         </div>
       </div>
@@ -307,27 +319,57 @@
     </section>
 
     <section id="saved" class="tabpage">
-      <h2>📁 क्लाऊडवर जतन केलेली माहिती</h2>
-      <div id="savedList"></div>
+      <div class="section">
+          <h2 style="color:#0b5d3b; margin-top:0;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
+          <p style="font-size:14px; color:#555;">येथे तुमची सेव्ह केलेली माहिती कायमस्वरूपी सुरक्षित राहील. तुम्ही ती उघडून कधीही अपडेट किंवा प्रिंट करू शकता.</p>
+          <div id="savedList" style="margin-top: 15px;"></div>
+      </div>
     </section>
 
     <section id="help" class="tabpage">
-      <h2>📖 मार्गदर्शिका (User Manual)</h2>
-      <div class="helpbox" style="text-align: justify; line-height: 1.6; font-size:13px;">
-        <h3 style="color:#0b5d3b; font-size:15px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये</h3>
-        <ul style="margin-left: 15px; padding-left:10px;">
-            <li><b>सुलभ लेआऊट (Responsive Design):</b> पीसीवर प्रीमियम 'Fixed' लुक आणि मोबाईलवर सुलभ 'Scrollable' लुक, जेणेकरून टायपिंग करताना अडचण येणार नाही.</li>
-            <li><b>सक्तीचे सुरक्षित लॉगिन:</b> गुगल लॉगिन केल्याने तुमचा डेटा सुरक्षित राहतो.</li>
-            <li><b>Pop-up अहवाल:</b> गणना पूर्ण झाल्यावर अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
-            <li><b>ऑटोमॅटिक रजा रोखीकरण:</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
-            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> युनिटच्या फरकानुसार सॉफ्टवेअर अचूक GIS रक्कम काढते. दर उपलब्ध नसल्यास तुम्ही मॅन्युअली दर टाकू शकता.</li>
+      <div class="section" style="line-height: 1.8; font-size:14.5px;">
+        <div style="background: #e8f5e9; padding: 15px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
+            <b>नमस्कार!</b> महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांच्या निवृत्तीवेतन (Pension) आणि इतर लाभांची अतिशय जलद आणि अचूक गणना करण्यासाठी हे प्रगत सॉफ्टवेअर बनवले आहे. खालील माहिती वाचून तुम्ही सॉफ्टवेअरचा योग्य वापर करू शकता.
+        </div>
+
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px;">🚀 १. सॉफ्टवेअरची प्रमुख वैशिष्ट्ये</h3>
+        <ul style="margin-left: 20px; margin-bottom: 25px;">
+            <li><b>सुरक्षित डेटा जतन (Google Sync):</b> गुगल लॉगिन केल्याने तुमचा भरलेला डेटा क्लाऊडवर कायमस्वरूपी सुरक्षित राहतो. पीसीवर सेव्ह केलेला डेटा तुम्ही मोबाईलवरही पाहू शकता.</li>
+            <li><b>स्थिर बटणे (Fixed Action Bar):</b> फॉर्म भरताना 'जतन करा' आणि 'रिकामा करा' ही मुख्य बटणे तुमच्या स्क्रीनवर नेहमी खाली उपलब्ध राहतील.</li>
+            <li><b>ऑटोमॅटिक रजा रोखीकरण (Leave Encashment):</b> तुम्हाला फक्त शिल्लक अर्जित रजांचे दिवस (कमाल ३००) टाकायचे आहेत. सॉफ्टवेअर आपोआप अचूक रक्कम काढेल.</li>
+            <li><b>प्रगत GIS गणना:</b> शासन निर्णयानुसार युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते. तुम्हाला फक्त सुरुवातीचा गट आणि प्रमोशनचा गट व दिनांक टाकायचा आहे.</li>
+            <li><b>Pop-up अहवाल:</b> गणना पूर्ण झाल्यावर सुंदर अहवाल 'पॉप-अप विंडो' मध्ये उघडतो, जिथून तुम्ही थेट प्रिंट काढू शकता.</li>
+        </ul>
+
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px;">📝 २. फॉर्म कसा भरावा? (Step-by-Step)</h3>
+        <ol style="margin-left: 20px; margin-bottom: 25px;">
+            <li><b>लॉगिन:</b> सॉफ्टवेअर सुरू करण्यासाठी सुरुवातीला <b>'Google ने Login करा'</b> बटणावर क्लिक करा. याशिवाय तुम्ही माहिती सेव्ह करू शकत नाही.</li>
+            <li><b>वैयक्तिक माहिती:</b> तुमचा विभाग (शोधून निवडा), कार्यालयाचे नाव, स्वतःचे नाव आणि पदनाम भरा. त्यानंतर 'कर्मचारी वर्ग (गट)' निवडून <b>जन्म दिनांक</b> टाका. निवृत्तीचा दिनांक आपोआप निश्चित होईल.</li>
+            <li><b>सेवा कालावधी:</b> तुमची 'आस्थापना' निवडा. जर <b>'रोजंदारी'</b> असेल तर रुजू दिनांक टाका, सॉफ्टवेअर पहिली ५ वर्षे वगळून उर्वरित सेवेच्या ५०% कालावधीची स्वयंचलित गणना करून देईल.</li>
+            <li><b>वेतन व महागाई भत्ता:</b> ७ व्या वेतन आयोगानुसार तुमचा 'वेतन स्तर (S-1 ते S-31)' निवडा. सद्यस्थितीतील महागाई भत्ता (DA) टक्केवारीत टाका.</li>
+            <li><b>अंशराशीकरण (Commutation):</b> तुम्हाला पेन्शनचा काही भाग एकरकमी हवा असल्यास 'होय' निवडून टक्केवारी (जास्तीत जास्त ४०%) टाका.</li>
+            <li><b>रजा रोखीकरण आणि GIS:</b> शिल्लक रजांचे दिवस टाका. GIS साठी तक्त्यामध्ये तुमचा गट व महिना-वर्ष टाका (वर्गणी आपोआप येईल). जर प्रमोशन झाले असेल तर <b>'➕ नवीन गट/प्रमोशन जोडा'</b> वर क्लिक करा.</li>
+            <li><b>सेव्ह आणि प्रिंट:</b> सर्व माहिती भरल्यावर तळाशी असलेल्या <b>'💾 जतन करा आणि अहवाल पहा'</b> या बटणावर क्लिक करा.</li>
+        </ol>
+
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px;">📁 ३. जतन केलेली माहिती कशी पहावी?</h3>
+        <ul style="margin-left: 20px; margin-bottom: 25px;">
+            <li>वर दिलेल्या <b>'📁 जतन माहिती'</b> या टॅबवर क्लिक करा. तिथे तुम्ही आजवर सेव्ह केलेल्या सर्व कर्मचाऱ्यांची यादी दिसेल.</li>
+            <li>कोणत्याही नोंदीमधील माहिती पुन्हा पाहण्यासाठी किंवा बदलण्यासाठी <b>'✏️ माहिती सुधारा'</b> वर क्लिक करा. माहिती पुन्हा फॉर्ममध्ये भरली जाईल, जिथे बदल करून तुम्ही ती पुन्हा अपडेट (Update) करू शकता.</li>
+            <li>थेट प्रिंट काढायची असल्यास <b>'🖨️ अहवाल प्रिंट'</b> वर क्लिक करा.</li>
         </ul>
       </div>
     </section>
     </main>
 
-    <!-- 🌟 FOOTER (Fixed on PC, Relative on Mobile) -->
-    <footer class="fixed-bottom">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
+    <!-- 🌟 FIXED BOTTOM ACTION BAR & FOOTER -->
+    <div class="fixed-bottom-area">
+        <div class="action-bar">
+            <button type="submit" form="pensionForm" class="primary" id="submitBtn">💾 जतन करा आणि अहवाल पहा</button>
+            <button type="button" class="secondary" id="resetBtn">🧹 रिकामा करा</button>
+        </div>
+        <div class="footer-text">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
+    </div>
 
 </div> <!-- End of Main App -->
 
