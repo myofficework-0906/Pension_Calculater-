@@ -26,15 +26,11 @@ let fetchedRecords = [];
 let currentEditId = null; 
 let gisUnitChart = {}; 
 
-// त्रुटी पकडण्यासाठी (Redirect झाल्यावर जर काही Error आला तर तो इथे दिसेल)
-auth.getRedirectResult().catch(function(error) {
-    alert("लॉगिन करताना त्रुटी: " + error.message + "\n(जर 'Unauthorized domain' असा एरर आला तर Firebase मध्ये तुमची GitHub लिंक Add करा.)");
-});
-
 // Authentication State Listener (The Gatekeeper)
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
+        // User logged in
         $("loginScreen").style.display = "none";
         $("mainApp").style.display = "block";
         $("userNameDisplay").textContent = "Welcome, " + user.displayName;
@@ -43,18 +39,31 @@ auth.onAuthStateChanged(user => {
     } else {
         currentUser = null;
         fetchedRecords = [];
+        // User logged out
         $("loginScreen").style.display = "flex";
         $("mainApp").style.display = "none";
         $("userNameDisplay").textContent = "";
+        $("loginBtnMain").innerHTML = "🔐 Google ने Login करा";
     }
 });
 
-// Login / Logout Buttons (Mobile Safe Method)
+// Advanced Login Logic
 const doLogin = () => {
-    // पॉप-अप ऐवजी रीडिरेक्ट पद्धत (मोबाईलसाठी सर्वोत्तम)
-    auth.signInWithRedirect(provider);
+    $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... कृपया थांबा";
+    
+    // First try Popup method (Standard for modern browsers)
+    auth.signInWithPopup(provider).catch(error => {
+        // If Popup is blocked (e.g. on some mobiles), fallback to Redirect
+        if (error.code === 'auth/popup-blocked' || error.code === 'auth/web-storage-unsupported') {
+            auth.signInWithRedirect(provider);
+        } else {
+            $("loginBtnMain").innerHTML = "🔐 Google ने Login करा";
+            alert("लॉगिन फेल: " + error.message + "\n\n(कृपया Firebase मध्ये 'myofficework-0906.github.io' हे डोमेन Authorized Domains मध्ये Add केले आहे का ते नक्की तपासा!)");
+        }
+    });
 };
 
+// Login / Logout Buttons
 $("loginBtnMain").addEventListener("click", doLogin);
 if($("loginBtn")) $("loginBtn").addEventListener("click", doLogin);
 
