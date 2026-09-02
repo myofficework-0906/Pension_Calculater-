@@ -48,7 +48,7 @@
     .action-bar .secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
     .footer-text { background: #0b5d3b; color: white; padding: 6px; text-align: center; font-size: 11px; }
     
-    /* Container & Gaps */
+    /* Container & Gaps Reduced */
     main.container { max-width: 950px; margin: 5px auto 0; padding-left: 15px; padding-right: 15px; }
     .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 15px 20px; margin-bottom: 20px; border-top: 4px solid #0b5d3b; transition: transform 0.2s ease; }
     .section:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
@@ -370,6 +370,7 @@
           <div class="actions" style="margin-top:15px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 15px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
+          <!-- ✅ ONLY VISIBLE IN PDF/PRINT -->
           <div class="print-footer">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
         </div>
       </div>
@@ -378,13 +379,13 @@
 
     <section id="saved" class="tabpage">
       <div class="section">
-          <h2 style="color:#0b5d3b; margin-top:0; font-size:18px; border-bottom:2px solid #ccc; padding-bottom:8px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
+          <h2 style="color:#0b5d3b; margin-top:0; font-size:20px; border-bottom:2px solid #ccc; padding-bottom:10px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
           <p style="font-size:14px; color:#555; margin-top:10px;">येथे तुमची सेव्ह केलेली माहिती कायमस्वरूपी सुरक्षित राहील. तुम्ही ती उघडून कधीही अपडेट किंवा प्रिंट करू शकता.</p>
-          <div id="savedList" style="margin-top: 15px;"></div>
+          <div id="savedList" style="margin-top: 20px;"></div>
       </div>
     </section>
 
-    <!-- 📖 विस्तृत मदत -->
+    <!-- 📖 विस्तृत आणि सविस्तर मदत -->
     <section id="help" class="tabpage">
       <div class="section" style="line-height: 1.8; font-size:14.5px;">
         <div style="background: #e8f5e9; padding: 18px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
@@ -424,7 +425,7 @@
 
         <div style="background: #fff3cd; padding: 15px; border-left: 6px solid #ffecb5; border-radius: 6px; font-size:13.5px;">
             <b>⚠️ कायदेशीर टीप व निवेदन (Disclaimer):</b> <br><br>
-            हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या शासकीय कर्मचाऱ्यांच्या व अधिकाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी तयार करण्यात आला आहे. अंतिम आणि अधिकृत सेवानिवृत्ती देयकांसाठी संबंधित शासन निर्णय, 'महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम १९८२', 'अंशराशीकरण नियम १९८४', लागू असलेले वेतन/महागाई भत्ता आदेश आणि सक्षम प्राधिकाऱ्याची पडताळणी अनिवार्य राहील.
+            हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या शासकीय कर्मचाऱ्यांच्या व अधिकाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी तयार करण्यात आला आहे. अंतिम आणि अधिकृत सेवानिवृत्ती देयकांसाठी संबंधित शासन निर्णय, 'महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम १९८२', 'अंशराशीकरण नियम १९८४', लागू असलेले वेतन व महागाई राहत आदेश आणि सक्षम प्राधिकाऱ्याची पडताळणी अनिवार्य राहील.
         </div>
       </div>
     </section>
