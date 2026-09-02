@@ -78,7 +78,7 @@
     .grid3 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .grid4 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
     
-    /* ✅ SIDE-BY-SIDE LAYOUT (शेजारी-शेजारी मांडणी) */
+    /* SIDE-BY-SIDE LAYOUT */
     .two-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;}
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     
@@ -173,8 +173,8 @@
     <div class="fixed-top-area">
         <header class="topbar">
           <div class="brand-block">
-              <div class="brand">निवृत्तीवेतन गणना</div>
-              <div class="sub">Maharashtra Pension Calculator</div>
+              <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+              <div class="sub">Maharashtra Government Pension Calculator</div>
           </div>
           <div class="auth-section">
               <span id="userNameDisplay" class="user-name"></span>
@@ -195,8 +195,8 @@
     <!-- 🌟 MAIN CONTENT AREA -->
     <main class="container">
     <section id="calculator" class="tabpage active">
+    
     <form id="pensionForm">
-
     <div class="section blue">
     <h3>👤 वैयक्तिक व पद माहिती</h3>
     <div class="grid3">
@@ -233,11 +233,11 @@
       <label>कर्मचाऱ्याचे नाव <input type="text" id="employeeName" required placeholder="उदा. श्री. अभिजित निंबाळकर"></label>
       <label>पदनाम <input type="text" id="designation" placeholder="उदा. कनिष्ठ लिपिक"></label>
       <label>कर्मचारी वर्ग (Group)
-        <select id="group" onchange="calculateRetirementDate()">
+        <select id="group" required onchange="calculateRetirementDate()">
           <option value="">निवडा...</option><option value="A">गट अ</option><option value="B_Gaz">गट ब (राजपत्रित)</option><option value="B">गट ब (अराजपत्रित)</option><option value="C">गट क</option><option value="D">गट ड</option>
         </select>
       </label>
-      <label>जन्म दिनांक (DOB) <input type="date" id="dob" onchange="calculateRetirementDate()"></label>
+      <label>जन्म दिनांक (DOB) <input type="date" id="dob" required onchange="calculateRetirementDate()"></label>
       <label>निवृत्ती प्रकार
         <select id="retirementType">
           <option value="superannuation">नियत वयोमानानुसार निवृत्ती (Rule 63)</option>
@@ -283,7 +283,7 @@
     </div>
     </div>
 
-    <!-- ✅ SIDE-BY-SIDE SECTIONS (शेजारी शेजारी मांडणी) -->
+    <!-- ✅ SIDE-BY-SIDE SECTIONS -->
     <div class="two-col-grid">
         <div class="section orange" style="margin-bottom:0;">
             <h3>📉 अंशराशीकरण (Commutation)</h3>
@@ -337,8 +337,8 @@
            <table class="gis-table" id="gisTable">
                <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>मासिक वर्गणी (₹)</th><th>कृती</th></tr>
                <tr>
-                   <td><input type="month" class="gis-date"></td>
-                   <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+                   <td><input type="month" class="gis-date" required onchange="autoFillGisRow(this)"></td>
+                   <td><select class="gis-group" onchange="autoFillGisRow(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
                    <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef; border:none; box-shadow:none;"></td>
                    <td>-</td>
                </tr>
@@ -350,6 +350,7 @@
        </div>
     </div>
     </div>
+
     </form>
 
     <!-- Result Pop-up (Modal) -->
@@ -359,24 +360,16 @@
         <div id="result" class="result">
           <div class="resulthead"><h2>📜 निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate" style="display:none;"></span></div>
           <div id="summary" style="font-size:14px; background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #0b5d3b;"></div>
-          <div class="resultgrid" style="font-size:14px; display:grid; gap:8px; border:1px solid #ddd; padding:15px; border-radius:8px;">
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>मासिक मूळ निवृत्तीवेतन:</span><b id="pension"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA):</span><b id="pensionDA"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Basic + DA):</b></span><b id="totalMonthlyPension"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px; margin-top:8px;"><span>अंशराशीकरण रक्कम:</span><b id="commuted"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरणानंतर पेन्शन:</span><b id="reducedPension"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण एकरकमी रक्कम:</span><b id="commutationValue"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>सेवानिवृत्ती उपदान (Gratuity):</span><b id="gratuity"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>रजा रोखीकरण:</span><b id="leaveResult"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>GPF:</span><b id="gpfResult"></b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>GIS (अंदाजे):</span><b id="gisResult"></b></div>
-            <div class="total" style="font-size:18px; color: #0b5d3b; background:#e8f5e9; padding:12px; border-radius:6px; display:flex; justify-content:space-between; margin-top:8px;"><span>अंदाजे एकूण एकरकमी लाभ:</span><b id="lumpSum"></b></div>
+          
+          <!-- ✅ DYNAMIC RESULT GRID -->
+          <div id="resultGridContainer" class="resultgrid" style="font-size:14px; display:grid; gap:8px; border:1px solid #ddd; padding:15px; border-radius:8px;">
+              <!-- Filled by Javascript dynamically -->
           </div>
+          
           <p class="warning" style="font-size:11px; margin-top:10px; color:#d9534f; text-align:center;">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय लागू राहतील.</p>
           <div class="actions" style="margin-top:15px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 15px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
-          <!-- ✅ ONLY VISIBLE IN PDF/PRINT -->
           <div class="print-footer">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
         </div>
       </div>
@@ -391,7 +384,7 @@
       </div>
     </section>
 
-    <!-- 📖 विस्तृत आणि सविस्तर मदत -->
+    <!-- 📖 विस्तृत मदत -->
     <section id="help" class="tabpage">
       <div class="section" style="line-height: 1.8; font-size:14.5px;">
         <div style="background: #e8f5e9; padding: 18px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
