@@ -10,7 +10,7 @@
   
   <style>
     /* =========================================
-       ✨ COMPACT UI & REPEATING WATERMARK ✨
+       ✨ PREMIUM UI & BACKGROUND ✨
        ========================================= */
     body {
         background-color: #f4f7f6;
@@ -19,44 +19,59 @@
         font-size: 14px;
     }
     
-    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 12px 15px; margin-bottom: 15px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
-    .section:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
-    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 0; margin-bottom: 10px; font-size: 15px; }
+    /* 🌟 DEFAULT FOR PC (FIXED LAYOUT) */
+    .fixed-top-area { position: fixed; top: 0; left: 0; width: 100%; z-index: 1005; background: #f4f7f6; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    .topbar { background: #0b5d3b; color: white; padding: 15px 10px; text-align: center; position: relative; }
+    .brand { font-size: 18px; font-weight: bold; margin-top: 5px;}
+    .sub { font-size: 12px; color: #d1e7dd; margin-top: 3px; }
+    .tabs { display: flex; justify-content: center; gap: 8px; padding: 10px 5px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #ddd; }
+    .tab { background: #e9ecef; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; color: #444; font-size: 13px;}
+    .tab.active { background: #0b5d3b; color: white; border-color: #0b5d3b; }
     
-    input, select { border-radius: 4px; border: 1px solid #ced4da; padding: 6px 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; box-sizing: border-box;}
+    .fixed-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: #0b5d3b; color: white; text-align: center; padding: 12px; font-size: 12px; z-index: 1005; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+    
+    main.container { padding-top: 140px; padding-bottom: 60px; max-width: 900px; margin: 0 auto; padding-left: 10px; padding-right: 10px;}
+
+    /* Cards & Inputs */
+    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 15px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
+    .section:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 0; margin-bottom: 12px; font-size: 15px; }
+    input, select { border-radius: 4px; border: 1px solid #ced4da; padding: 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; box-sizing: border-box;}
     input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 4px rgba(11,93,59,0.3); outline: none; }
     button { transition: all 0.2s ease; border-radius: 4px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 13px;}
     button:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+    label { font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block; }
     
-    label { font-size: 12px; font-weight: bold; color: #444; margin-bottom: 3px; display: block; }
+    .select2-container .select2-selection--single { height: 34px; border: 1px solid #ced4da; border-radius: 4px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 34px; font-size: 13px;}
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 32px; }
     
-    .select2-container .select2-selection--single { height: 32px; border: 1px solid #ced4da; border-radius: 4px; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 32px; font-size: 13px;}
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 30px; }
-    
+    /* Login Screen Setup */
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
     .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; max-width: 350px; width: 90%; border-top: 5px solid #0b5d3b; }
     .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 20px; }
     .login-box p { color: #555; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
     .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 10px 20px; font-size: 15px; width: 100%; }
     
-    .auth-section { position: absolute; top: 10px; right: 10px; z-index: 1001; display: flex; align-items: center; }
+    .auth-section { position: absolute; top: 15px; right: 15px; z-index: 1001; display: flex; align-items: center; }
     .logout-btn { background-color: #d9534f; color: white; border: none; padding: 6px 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .user-name { color: white; margin-right: 10px; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
     
-    .grid3, .grid4 { display: grid; gap: 10px; }
+    .grid3, .grid4 { display: grid; gap: 12px; }
     .grid3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .grid4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
     
+    /* Modal Pop-up Styling */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 15px; backdrop-filter: blur(3px); }
     .modal-content { background-color: #fff; margin: auto; padding: 20px; border-radius: 8px; width: 95%; max-width: 700px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; margin-bottom: 30px; border-top: 4px solid #0b5d3b; }
     .close-modal { color: #d9534f; float: right; font-size: 28px; cursor: pointer; line-height: 1; transition: color 0.3s; margin-top: -5px;}
     
     .gis-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
-    .gis-table th { background-color: #0b5d3b; color: white; padding: 5px; font-weight: normal;}
-    .gis-table td { border: 1px solid #ccc; padding: 4px; text-align: center; background-color: white;}
+    .gis-table th { background-color: #0b5d3b; color: white; padding: 6px; font-weight: normal;}
+    .gis-table td { border: 1px solid #ccc; padding: 5px; text-align: center; background-color: white;}
     .gis-table input, .gis-table select { width: 95%; padding: 4px; font-size: 12px; }
     
+    /* Print Styles */
     @media print {
         body * { visibility: hidden; }
         #resultModal, #resultModal * { visibility: visible; }
@@ -64,8 +79,22 @@
         .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border-top: none; }
         .close-modal, #modalPrintBtn { display: none !important; }
         body { background-image: none !important; }
+        .fixed-top-area, .fixed-bottom { display: none !important; }
     }
-    @media (max-width: 600px) { .user-name { display: none; } }
+
+    /* 📱 MOBILE VIEW (Relative/Scrollable Layout to prevent keyboard block) */
+    @media (max-width: 768px) { 
+        .fixed-top-area { position: relative; box-shadow: none; border-bottom: 2px solid #0b5d3b; padding-bottom: 5px; }
+        .fixed-bottom { position: relative; margin-top: 20px; font-size: 11px; padding: 15px; }
+        main.container { padding-top: 15px; padding-bottom: 20px; }
+        .user-name { display: none; } 
+        .brand { font-size: 16px; margin-top: 0; margin-right: 70px; text-align: left; padding-left: 5px;}
+        .sub { font-size: 11px; text-align: left; padding-left: 5px;}
+        .topbar { padding: 10px 5px; text-align: left;}
+        .auth-section { top: 8px; right: 8px; }
+        .logout-btn { padding: 5px 10px; font-size: 12px; }
+        .tab { padding: 6px 12px; font-size: 12px;}
+    }
   </style>
 </head>
 <body>
@@ -82,23 +111,27 @@
 
 <!-- ✅ MAIN APPLICATION -->
 <div id="mainApp" style="display: none;">
-    <div class="auth-section">
-        <span id="userNameDisplay" class="user-name"></span>
-        <button id="logoutBtn" class="logout-btn">🚪 लॉगआउट</button>
+    
+    <!-- 🌟 TOP AREA (Fixed on PC, Relative on Mobile) -->
+    <div class="fixed-top-area">
+        <header class="topbar">
+          <div class="auth-section">
+              <span id="userNameDisplay" class="user-name"></span>
+              <button id="logoutBtn" class="logout-btn">🚪 लॉगआउट</button>
+          </div>
+          <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+          <div class="sub">Maharashtra Government Pension Calculator</div>
+        </header>
+
+        <nav class="tabs">
+          <button class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</button>
+          <button class="tab" data-tab="saved">📁 जतन माहिती</button>
+          <button class="tab" data-tab="help">📖 मदत</button>
+        </nav>
     </div>
 
-    <header class="topbar" style="padding: 10px; text-align: center;">
-      <div class="brand" style="font-size: 18px;">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
-      <div class="sub" style="font-size: 12px;">Maharashtra Government Pension Calculator</div>
-    </header>
-
-    <nav class="tabs" style="margin-bottom: 10px;">
-      <button class="tab active" data-tab="calculator" style="padding: 8px;">🧮 मुख्य फॉर्म</button>
-      <button class="tab" data-tab="saved" style="padding: 8px;">📁 जतन माहिती</button>
-      <button class="tab" data-tab="help" style="padding: 8px;">📖 मदत</button>
-    </nav>
-
-    <main class="container" style="padding: 5px;">
+    <!-- 🌟 MAIN CONTENT AREA -->
+    <main class="container">
     <section id="calculator" class="tabpage active">
     <form id="pensionForm">
 
@@ -283,17 +316,20 @@
       <div class="helpbox" style="text-align: justify; line-height: 1.6; font-size:13px;">
         <h3 style="color:#0b5d3b; font-size:15px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये</h3>
         <ul style="margin-left: 15px; padding-left:10px;">
+            <li><b>सुलभ लेआऊट (Responsive Design):</b> पीसीवर प्रीमियम 'Fixed' लुक आणि मोबाईलवर सुलभ 'Scrollable' लुक, जेणेकरून टायपिंग करताना अडचण येणार नाही.</li>
             <li><b>सक्तीचे सुरक्षित लॉगिन:</b> गुगल लॉगिन केल्याने तुमचा डेटा सुरक्षित राहतो.</li>
             <li><b>Pop-up अहवाल:</b> गणना पूर्ण झाल्यावर अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
             <li><b>ऑटोमॅटिक रजा रोखीकरण:</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
-            <li><b>GIS ऑटो गणना:</b> शासन निर्णयानुसार युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
+            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> युनिटच्या फरकानुसार सॉफ्टवेअर अचूक GIS रक्कम काढते. दर उपलब्ध नसल्यास तुम्ही मॅन्युअली दर टाकू शकता.</li>
         </ul>
       </div>
     </section>
     </main>
-</div> <!-- End of Main App -->
 
-<footer style="font-size:11px; padding:10px; text-align:center;">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
+    <!-- 🌟 FOOTER (Fixed on PC, Relative on Mobile) -->
+    <footer class="fixed-bottom">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
+
+</div> <!-- End of Main App -->
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
