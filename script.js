@@ -189,7 +189,9 @@ function calculateRetirementDate() {
     if($("joiningDate").value) {
          const p = sixMonthlyPeriods();
          $("serviceHalfYears").value = p;
-         $("serviceOutput").textContent = `एकूण सेवा: ${Math.floor(p/2)} वर्षे ${p%2?6:0} महिने`;
+         let yrs = Math.floor(p / 2);
+         let mths = (p % 2) ? 6 : 0;
+         $("serviceOutput").textContent = `एकूण सेवा: ${yrs} वर्षे ${mths} महिने`;
     }
 }
 
@@ -262,7 +264,9 @@ function sixMonthlyPeriods() {
 $("calcService").addEventListener("click",()=> {
   const p = sixMonthlyPeriods();
   $("serviceHalfYears").value = p;
-  $("serviceOutput").textContent = `एकूण सेवा: ${Math.floor(p/2)} वर्षे ${p%2?6:0} महिने`;
+  let yrs = Math.floor(p / 2);
+  let mths = (p % 2) ? 6 : 0;
+  $("serviceOutput").textContent = `एकूण सेवा: ${yrs} वर्षे ${mths} महिने`;
 });
 
 // ==========================================
@@ -292,7 +296,6 @@ window.addGISRow = function() {
     `;
 }
 
-// Get required units based on Govt rules
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
@@ -318,7 +321,7 @@ window.calculateAutoGIS = function() {
         if(dateInput && groupInput) {
             events.push({ date: dateInput, group: groupInput, type: 'user' });
             let units = getGisUnits(dateInput, groupInput);
-            rows[i].querySelector('.gis-sub').value = units * 10; // Visual base sub
+            rows[i].querySelector('.gis-sub').value = units * 10; 
         }
     }
     
@@ -374,9 +377,33 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// MAIN CALCULATE FUNCTION (Fix for Save Bug & Formatting)
+// MAIN CALCULATE FUNCTION (With New Print Formatting)
 // ==========================================
-function calculate(){
+$("calcBtn").addEventListener("click", () => {
+    if($("pensionForm").reportValidity()) calculate(true);
+});
+
+$("saveBtn").addEventListener("click", async () => {
+    if(!$("pensionForm").reportValidity()) return;
+    if(!currentUser) { alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); return; }
+    
+    const data = calculate(false); 
+    const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
+
+    try {
+        if(currentEditId !== null) {
+            await dbRef.child(currentEditId).set(data);
+            currentEditId = null;
+        } else {
+            await dbRef.push(data);
+        }
+        fetchDataFromFirebase();
+        alert("माहिती यशस्वीरित्या जतन झाली!");
+        document.querySelector('.tab[data-tab="saved"]').click();
+    } catch(error) { alert("त्रुटी: " + error.message); }
+});
+
+function calculate(showModal = true){
   const basic=val("basicPay");
   const halfYears=Math.max(0,Math.floor(val("serviceHalfYears")));
   const da=val("daPercent");
@@ -397,7 +424,6 @@ function calculate(){
   
   calculateRealtimeLeave();
   
-  // Safe Variable Names for Save Fix
   const amtLeave=val("leaveEncashment");
   const amtGpf=val("gpf");
   const amtGis=val("gis");
@@ -421,20 +447,36 @@ function calculate(){
   $("gpfResult").textContent=money(amtGpf);
   $("gisResult").textContent=money(amtGis);
   $("lumpSum").textContent=money(lump);
-  $("reportDate").textContent=new Date().toLocaleDateString("en-IN");
   
   let deptText = $("department").selectedIndex > 0 ? $("department").options[$("department").selectedIndex].text : "-";
   
-  // Formatting service in Years and Months
   let yrs = Math.floor(halfYears / 2);
   let mths = (halfYears % 2) ? 6 : 0;
   let serviceStr = `${yrs} वर्षे ${mths} महिने`;
   
-  $("summary").innerHTML=`<p style="margin-bottom:4px;"><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
-  <p style="margin-bottom:4px;">विभाग: <b>${deptText}</b></p>
-  <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; एकूण सेवा: <b>${serviceStr}</b></p>`;
+  let dobText = $("dob").value ? new Date($("dob").value).toLocaleDateString("en-IN") : "-";
+  let estText = $("establishment").options[$("establishment").selectedIndex].text;
+  let rozText = $("rozandariDate").value ? new Date($("rozandariDate").value).toLocaleDateString("en-IN") : "-";
+  let joinText = $("joiningDate").value ? new Date($("joiningDate").value).toLocaleDateString("en-IN") : "-";
+  let retText = $("retirementDate").value ? new Date($("retirementDate").value).toLocaleDateString("en-IN") : "-";
+
+  let rozStr = ($("establishment").value === "rozandari") ? ` | रोजंदारी रुजू: <b>${rozText}</b>` : "";
   
-  $("resultModal").style.display = "block";
+  $("summary").innerHTML=`
+  <p style="margin-bottom:4px; font-size:16px;"><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
+  <p style="margin-bottom:6px;">विभाग: <b>${deptText}</b></p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px; background:#fff; padding:10px; border-radius:4px; border:1px solid #ced4da;">
+      <div>जन्म दिनांक: <b style="color:#0b5d3b;">${dobText}</b></div>
+      <div>आस्थापना: <b style="color:#0b5d3b;">${estText}</b></div>
+      <div>सेवेत रुजू: <b style="color:#0b5d3b;">${joinText}</b> ${rozStr}</div>
+      <div>निवृत्ती दिनांक: <b style="color:#d9534f;">${retText}</b></div>
+  </div>
+  <p style="font-size:14px; margin-top:5px;">Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; एकूण सेवा: <b style="color:#d9534f;">${serviceStr}</b></p>
+  `;
+  
+  if(showModal) {
+      $("resultModal").style.display = "block";
+  }
   
   return {
     name:$("employeeName").value, department:$("department").value, office:$("officeName").value,
@@ -450,24 +492,6 @@ function calculate(){
 
 $("closeModal").addEventListener("click", () => $("resultModal").style.display = "none");
 window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal").style.display = "none"; }
-
-$("pensionForm").addEventListener("submit", async e=>{
-  e.preventDefault();
-  if(!currentUser) { alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); return; }
-  
-  const data = calculate(); // calculate first, then proceed to save
-  const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
-
-  try {
-      if(currentEditId !== null) {
-          await dbRef.child(currentEditId).set(data);
-          currentEditId = null;
-      } else {
-          await dbRef.push(data);
-      }
-      fetchDataFromFirebase();
-  } catch(error) { alert("त्रुटी: " + error.message); }
-});
 
 $("resetBtn").addEventListener("click",()=>{
     $("pensionForm").reset(); 
@@ -494,10 +518,19 @@ function renderSaved(){
   $("savedList").innerHTML = fetchedRecords.map((rObj, i)=>{
       let r = rObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      return `<div class="section" style="padding:15px; margin-bottom:15px;"><b>${r.name||"नाव नाही"}</b><br>${r.designation||""} | ${deptName||""}<br>Basic Pay ₹${Number(r.basicPay||0).toLocaleString("en-IN")}<br><small>${new Date(r.savedAt).toLocaleString("en-IN")}</small><br><br>
-      <button onclick="loadRecord(${i})" style="margin-right:10px; background-color:#ffc107; color:black; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;">✏️ माहिती सुधारा</button>
-      <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; margin-right:10px; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;">🖨️ अहवाल प्रिंट</button>
-      <button style="background-color:#d9534f; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:5px;" onclick="deleteRecord(${i})">🗑️ डिलीट</button></div>`;
+      return `
+      <div class="section" style="padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
+          <div>
+              <h3 style="margin:0; color:#0b5d3b;">👤 ${r.name || "नाव नाही"}</h3>
+              <p style="margin:5px 0 0 0; font-size:13px; color:#555;">${r.designation || ""} | ${deptName || ""}</p>
+              <p style="margin:5px 0 0 0; font-size:13px;">Basic Pay: ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | सेव्ह दिनांक: ${new Date(r.savedAt).toLocaleDateString("en-IN")}</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+              <button onclick="loadRecord(${i})" style="background-color:#ffc107; color:black; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">✏️ Edit</button>
+              <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">🖨️ Print</button>
+              <button onclick="deleteRecord(${i})" style="background-color:#d9534f; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">🗑️ Delete</button>
+          </div>
+      </div>`;
   }).join("");
 }
 
@@ -523,7 +556,7 @@ window.loadRecord = function(i){
 
 window.printRecord = function(i) {
     loadRecord(i);
-    setTimeout(() => { calculate(); setTimeout(() => { window.print(); }, 500); }, 500);
+    setTimeout(() => { calculate(true); setTimeout(() => { window.print(); }, 500); }, 500);
 }
 
 window.deleteRecord = function(i){
