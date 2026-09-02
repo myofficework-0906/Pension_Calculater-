@@ -10,7 +10,7 @@
   
   <style>
     /* =========================================
-       ✨ GLOBAL RESPONSIVE & APP-LIKE UI ✨
+       ✨ GLOBAL SAFE & COMPACT SETTINGS ✨
        ========================================= */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -20,84 +20,83 @@
         background-attachment: fixed; 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 14px;
-        padding-top: 135px; /* PC Default Header Space */
-        padding-bottom: 40px; 
+        padding-top: 155px; /* PC Fixed Header Space Adjusted */
+        padding-bottom: 80px; /* Fixed Bottom Buttons Space */
     }
     
-    /* 🌟 PC HEADER AREA */
+    /* 🌟 FIXED HEADER AREA */
     .fixed-top-area { position: fixed; top: 0; left: 0; width: 100%; z-index: 1010; box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: #ffffff; }
-    .topbar { background-color: #0b5d3b; padding: 12px 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; border-bottom: 2px solid #06402b; }
-    .brand-block { text-align: left; }
-    .brand { font-size: 22px; font-weight: bold; color: #ffffff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); letter-spacing: 0.5px;}
-    .sub { font-size: 13px; color: #e8f5e9 !important; font-weight: 500; margin-top:2px;}
     
-    /* PC Tabs */
-    .desktop-tabs-container { background-color: #ffffff; padding: 12px 10px; width: 100%; }
-    .tabs { display: flex; justify-content: center; gap: 15px; list-style: none; }
-    .tab { background: #f8f9fa; border: 1px solid #ced4da; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: #495057; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
-    .tab:hover { background: #e2e6ea; transform: translateY(-2px); }
+    .topbar { background-color: #0b5d3b; padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border-bottom: 2px solid #06402b; }
+    .brand { font-size: 20px; font-weight: bold; color: #ffffff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); margin-top: 2px; letter-spacing: 0.5px; text-align: center;}
+    .sub { font-size: 12px; color: #e8f5e9 !important; margin-top: 2px; font-weight: 500; text-align: center;}
+    
+    /* Elegant Tabs - ✅ टॅब्स थोडे खाली घेण्यासाठी Padding वाढवले आहे */
+    .tabs-container { background-color: #ffffff; padding: 16px 10px 14px 10px; width: 100%; border-bottom: 1px solid #ddd; }
+    .tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; list-style: none; }
+    .tab { background: #f8f9fa; border: 1px solid #ced4da; padding: 8px 22px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: #495057; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1.2;}
+    .tab:hover { background: #e2e6ea; transform: translateY(-1px); }
     .tab.active { background: #0b5d3b; color: white; border-color: #0b5d3b; box-shadow: 0 4px 8px rgba(11,93,59,0.3); }
     
-    /* 📱 MOBILE BOTTOM NAVIGATION (Android App Style) */
-    .mobile-bottom-nav { display: none; }
+    /* 🌟 FIXED BOTTOM ACTION BAR & FOOTER */
+    .fixed-bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1010; background: #ffffff; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
+    .action-bar { padding: 10px; display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; background: #e8f5e9; border-top: 2px solid #c3e6cb; }
+    .action-bar button { font-size: 14px; padding: 10px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; border: none; box-shadow: 0 3px 5px rgba(0,0,0,0.1); }
+    .action-bar .primary { background-color: #0b5d3b; color: white; }
+    .action-bar .primary:hover { background-color: #094a2f; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.15); }
+    .action-bar .secondary { background-color: #6c757d; color: white; }
+    .action-bar .secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
+    .footer-text { background: #0b5d3b; color: white; padding: 6px; text-align: center; font-size: 11px; }
     
-    /* Content Container */
-    main.container { max-width: 950px; margin: 0 auto; padding-left: 15px; padding-right: 15px; }
-
-    /* Action Buttons (Inside Form - Prevents Keyboard overlap) */
-    .action-card { background: #e8f5e9; border: 2px solid #c3e6cb; border-radius: 8px; padding: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
-    .action-card button { font-size: 16px; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .btn-calc { background-color: #17a2b8; color: white; }
-    .btn-save { background-color: #28a745; color: white; }
-    .btn-clear { background-color: #6c757d; color: white; }
-    .action-card button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.2); filter: brightness(1.05); }
-
-    /* Cards & Inputs */
-    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 20px; margin-bottom: 20px; border-top: 4px solid #0b5d3b; transition: transform 0.2s ease; }
+    /* Container & Gaps Reduced */
+    main.container { max-width: 950px; margin: 5px auto 0; padding-left: 15px; padding-right: 15px; }
+    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 15px 20px; margin-bottom: 15px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
     .section:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 10px; margin-bottom: 15px; font-size: 16px; }
+    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 8px; margin-top: 0; margin-bottom: 12px; font-size: 15px; }
     
     input[type="text"], input[type="number"], input[type="date"], input[type="month"], select { 
-        border-radius: 6px; border: 1px solid #ced4da; padding: 10px; font-size: 14px; transition: border-color 0.3s; width: 100%;
+        border-radius: 6px; border: 1px solid #ced4da; padding: 8px 10px; font-size: 14px; transition: border-color 0.3s; width: 100%;
     }
     input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
-    button.smallbtn { border-radius: 6px; font-weight: bold; cursor: pointer; padding: 10px 15px; font-size: 14px; border:none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    button.smallbtn { border-radius: 6px; font-weight: bold; cursor: pointer; padding: 8px 15px; font-size: 13px; border:none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
     button.smallbtn:hover { transform: translateY(-2px); }
-    label { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 6px; display: block; }
     
-    .select2-container .select2-selection--single { height: 42px; border: 1px solid #ced4da; border-radius: 6px; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 42px; font-size: 14px;}
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 40px; }
+    label { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 5px; display: block; }
     
-    /* Login Box */
+    /* Login Screen Setup */
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
     .login-box { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; border-top: 5px solid #0b5d3b; }
     .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 22px; margin-bottom: 15px;}
-    .login-box p { color: #555; margin-bottom: 25px; font-size: 15px; line-height: 1.6; }
+    .login-box p { color: #555; margin-bottom: 25px; font-size: 14px; line-height: 1.6; }
     .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     
-    .auth-section { display: flex; align-items: center; }
-    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size:13px;}
-    .user-name { color: #ffffff !important; margin-right: 15px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    /* Topbar Auth Section */
+    .auth-section { position: absolute; top: 12px; right: 15px; z-index: 1001; display: flex; align-items: center; }
+    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .user-name { color: #ffffff !important; margin-right: 12px; font-weight: bold; font-size: 13px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
     
-    .grid3 { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    .grid4 { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .grid3 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid4 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
     
     /* Modal Pop-up Styling */
-    .modal { display: none; position: fixed; z-index: 3500; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(4px); }
+    .modal { display: none; position: fixed; z-index: 2500; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(4px); }
     .modal-content { background-color: #fff; margin: auto; padding: 25px; border-radius: 10px; width: 95%; max-width: 750px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; margin-bottom: 40px; border-top: 5px solid #0b5d3b; }
     .close-modal { color: #d9534f; float: right; font-size: 35px; cursor: pointer; line-height: 1; transition: color 0.3s; margin-top: -10px; font-weight: bold;}
     
-    .gis-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-    .gis-table th { background-color: #0b5d3b; color: white; padding: 10px; font-weight: normal;}
-    .gis-table td { border: 1px solid #ccc; padding: 8px; text-align: center; background-color: white;}
+    .gis-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    .gis-table th { background-color: #0b5d3b; color: white; padding: 8px; font-weight: normal;}
+    .gis-table td { border: 1px solid #ccc; padding: 6px; text-align: center; background-color: white;}
     
-    .inline-checkbox-label { font-size: 14px; font-weight:bold; color:#d9534f; margin-bottom:10px; display:flex; align-items:center; cursor:pointer; gap: 8px; }
-    .inline-checkbox-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; padding: 0; cursor: pointer; }
+    /* Fix Checkbox Alignment */
+    .inline-checkbox-label {
+        font-size: 14px; font-weight:bold; color:#d9534f; margin-bottom:10px; 
+        display:flex; align-items:center; cursor:pointer; gap: 8px;
+    }
+    .inline-checkbox-label input[type="checkbox"] {
+        width: 18px; height: 18px; margin: 0; padding: 0; cursor: pointer;
+    }
 
-    /* =========================================
-       🖨️ PERFECT SINGLE PAGE PRINT CSS 🖨️
-       ========================================= */
+    /* Print Styles - One Page PDF */
     @media print {
         @page { size: A4 portrait; margin: 8mm; }
         body { visibility: hidden; background: #fff !important; padding: 0 !important; }
@@ -107,6 +106,7 @@
         .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border: none; }
         .close-modal, #modalPrintBtn { display: none !important; }
         
+        /* Compact elements for single page fit */
         .resultgrid { gap: 4px !important; padding: 8px !important; font-size: 13px !important; border: 1px solid #000 !important; }
         .resultgrid div { padding-bottom: 3px !important; border-bottom: 1px dashed #999 !important; border-radius:0 !important; margin-bottom: 2px !important;}
         .resulthead h2 { font-size: 18px !important; margin-bottom: 5px !important; text-align:center;}
@@ -115,42 +115,50 @@
         .total { padding: 8px !important; font-size: 15px !important; margin-top: 5px !important; background: #e8f5e9 !important; -webkit-print-color-adjust: exact; color: #000 !important; border-bottom: none !important;}
         .warning { font-size: 11px !important; margin-top: 10px !important; color: #000 !important; margin-bottom:25px !important;}
         
-        .fixed-top-area, .mobile-bottom-nav { display: none !important; }
+        .fixed-top-area, .mobile-bottom-nav, .fixed-bottom-area { display: none !important; }
+        
+        /* ✅ Custom Footer visible only in PDF/Print */
         .print-footer { display: block !important; position: fixed; bottom: 0; left:0; width: 100%; text-align: center; font-size: 11px; font-weight: bold; padding-top: 5px; border-top: 1px solid #000; color: #000;}
     }
 
     .print-footer { display: none; }
 
-    /* =========================================
-       📱 APP-LIKE MOBILE ADJUSTMENTS 
-       ========================================= */
+    /* 📱 Mobile Adjustments */
     @media (max-width: 768px) { 
-        body { padding-top: 70px; padding-bottom: 85px; } /* Space for Appbar & Bottom Nav */
+        body { padding-top: 70px; padding-bottom: 130px; } /* Space for Appbar & Fixed Action Buttons + Nav */
         
         /* Compact Header (App Bar) */
         .fixed-top-area { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-bottom: none;}
         .desktop-tabs-container { display: none; } /* Hide PC Tabs */
-        .topbar { padding: 12px 15px; }
-        .brand { font-size: 17px; margin: 0;}
-        .sub { display: none; } /* Hide sub on mobile to save space */
+        .topbar { padding: 12px 15px; flex-direction: row; justify-content: space-between; }
+        .brand-block { text-align: left;}
+        .brand { font-size: 17px; margin: 0; text-align: left;}
+        .sub { display: none; } 
         .user-name { display: none; } 
+        .auth-section { position: static; }
         .logout-btn { padding: 6px 12px; font-size: 12px; }
         
-        /* Mobile Action Card */
-        .action-card { flex-direction: column; gap: 10px; padding: 15px; margin-bottom: 5px;}
-        .action-card button { width: 100%; padding: 14px; font-size: 15px; }
+        /* Fixed Bottom Action Bar on Mobile */
+        .fixed-bottom-area { bottom: 58px; } /* Placed exactly above mobile tabs */
+        .action-bar { gap: 8px; padding: 10px 5px;}
+        .action-bar button { padding: 10px 12px; font-size: 13px; width: 31%; text-align: center;} /* 3 buttons fit perfectly */
         
         /* 📱 BOTTOM NAVIGATION BAR */
         .mobile-bottom-nav { 
-            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 58px;
             background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 2000;
         }
         .mobile-tab { 
-            flex: 1; text-align: center; padding: 12px 5px; font-size: 12px; font-weight: bold; 
-            color: #6c757d; cursor: pointer; transition: 0.3s; 
+            flex: 1; text-align: center; padding: 10px 5px; font-size: 12px; font-weight: bold; 
+            color: #6c757d; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; justify-content: center;
         }
         .mobile-tab.active { color: #0b5d3b; background: #e8f5e9; border-top: 3px solid #0b5d3b; }
-        .mobile-tab-icon { display: block; font-size: 20px; margin-bottom: 4px; }
+        .mobile-tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
+    }
+    
+    @media (min-width: 769px) {
+        .mobile-bottom-nav { display: none !important; }
+        .brand-block { text-align: center;}
     }
   </style>
 </head>
@@ -169,12 +177,12 @@
 <!-- ✅ MAIN APPLICATION -->
 <div id="mainApp" style="display: none;">
     
-    <!-- 🌟 TOP HEADER (App Bar) -->
+    <!-- 🌟 FIXED TOP AREA -->
     <div class="fixed-top-area">
         <header class="topbar">
           <div class="brand-block">
-              <div class="brand">निवृत्तीवेतन गणना</div>
-              <div class="sub">Maharashtra Pension Calculator</div>
+              <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+              <div class="sub">Maharashtra Government Pension Calculator</div>
           </div>
           <div class="auth-section">
               <span id="userNameDisplay" class="user-name"></span>
@@ -182,12 +190,11 @@
           </div>
         </header>
 
-        <!-- 💻 PC TABS -->
-        <div class="desktop-tabs-container">
+        <div class="tabs-container desktop-tabs-container">
             <ul class="tabs">
               <li class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</li>
               <li class="tab" data-tab="saved">📁 जतन माहिती</li>
-              <li class="tab" data-tab="help">📖 विस्तृत मदत</li>
+              <li class="tab" data-tab="help">📖 मदत</li>
             </ul>
         </div>
     </div>
@@ -263,9 +270,9 @@
       <label>निवृत्त / सेवा समाप्ती दिनांक <input type="date" id="retirementDate"></label>
       <label>अर्हताकारी सेवा सहामाही <input type="number" id="serviceHalfYears" min="0" value="0" readonly style="background-color: #e9ecef; border-color:#ccc;"></label>
     </div>
-    <div style="margin-top: 15px;">
+    <div style="margin-top: 10px;">
         <button type="button" class="smallbtn" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
-        <span id="serviceOutput" style="font-weight:bold; margin-left:15px; color:#6f42c1; font-size:15px;"></span>
+        <span id="serviceOutput" style="font-weight:bold; margin-left:15px; color:#6f42c1; font-size:14px;"></span>
     </div>
     </div>
 
@@ -311,8 +318,8 @@
       <label>GIS रक्कम (₹) <input type="number" id="gis" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold;"></label>
     </div>
 
-    <div style="margin-top: 20px; padding: 18px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb;">
-       <h4 style="margin:0 0 10px 0; color:#0b5d3b; font-size:16px;">📊 गट विमा योजना (GIS) गणना</h4>
+    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb;">
+       <h4 style="margin:0 0 10px 0; color:#0b5d3b; font-size:15px;">📊 गट विमा योजना (GIS) गणना</h4>
        
        <label class="inline-checkbox-label">
            <input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> 
@@ -330,19 +337,12 @@
                    <td>-</td>
                </tr>
            </table>
-           <div style="margin-top:12px;">
+           <div style="margin-top:10px;">
                <button type="button" class="smallbtn" onclick="addGISRow()" style="background-color:#17a2b8; color:white;">➕ नवीन गट/प्रमोशन जोडा</button>
                <button type="button" class="smallbtn" onclick="calculateAutoGIS()" style="background-color: #0b5d3b; color:white; margin-left:8px;">📊 GIS रक्कम निश्चित करा</button>
            </div>
        </div>
     </div>
-    </div>
-
-    <!-- 🌟 INLINE ACTION BUTTONS (Prevents Keyboard Overlap) -->
-    <div class="action-card">
-        <button type="button" class="btn-calc" onclick="validateAndProceed('calc')">📄 अहवाल पहा</button>
-        <button type="button" class="btn-save" id="saveBtn" onclick="validateAndProceed('save')">💾 जतन करा</button>
-        <button type="button" class="btn-clear" onclick="resetApp()">🧹 रिकामा करा</button>
     </div>
 
     </form>
@@ -371,6 +371,7 @@
           <div class="actions" style="margin-top:15px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 15px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
+          <!-- ✅ ONLY VISIBLE IN PDF/PRINT -->
           <div class="print-footer">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
         </div>
       </div>
@@ -379,65 +380,62 @@
 
     <section id="saved" class="tabpage">
       <div class="section">
-          <h2 style="color:#0b5d3b; margin-top:0; font-size:20px; border-bottom:2px solid #ccc; padding-bottom:10px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
+          <h2 style="color:#0b5d3b; margin-top:0; font-size:18px; border-bottom:2px solid #ccc; padding-bottom:8px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
           <p style="font-size:14px; color:#555; margin-top:10px;">येथे तुमची सेव्ह केलेली माहिती कायमस्वरूपी सुरक्षित राहील. तुम्ही ती उघडून कधीही अपडेट किंवा प्रिंट करू शकता.</p>
-          <div id="savedList" style="margin-top: 20px;"></div>
+          <div id="savedList" style="margin-top: 15px;"></div>
       </div>
     </section>
 
-    <!-- 📖 विस्तृत आणि सविस्तर मदत (Detailed User Manual) -->
+    <!-- 📖 विस्तृत मदत -->
     <section id="help" class="tabpage">
-      <div class="section" style="line-height: 1.8; font-size:15px;">
-        <div style="background: #e8f5e9; padding: 18px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
-            <b>नमस्कार!</b> महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांच्या निवृत्तीवेतन (Pension) आणि इतर सेवा लाभांची अतिशय जलद, सुटसुटीत आणि १००% अचूक गणना करण्यासाठी हे प्रगत सॉफ्टवेअर बनवले आहे. खालील सविस्तर मार्गदर्शिका वाचून तुम्ही सॉफ्टवेअरचा योग्य वापर करू शकता.
+      <div class="section" style="line-height: 1.8; font-size:14px;">
+        <div style="background: #e8f5e9; padding: 15px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
+            <b>नमस्कार!</b> महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांच्या निवृत्तीवेतन (Pension) आणि इतर सेवा लाभांची अतिशय जलद, सुटसुटीत आणि १००% अचूक गणना करण्यासाठी हे प्रगत सॉफ्टवेअर बनवले आहे.
         </div>
 
-        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; margin-top:20px; color:#0b5d3b;">🚀 १. सॉफ्टवेअरची प्रमुख वैशिष्ट्ये</h3>
-        <ul style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
-            <li style="margin-bottom:8px;"><b>स्मार्ट मोबाईल UI (App-Like Feel):</b> मोबाईलवर वापरताना तुम्हाला अगदी नेटिव्ह अँड्रॉइड ॲपसारखा अनुभव मिळेल (खाली नॅव्हिगेशन आणि कीबोर्डचा अडथळा नाही).</li>
-            <li style="margin-bottom:8px;"><b>सुरक्षित क्लाउड जतन (Google Sync):</b> अधिकृत गुगल लॉगिन केल्याने तुमचा भरलेला डेटा क्लाउडवर कायमस्वरूपी सुरक्षित राहतो. पीसीवर सेव्ह केलेला डेटा तुम्ही मोबाईलवरही पाहू शकता.</li>
-            <li style="margin-bottom:8px;"><b>स्वयंचलित रजा रोखीकरण (Leave Encashment):</b> शिल्लक अर्जित रजांचे दिवस (कमाल ३००) टाकले की सॉफ्टवेअर शासन नियमानुसार (Basic + DA) सूत्र लागू करून अचूक रक्कम आपोआप काढते.</li>
-            <li style="margin-bottom:8px;"><b>प्रगत GIS गणना (100% अचूक):</b> महाराष्ट्र राज्य गट विमा योजना १९८२ च्या नियमानुसार, युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते. २००२ व २०१६ मधील युनिट बदल सॉफ्टवेअर स्वतः ओळखते.</li>
-            <li style="margin-bottom:8px;"><b>१ पानाची PDF प्रिंट (Single Page Print):</b> गणना पूर्ण झाल्यावर सुंदर अहवाल पॉप-अप विंडोमध्ये दिसतो. 'प्रिंट' दाबली असता तो मोबाईल किंवा पीसी वरून अचूकपणे एकाच पानावर (Single Page) PDF म्हणून सेव्ह होतो.</li>
+        <h3 style="font-size:16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">🚀 १. सॉफ्टवेअरची प्रमुख वैशिष्ट्ये</h3>
+        <ul style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
+            <li style="margin-bottom:5px;"><b>सुरक्षित डेटा जतन (Google Sync):</b> गुगल लॉगिन केल्याने तुमचा भरलेला डेटा क्लाऊडवर सुरक्षित राहतो.</li>
+            <li style="margin-bottom:5px;"><b>स्थिर बटणे (Fixed Action Bar):</b> फॉर्म भरताना <b>'जतन करा'</b> आणि <b>'अहवाल पहा'</b> ही मुख्य बटणे तुमच्या स्क्रीनवर नेहमी खाली उपलब्ध राहतील.</li>
+            <li style="margin-bottom:5px;"><b>प्रगत GIS गणना (100% अचूक):</b> शासन निर्णयानुसार युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते. तुम्हाला फक्त सुरुवातीचा गट आणि प्रमोशनचा गट टाकायचा आहे, २००२ व २०१६ चे युनिट बदल सॉफ्टवेअर स्वतः ओळखते.</li>
+            <li style="margin-bottom:5px;"><b>१ पानाची PDF प्रिंट:</b> अहवाल अगदी सुटसुटीत बनवला असून तो मोबाईल किंवा पीसी वरून एकाच पानावर (Single Page) PDF म्हणून सेव्ह होतो.</li>
         </ul>
 
-        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; color:#0b5d3b;">📝 २. फॉर्म कसा भरावा? (Step-by-Step मार्गदर्शिका)</h3>
-        <ol style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
-            <li style="margin-bottom:10px;"><b>सुरक्षित लॉगिन:</b> सॉफ्टवेअर सुरू करण्यासाठी सुरुवातीला <b>'Google ने Login करा'</b> या बटणावर क्लिक करा. लॉगिन असल्याशिवाय क्लाउडवर माहिती सेव्ह करता येत नाही.</li>
-            <li style="margin-bottom:10px;"><b>वैयक्तिक व पद माहिती:</b> तुमचा विभाग (ड्रापडाऊनमधून शोधा), कार्यालयाचे नाव, कर्मचाऱ्याचे पूर्ण नाव आणि पदनाम भरा. त्यानंतर 'कर्मचारी वर्ग (गट)' निवडून <b>जन्म दिनांक</b> टाका. नियमानुसार निवृत्तीचा दिनांक आपोआप निश्चित होईल.</li>
-            <li style="margin-bottom:10px;"><b>सेवा कालावधी तपशील:</b> तुमची 'आस्थापना' (कायम किंवा तात्पुरती) निवडा. जर सेवा <b>'रोजंदारीवरून नियमित'</b> असेल, तर रोजंदारी रुजू दिनांक टाका. सॉफ्टवेअर पहिली ५ वर्षे वगळून पुढील सेवेच्या ५०% कालावधीची स्वयंचलित गणना करून देईल. शेवटी <b>'⏳ सेवा कालावधी तपासा'</b> वर क्लिक करा.</li>
-            <li style="margin-bottom:10px;"><b>वेतन तपशील (7th Pay Commission):</b> ७ व्या वेतन आयोगानुसार तुमचा 'वेतन स्तर (S-1 ते S-31)' निवडा. त्यानुसार बेसिक पे चे योग्य पर्याय खाली उपलब्ध होतील. सद्यस्थितीतील महागाई भत्ता (DA) टक्केवारीत टाका (उदा. ५०).</li>
-            <li style="margin-bottom:10px;"><b>अंशराशीकरण (Commutation):</b> निवृत्तीवेतनाचे अंशराशीकरण हवे असल्यास 'होय' निवडून हवी असलेली टक्केवारी (कमाल ४०%) टाका. वय-गुणक ऑटोमॅटिक येईल.</li>
-            <li style="margin-bottom:10px;"><b>रजा रोखीकरण, GPF आणि GIS:</b> 
-                <ul style="margin-top:5px; list-style-type: disc;">
-                    <li>शिल्लक अर्जित रजांचे दिवस टाका.</li>
-                    <li>GPF ची एकूण जमा रक्कम टाका.</li>
-                    <li>GIS साठी तक्त्यामध्ये तुमचा सुरुवातीचा गट व महिना-वर्ष टाका. सेवेमध्ये प्रमोशन किंवा गट बदल झाला असल्यास <b>'➕ नवीन गट/प्रमोशन जोडा'</b> वर क्लिक करून तपशील टाका आणि <b>'📊 GIS रक्कम निश्चित करा'</b> बटण दाबा.</li>
-                </ul>
-            </li>
-            <li style="margin-bottom:10px;"><b>अहवाल पाहणे व जतन करणे:</b> 
-                <ul>
-                    <li>माहिती तपासण्यासाठी फॉर्मच्या शेवटी असलेले <b>'📄 अहवाल पहा'</b> बटण दाबा.</li>
-                    <li>माहिती कायमस्वरूपी सेव्ह करण्यासाठी हरी रंगाचे <b>'💾 जतन करा'</b> बटण दाबा.</li>
-                </ul>
-            </li>
+        <h3 style="font-size:16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">📝 २. फॉर्म कसा भरावा? (Step-by-Step)</h3>
+        <ol style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
+            <li><b>लॉगिन:</b> सॉफ्टवेअर सुरू करण्यासाठी <b>'Google ने Login करा'</b> बटणावर क्लिक करा.</li>
+            <li><b>वैयक्तिक माहिती:</b> तुमचा विभाग, नाव आणि पदनाम भरा. 'कर्मचारी वर्ग' निवडून <b>जन्म दिनांक</b> टाका. निवृत्तीचा दिनांक आपोआप निश्चित होईल.</li>
+            <li><b>सेवा कालावधी:</b> जर <b>'रोजंदारी'</b> असेल तर रुजू दिनांक टाका, सॉफ्टवेअर ५ वर्षे वगळून ५०% कालावधीची स्वयंचलित गणना करेल.</li>
+            <li><b>वेतन व महागाई भत्ता:</b> 'वेतन स्तर (S-1 ते S-31)' निवडा व बेसिक पे आणि DA टाका.</li>
+            <li><b>अंशराशीकरण (Commutation):</b> पेन्शन एकरकमी हवी असल्यास टक्केवारी (कमाल ४०%) टाका.</li>
+            <li><b>GIS गणना:</b> तक्त्यामध्ये तुमचा सुरुवातीचा गट व महिना-वर्ष टाका. जर प्रमोशन झाले असेल तर <b>'➕ नवीन गट/प्रमोशन जोडा'</b> वर क्लिक करून नवीन गट टाका आणि <b>'📊 GIS रक्कम निश्चित करा'</b> बटण दाबा.</li>
+            <li><b>सेव्ह आणि प्रिंट:</b> तळाशी असलेल्या <b>'💾 जतन करा'</b> किंवा <b>'📄 अहवाल पहा'</b> या बटणांवर क्लिक करा.</li>
         </ol>
 
-        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; color:#0b5d3b;">📁 ३. जतन केलेली माहिती कशी व्यवस्थापित करावी?</h3>
-        <ul style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
-            <li style="margin-bottom:8px;">वर दिलेल्या (किंवा मोबाईलच्या खाली असलेल्या) <b>'📁 जतन माहिती'</b> या टॅबवर क्लिक करा. तिथे तुम्ही आजवर सेव्ह केलेल्या सर्व कर्मचाऱ्यांची यादी दिसेल.</li>
-            <li style="margin-bottom:8px;"><b>माहिती सुधारा (Edit):</b> एखाद्या कर्मचाऱ्याच्या माहितीत बदल करायचा असल्यास <b>'✏️ Edit'</b> बटण दाबा. माहिती फॉर्ममध्ये लोड होईल, तिथे आवश्यक बदल करून पुन्हा जतन करता येईल.</li>
-            <li style="margin-bottom:8px;"><b>थेट प्रिंट (Print):</b> सेव्ह केलेल्या रेकॉर्डची थेट प्रिंट किंवा PDF काढण्यासाठी <b>'🖨️ Print'</b> बटण दाबा.</li>
-            <li style="margin-bottom:8px;"><b>डिलीट (Delete):</b> नोंद कायमची काढून टाकण्यासाठी <b>'🗑️ Delete'</b> बटण वापरू शकता.</li>
+        <h3 style="font-size:16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">📁 ३. जतन केलेली माहिती कशी पहावी?</h3>
+        <ul style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
+            <li><b>'📁 जतन माहिती'</b> या टॅबवर क्लिक करा. तिथे तुमची यादी दिसेल.</li>
+            <li>माहिती बदलण्यासाठी <b>'✏️ माहिती सुधारा'</b> वर क्लिक करा.</li>
+            <li>थेट प्रिंट काढायची असल्यास <b>'🖨️ अहवाल प्रिंट'</b> वर क्लिक करा.</li>
         </ul>
-
-        <div style="background: #fff3cd; padding: 15px; border-left: 6px solid #ffecb5; border-radius: 6px; font-size:13.5px;">
-            <b>⚠️ कायदेशीर टीप व निवेदना (Disclaimer):</b> <br><br>
-            हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या शासकीय कर्मचाऱ्यांच्या व अधिकाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी तयार करण्यात आला आहे. अंतिम आणि अधिकृत सेवानिवृत्ती देयकांसाठी संबंधित शासन निर्णय, 'महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम १९८२', 'अंशराशीकरण नियम १९८४', लागू असलेले वेतन/महारहाट आदेश आणि सक्षम प्राधिकाऱ्याची पडताळणी अनिवार्य राहील.
+        
+        <div style="background: #fff3cd; padding: 12px; border-left: 5px solid #ffecb5; border-radius: 4px; font-size:13px;">
+            <b>⚠️ कायदेशीर टीप (Disclaimer):</b> <br><br>
+            हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या कर्मचाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी बनवण्यात आला आहे. अंतिम आणि अधिकृत देयकांसाठी संबंधित शासन निर्णय आणि सक्षम प्राधिकाऱ्याची पडताळणी अनिवार्य राहील.
         </div>
       </div>
     </section>
     </main>
+
+    <!-- 🌟 FIXED BOTTOM ACTION BAR & FOOTER -->
+    <div class="fixed-bottom-area">
+        <div class="action-bar">
+            <button type="button" class="primary" id="calcBtn" style="background-color: #17a2b8;">📄 अहवाल पहा</button>
+            <button type="button" class="primary" id="saveBtn" style="background-color: #28a745;">💾 जतन करा</button>
+            <button type="button" class="secondary" id="resetBtn">🧹 रिकामा करा</button>
+        </div>
+        <div class="footer-text">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
+    </div>
 
     <!-- 📱 MOBILE BOTTOM NAVIGATION BAR -->
     <nav class="mobile-bottom-nav">
