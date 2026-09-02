@@ -124,15 +124,13 @@ const commutationFactors = {
 // 📊 GIS RATES 2026 (Maturity Value per 1 Unit)
 // ==========================================
 const GIS_RATES_2026 = {
-    "1982-05": 75881, 
-    "1990-01": 50066,
+    "1982-05": 76102, 
+    "1990-01": 51424,
     "1994-01": 38315,
     "2002-01": 26731,
     "2010-01": 16530,
-    "2016-01": 7641,
-    "2016-06": 7903,
-    "2018-01": 6333,
-    "2018-07": 5877,
+    "2016-01": 7903,
+    "2018-01": 5877, 
     "2026-01": 42
 };
 
@@ -266,7 +264,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED AUTO GIS MODULE
+// ADVANCED AUTO GIS MODULE (Timeline Logic)
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -285,79 +283,81 @@ window.addGISRow = function() {
     const table = $("gisTable");
     const row = table.insertRow();
     row.innerHTML = `
-        <td><input type="month" class="gis-date" required onchange="autoFillGisRow(this)"></td>
-        <td><select class="gis-group" onchange="autoFillGisRow(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
-        <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef;"></td>
+        <td><input type="month" class="gis-date" required></td>
+        <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+        <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef; border:none; box-shadow:none;"></td>
         <td><button type="button" onclick="this.parentNode.parentNode.remove()" style="color:red; font-weight:bold; cursor:pointer; border:none; background:none; font-size:16px;">❌</button></td>
     `;
 }
 
-function getGisDetails(dateStr, group) {
-    if(!dateStr || !group) return { amount: 0, units: 0 };
-    const d = new Date(dateStr);
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1; 
-
-    if (year < 1990 || (year === 1990 && month < 1)) { 
-        if (group === "D") return { amount: 10, units: 1 };
-        if (group === "C") return { amount: 20, units: 2 };
-        if (group === "B") return { amount: 40, units: 4 };
-        if (group === "A") return { amount: 80, units: 8 };
-    } else if (year < 2002) { 
-        if (group === "D") return { amount: 15, units: 1 };
-        if (group === "C") return { amount: 30, units: 2 };
-        if (group === "B") return { amount: 60, units: 4 };
-        if (group === "A") return { amount: 120, units: 8 };
-    } else if (year < 2010) { 
-        if (group === "D") return { amount: 30, units: 1 };
-        if (group === "C") return { amount: 60, units: 2 };
-        if (group === "B") return { amount: 240, units: 8 };
-        if (group === "A") return { amount: 480, units: 16 };
+// Get required units for a given date and group based on govt rules
+function getGisUnits(dateStr, group) {
+    if(!dateStr || !group) return 0;
+    const year = parseInt(dateStr.split('-')[0]);
+    
+    if (year < 2002) { 
+        if (group === "D") return 1; if (group === "C") return 2; if (group === "B") return 4; if (group === "A") return 8;
     } else if (year < 2016) { 
-        if (group === "D") return { amount: 60, units: 1 };
-        if (group === "C") return { amount: 120, units: 2 };
-        if (group === "B") return { amount: 480, units: 8 };
-        if (group === "A") return { amount: 960, units: 16 };
+        if (group === "D") return 1; if (group === "C") return 2; if (group === "B") return 8; if (group === "A") return 16;
     } else { 
-        if (group === "D") return { amount: 240, units: 4 };
-        if (group === "C") return { amount: 360, units: 6 };
-        if (group === "B") return { amount: 480, units: 8 };
-        if (group === "A") return { amount: 960, units: 16 };
+        if (group === "D") return 4; if (group === "C") return 6; if (group === "B") return 8; if (group === "A") return 16;
     }
-    return { amount: 0, units: 0 };
-}
-
-window.autoFillGisRow = function(elem) {
-    const tr = elem.closest('tr');
-    const dateVal = tr.querySelector('.gis-date').value;
-    const groupVal = tr.querySelector('.gis-group').value;
-    if (dateVal && groupVal) {
-        const details = getGisDetails(dateVal, groupVal);
-        tr.querySelector('.gis-sub').value = details.amount;
-    }
+    return 0;
 }
 
 window.calculateAutoGIS = function() {
     let totalGisAmount = 0;
     const rows = document.querySelectorAll("#gisTable tr");
-    let previousUnits = 0;
     
+    let events = [];
+    // Gather user input events
     for(let i=1; i < rows.length; i++) {
         const dateInput = rows[i].querySelector('.gis-date').value;
         const groupInput = rows[i].querySelector('.gis-group').value;
+        if(dateInput && groupInput) {
+            events.push({ date: dateInput, group: groupInput, type: 'user' });
+            
+            // Auto fill subscription amount for display
+            let units = getGisUnits(dateInput, groupInput);
+            rows[i].querySelector('.gis-sub').value = units * 10; // Base 10 rs per unit (approx representation)
+        }
+    }
+    
+    if(events.length === 0) {
+        $("gis").value = 0;
+        return;
+    }
 
-        if(!dateInput || !groupInput) continue;
-
-        let details = getGisDetails(dateInput, groupInput);
-        let currentUnits = details.units;
+    events.sort((a, b) => a.date.localeCompare(b.date));
+    const startYear = parseInt(events[0].date.split('-')[0]);
+    
+    // Inject automatic rule changes that affect units
+    if (startYear < 2002) events.push({ date: "2002-01", group: null, type: 'auto' });
+    if (startYear < 2016) events.push({ date: "2016-01", group: null, type: 'auto' });
+    
+    events.sort((a, b) => a.date.localeCompare(b.date));
+    
+    let currentGroup = events[0].group;
+    let previousUnits = 0;
+    
+    for(let i=0; i < events.length; i++) {
+        let ev = events[i];
+        if(ev.type === 'user') {
+            currentGroup = ev.group;
+        } else {
+            ev.group = currentGroup;
+        }
+        
+        let currentUnits = getGisUnits(ev.date, currentGroup);
         let diffUnits = currentUnits - previousUnits;
-
+        
         if(diffUnits > 0) {
-            let rate = GIS_RATES_2026[dateInput]; 
+            let rate = GIS_RATES_2026[ev.date]; 
             if(!rate) {
-                let manualRate = prompt(`⚠️ त्रुटी: ${dateInput} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर येथे टाईप करा:`);
+                let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर (Maturity Value of 1 Unit) येथे टाईप करा:\n(उदा. 38315)`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
+                    GIS_RATES_2026[ev.date] = rate; // Save for this session
                 } else {
                     return; 
                 }
@@ -366,6 +366,7 @@ window.calculateAutoGIS = function() {
             previousUnits = currentUnits;
         }
     }
+    
     $("gis").value = Math.round(totalGisAmount);
     
     $("gisAutoSection").style.border = "2px solid #28a745";
@@ -447,7 +448,6 @@ $("pensionForm").addEventListener("submit", async e=>{
       if(currentEditId !== null) {
           await dbRef.child(currentEditId).set(data);
           currentEditId = null;
-          $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
       } else {
           await dbRef.push(data);
       }
@@ -459,7 +459,6 @@ $("resetBtn").addEventListener("click",()=>{
     $("pensionForm").reset(); 
     $("resultModal").style.display = "none";
     currentEditId = null;
-    $("submitBtn").innerHTML = "💾 जतन करा आणि अहवाल पहा";
     if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
     toggleRozandari();
 });
@@ -503,8 +502,6 @@ window.loadRecord = function(i){
   
   currentEditId = fetchedRecords[i].id; 
   document.querySelector('[data-tab="calculator"]').click(); 
-  
-  $("submitBtn").innerHTML = "💾 बदल जतन करा (Update)";
   
   $("resultModal").style.display = "none";
   setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
