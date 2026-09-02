@@ -12,8 +12,7 @@ const firebaseConfig = {
   projectId: "pension-calculater",
   storageBucket: "pension-calculater.firebasestorage.app",
   messagingSenderId: "44699549394",
-  appId: "1:44699549394:web:07a15aa6980c869475370b",
-  measurementId: "G-LT71537XP1"
+  appId: "1:44699549394:web:07a15aa6980c869475370b"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -24,22 +23,18 @@ const provider = new firebase.auth.GoogleAuthProvider();
 let currentUser = null;
 let fetchedRecords = []; 
 let currentEditId = null; 
-let gisUnitChart = {}; 
 
 // Authentication State Listener (The Gatekeeper)
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
-        // User logged in
         $("loginScreen").style.display = "none";
         $("mainApp").style.display = "block";
         $("userNameDisplay").textContent = "Welcome, " + user.displayName;
         fetchDataFromFirebase();
-        loadGISChartFromCloud(); 
     } else {
         currentUser = null;
         fetchedRecords = [];
-        // User logged out
         $("loginScreen").style.display = "flex";
         $("mainApp").style.display = "none";
         $("userNameDisplay").textContent = "";
@@ -47,25 +42,14 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// Advanced Login Logic
-const doLogin = () => {
-    $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... कृपया थांबा";
-    
-    // First try Popup method (Standard for modern browsers)
+// ✅ FIXED LOGIN LOGIC (Uses Popup to prevent Mobile Loop)
+$("loginBtnMain").addEventListener("click", () => {
+    $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... पॉप-अप Allow करा";
     auth.signInWithPopup(provider).catch(error => {
-        // If Popup is blocked (e.g. on some mobiles), fallback to Redirect
-        if (error.code === 'auth/popup-blocked' || error.code === 'auth/web-storage-unsupported') {
-            auth.signInWithRedirect(provider);
-        } else {
-            $("loginBtnMain").innerHTML = "🔐 Google ने Login करा";
-            alert("लॉगिन फेल: " + error.message + "\n\n(कृपया Firebase मध्ये 'myofficework-0906.github.io' हे डोमेन Authorized Domains मध्ये Add केले आहे का ते नक्की तपासा!)");
-        }
+        alert("लॉगिन त्रुटी: " + error.message + "\n\n(कृपया तुमच्या ब्राऊजरमध्ये 'Pop-ups' Allow केले असल्याची खात्री करा.)");
+        $("loginBtnMain").innerHTML = "🔐 Google ने Login करा";
     });
-};
-
-// Login / Logout Buttons
-$("loginBtnMain").addEventListener("click", doLogin);
-if($("loginBtn")) $("loginBtn").addEventListener("click", doLogin);
+});
 
 $("logoutBtn").addEventListener("click", () => auth.signOut().then(()=> window.location.reload() ));
 
@@ -116,6 +100,20 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
+// ==========================================
+// 📊 GIS RATES 2026 (Hardcoded from Image)
+// ==========================================
+// हे २०२६ मध्ये निवृत्त होणाऱ्या कर्मचाऱ्यांसाठी महाकोशचे अंदाजे दर आहेत (प्रति युनिट)
+const GIS_RATES_2026 = {
+    "1994-01": 38315,
+    "2002-01": 26731,
+    "2010-01": 16530,
+    "2016-06": 7903,
+    "2018-07": 5877,
+    // तुम्ही इथे आवश्यकतेनुसार महिन्यांचे नवीन दर (Rates) Add करू शकता.
+    // "YYYY-MM" : Amount
+};
+
 function updateBasicPay() {
     const payLevelDropdown = $("payLevel");
     const basicPayDropdown = $("basicPay");
@@ -125,8 +123,7 @@ function updateBasicPay() {
     if (selectedLevel && payMatrix[selectedLevel]) {
         payMatrix[selectedLevel].forEach(function(value) {
             const option = document.createElement("option");
-            option.value = value;
-            option.textContent = value;
+            option.value = value; option.textContent = value;
             basicPayDropdown.appendChild(option);
         });
     }
@@ -247,7 +244,7 @@ $("calcService").addEventListener("click",()=> {
 });
 
 // ==========================================
-// ADVANCED GIS MODULE
+// ADVANCED AUTO GIS MODULE (Mahakosh Logic)
 // ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
@@ -267,63 +264,59 @@ window.addGISRow = function() {
     const row = table.insertRow();
     row.innerHTML = `
         <td><input type="month" class="gis-date" required></td>
-        <td><select class="gis-group" onchange="setGisAmount(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
-        <td><input type="number" class="gis-sub" required></td>
+        <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
         <td><button type="button" onclick="this.parentNode.parentNode.remove()" style="color:red; font-weight:bold; cursor:pointer; border:none; background:none; font-size:16px;">❌</button></td>
     `;
 }
 
-window.setGisAmount = function(selectElem) {
-    const rates = {"D": 120, "C": 240, "B": 360, "A": 480}; 
-    const val = selectElem.value;
-    const input = selectElem.parentNode.nextElementSibling.querySelector('input');
-    if(rates[val]) input.value = rates[val];
-}
-
-window.uploadGISChart = function() {
-    const fileInput = $("gisChartInput");
-    if(!fileInput.files.length) { alert("कृपया प्रथम फाईल (JSON) निवडा."); return; }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            gisUnitChart = JSON.parse(e.target.result);
-            if(currentUser) db.ref('users/' + currentUser.uid + '/gisSettings').set(gisUnitChart);
-            $("gisUploadStatus").textContent = "चार्ट यशस्वीरीत्या अपलोड झाला!";
-            setTimeout(()=> { $("gisUploadStatus").textContent = ""; }, 3000);
-        } catch(err) { alert("फाईल चुकीची आहे."); }
-    };
-    reader.readAsText(fileInput.files[0]);
-}
-
-function loadGISChartFromCloud() {
-    if(currentUser) {
-        db.ref('users/' + currentUser.uid + '/gisSettings').once('value', snap => {
-            if(snap.val()) gisUnitChart = snap.val();
-        });
+// Get Units based on Date and Group (Mahakosh Rules)
+function getGisUnits(dateStr, group) {
+    if(!dateStr || !group) return 0;
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    
+    if (year < 2004) {
+        if (group === "D") return 1;
+        if (group === "C") return 2;
+        if (group === "B") return 4;
+        if (group === "A") return 8;
+    } else if (year >= 2004 && year <= 2015) {
+        if (group === "D") return 1;
+        if (group === "C") return 2;
+        if (group === "B") return 8;
+        if (group === "A") return 16;
+    } else { // 2016 onwards
+        if (group === "D") return 4;
+        if (group === "C") return 6;
+        if (group === "B") return 8;
+        if (group === "A") return 16;
     }
+    return 0;
 }
 
 window.calculateAutoGIS = function() {
-    if(Object.keys(gisUnitChart).length === 0) {
-        alert("कृपया आधी महाकोशचा JSON युनिट चार्ट अपलोड करा."); return;
-    }
     let totalGisAmount = 0;
     const rows = document.querySelectorAll("#gisTable tr");
-    let previousSub = 0;
+    let previousUnits = 0;
     
     for(let i=1; i < rows.length; i++) {
         const dateInput = rows[i].querySelector('.gis-date').value;
-        const subInput = Number(rows[i].querySelector('.gis-sub').value);
-        if(!dateInput || !subInput) continue;
+        const groupInput = rows[i].querySelector('.gis-group').value;
+        if(!dateInput || !groupInput) continue;
         
-        let diffSub = subInput - previousSub;
-        if(diffSub <= 0) continue; 
+        let currentUnits = getGisUnits(dateInput, groupInput);
+        let diffUnits = currentUnits - previousUnits;
         
-        let units = diffSub / 10; 
-        let unitValue = gisUnitChart[dateInput] || 0; 
-        
-        totalGisAmount += (units * unitValue);
-        previousSub = subInput;
+        if(diffUnits > 0) {
+            // Find rate in Hardcoded 2026 table
+            let rate = GIS_RATES_2026[dateInput]; 
+            if(!rate) {
+                alert(`⚠️ त्रुटी: ${dateInput} या महिन्याचा GIS दर उपलब्ध नाही. कृपया मॅन्युअली रक्कम टाका किंवा कोड अपडेट करा.`);
+                return;
+            }
+            totalGisAmount += (diffUnits * rate);
+            previousUnits = currentUnits;
+        }
     }
     $("gis").value = Math.round(totalGisAmount);
     alert("GIS गणना पूर्ण: ₹ " + Math.round(totalGisAmount));
