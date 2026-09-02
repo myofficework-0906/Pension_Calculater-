@@ -37,7 +37,7 @@ function toggleCommute() {
     if (!isYes) {
         cp.value = "0";
     } else if (cp.value === "0" || cp.value === "") {
-        cp.value = "40"; 
+        cp.value = "40"; // Default back to 40
     }
 }
 
@@ -338,7 +338,6 @@ window.addGISRow = function() {
     row.innerHTML = `
         <td><input type="month" class="gis-date" required></td>
         <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
-        <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef; border:none; box-shadow:none;"></td>
         <td><button type="button" onclick="this.parentNode.parentNode.remove()" style="color:red; font-weight:bold; cursor:pointer; border:none; background:none; font-size:16px;">❌</button></td>
     `;
 }
@@ -367,8 +366,6 @@ window.calculateAutoGIS = function() {
         const groupInput = rows[i].querySelector('.gis-group').value;
         if(dateInput && groupInput) {
             events.push({ date: dateInput, group: groupInput, type: 'user' });
-            let units = getGisUnits(dateInput, groupInput);
-            rows[i].querySelector('.gis-sub').value = units * 10; 
         }
     }
     
@@ -380,7 +377,6 @@ window.calculateAutoGIS = function() {
     events.sort((a, b) => a.date.localeCompare(b.date));
     const startYear = parseInt(events[0].date.split('-')[0]);
     
-    // Auto rules injections
     if (startYear < 2002) events.push({ date: "2002-01", group: null, type: 'auto' });
     if (startYear < 2010) events.push({ date: "2010-01", group: null, type: 'auto' });
     if (startYear < 2016) events.push({ date: "2016-01", group: null, type: 'auto' });
@@ -454,7 +450,7 @@ window.handleSave = function() {
         const cleanData = JSON.parse(JSON.stringify(rawData)); // Safe Object for Firebase
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
-        // Background Sync (Fire and Forget) - No Hanging!
+        // Background Sync (Fire and Forget)
         if(currentEditId !== null) {
             dbRef.child(currentEditId).set(cleanData).catch(e => console.log("Background sync error:", e));
             currentEditId = null;
@@ -531,13 +527,13 @@ function calculate(showModal = true){
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण रक्कम:</span><b>${money(commuted)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण एकरकमी रक्कम:</span><b>${money(commutationValue)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरणानंतर पेन्शन:</span><b>${money(reduced)}</b></div>
-        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA):</span><b>${money(pensionDA)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA) (${da}% मूळ पेन्शनवर):</span><b>${money(pensionDA)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Reduced + DA):</b></span><b>${money(reduced + pensionDA)}</b></div>
       `;
   } else {
       gridHTML += `
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>मासिक मूळ निवृत्तीवेतन:</span><b>${money(pension)}</b></div>
-        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA):</span><b>${money(pensionDA)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA) (${da}% मूळ पेन्शनवर):</span><b>${money(pensionDA)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Basic + DA):</b></span><b>${money(pension + pensionDA)}</b></div>
       `;
   }
