@@ -20,7 +20,7 @@
         background-attachment: fixed; 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 14px;
-        padding-top: 135px; /* PC Fixed Header Space */
+        padding-top: 155px; /* PC Fixed Header Space Adjusted */
         padding-bottom: 80px; /* Fixed Bottom Buttons Space */
     }
     
@@ -31,17 +31,17 @@
     .brand { font-size: 20px; font-weight: bold; color: #ffffff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); margin-top: 2px; letter-spacing: 0.5px; text-align: center;}
     .sub { font-size: 12px; color: #e8f5e9 !important; margin-top: 2px; font-weight: 500; text-align: center;}
     
-    /* Elegant Tabs */
-    .tabs-container { background-color: #ffffff; padding: 8px 10px; width: 100%; }
+    /* Elegant Tabs - ✅ टॅब्स थोडे खाली घेण्यासाठी Padding वाढवले आहे */
+    .tabs-container { background-color: #ffffff; padding: 16px 10px 14px 10px; width: 100%; border-bottom: 1px solid #ddd; }
     .tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; list-style: none; }
-    .tab { background: #f8f9fa; border: 1px solid #ced4da; padding: 8px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: #495057; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1.2;}
+    .tab { background: #f8f9fa; border: 1px solid #ced4da; padding: 8px 22px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; color: #495057; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1.2;}
     .tab:hover { background: #e2e6ea; transform: translateY(-1px); }
     .tab.active { background: #0b5d3b; color: white; border-color: #0b5d3b; box-shadow: 0 4px 8px rgba(11,93,59,0.3); }
     
     /* 🌟 FIXED BOTTOM ACTION BAR & FOOTER */
     .fixed-bottom-area { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1010; background: #ffffff; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); }
     .action-bar { padding: 10px; display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; background: #e8f5e9; border-top: 2px solid #c3e6cb; }
-    .action-bar button { font-size: 14px; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; border: none; box-shadow: 0 3px 5px rgba(0,0,0,0.1); }
+    .action-bar button { font-size: 14px; padding: 10px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; border: none; box-shadow: 0 3px 5px rgba(0,0,0,0.1); }
     .action-bar .primary { background-color: #0b5d3b; color: white; }
     .action-bar .primary:hover { background-color: #094a2f; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.15); }
     .action-bar .secondary { background-color: #6c757d; color: white; }
@@ -106,7 +106,6 @@
         .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border: none; }
         .close-modal, #modalPrintBtn { display: none !important; }
         
-        /* Compact elements for single page fit */
         .resultgrid { gap: 4px !important; padding: 8px !important; font-size: 13px !important; border: 1px solid #000 !important; }
         .resultgrid div { padding-bottom: 3px !important; border-bottom: 1px dashed #999 !important; border-radius:0 !important; margin-bottom: 2px !important;}
         .resulthead h2 { font-size: 18px !important; margin-bottom: 5px !important; text-align:center;}
@@ -117,7 +116,6 @@
         
         .fixed-top-area, .fixed-bottom-area { display: none !important; }
         
-        /* ✅ Custom Footer visible only in PDF/Print */
         .print-footer { display: block !important; position: fixed; bottom: 0; left:0; width: 100%; text-align: center; font-size: 11px; font-weight: bold; padding-top: 5px; border-top: 1px solid #000; color: #000;}
     }
 
@@ -125,20 +123,20 @@
 
     /* 📱 Mobile Adjustments */
     @media (max-width: 768px) { 
-        body { padding-top: 130px; padding-bottom: 75px; }
+        body { padding-top: 160px; padding-bottom: 75px; }
         .auth-section { position: static; justify-content: center; margin-bottom: 5px; }
         .brand { font-size: 16px; text-align: center; margin-top: 0;}
         .sub { font-size: 11px; text-align: center; }
         .user-name { display: none; } 
-        .tabs-container { padding: 8px 5px; }
+        .tabs-container { padding: 14px 5px 12px 5px; }
         .tab { padding: 6px 14px; font-size: 12px;}
-        .action-bar button { padding: 8px 15px; font-size: 13px; }
+        .action-bar button { padding: 8px 18px; font-size: 13px; }
     }
   </style>
 </head>
 <body>
 
-<!-- 🛑 LOGIN SCREEN (Gatekeeper) -->
+<!-- 🛑 LOGIN SCREEN -->
 <div id="loginScreen">
     <div class="login-box">
         <h2 style="font-size: 32px; margin-bottom: 10px;">🏛️</h2>
@@ -343,7 +341,6 @@
           <div class="actions" style="margin-top:15px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 15px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
-          <!-- ✅ ONLY VISIBLE IN PDF/PRINT -->
           <div class="print-footer">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
         </div>
       </div>
@@ -358,19 +355,56 @@
       </div>
     </section>
 
+    <!-- 📖 विस्तृत आणि सविस्तर मदत (Detailed User Manual) -->
     <section id="help" class="tabpage">
-      <div class="section" style="line-height: 1.8; font-size:14px;">
-        <div style="background: #e8f5e9; padding: 15px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
-            <b>नमस्कार!</b> महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांच्या निवृत्तीवेतन (Pension) आणि इतर लाभांची अतिशय जलद आणि अचूक गणना करण्यासाठी हे प्रगत सॉफ्टवेअर बनवले आहे.
+      <div class="section" style="line-height: 1.8; font-size:14.5px;">
+        <div style="background: #e8f5e9; padding: 18px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
+            <b>नमस्कार!</b> महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांच्या निवृत्तीवेतन (Pension) आणि इतर सेवा लाभांची अतिशय जलद, सुटसुटीत आणि १००% अचूक गणना करण्यासाठी हे प्रगत सॉफ्टवेअर बनवले आहे. खालील सविस्तर मार्गदर्शिका वाचून तुम्ही सॉफ्टवेअरचा योग्य वापर करू शकता.
         </div>
 
-        <h3 style="font-size:16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">🚀 १. सॉफ्टवेअरची प्रमुख वैशिष्ट्ये</h3>
-        <ul style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
-            <li style="margin-bottom:5px;"><b>सुरक्षित डेटा जतन:</b> गुगल लॉगिन केल्याने तुमचा भरलेला डेटा क्लाऊडवर सुरक्षित राहतो.</li>
-            <li style="margin-bottom:5px;"><b>स्थिर बटणे:</b> 'जतन करा' आणि 'अहवाल पहा' ही बटणे स्क्रीनवर नेहमी खाली उपलब्ध राहतील.</li>
-            <li style="margin-bottom:5px;"><b>प्रगत GIS गणना (100% अचूक):</b> शासन निर्णयानुसार युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते. तुम्हाला फक्त सुरुवातीचा गट आणि प्रमोशनचा गट टाकायचा आहे, २००२ व २०१६ चे युनिट बदल सॉफ्टवेअर स्वतः ओळखते.</li>
-            <li style="margin-bottom:5px;"><b>१ पानाची PDF प्रिंट:</b> अहवाल अगदी सुटसुटीत बनवला असून तो मोबाईल किंवा पीसी वरून एकाच पानावर (Single Page) PDF म्हणून सेव्ह होतो.</li>
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; margin-top:20px; color:#0b5d3b;">🚀 १. सॉफ्टवेअरची प्रमुख वैशिष्ट्ये</h3>
+        <ul style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
+            <li style="margin-bottom:8px;"><b>सुरक्षित क्लाउड जतन (Google Sync):</b> अधिकृत गुगल लॉगिन केल्याने तुमचा भरलेला डेटा क्लाउडवर कायमस्वरूपी सुरक्षित राहतो. पीसीवर सेव्ह केलेला डेटा तुम्ही मोबाईलवरही लॉगइन करून पाहू शकता.</li>
+            <li style="margin-bottom:8px;"><b>स्थिर नियंत्रण बटणे (Fixed Action Bar):</b> फॉर्म भरताना <b>'जतन करा'</b> आणि <b>'रिकामा करा'</b> ही मुख्य बटणे स्क्रीनच्या तळाशी नेहमी उपलब्ध राहतात, त्यामुळे फॉर्ममध्ये वर-खाली स्क्रोल करत बढावे लागत नाही.</li>
+            <li style="margin-bottom:8px;"><b>स्वयंचलित रजा रोखीकरण (Leave Encashment):</b> शिल्लक अर्जित रजांचे दिवस (कमाल ३००) टाकले की सॉफ्टवेअर शासन नियमानुसार (Basic + DA) सूत्र लागू करून अचूक रक्कम आपोआप काढते.</li>
+            <li style="margin-bottom:8px;"><b>प्रगत GIS गणना (100% अचूक):</b> महाराष्ट्र राज्य गट विमा योजना १९८२ च्या नियमानुसार, युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते. २००२ व २०१६ मधील युनिट बदल सॉफ्टवेअर स्वतः ओळखते.</li>
+            <li style="margin-bottom:8px;"><b>१ पानाची PDF प्रिंट (Single Page Print):</b> गणना पूर्ण झाल्यावर सुंदर अहवाल पॉप-अप विंडोमध्ये दिसतो. 'प्रिंट' दाबली असता तो मोबाईल किंवा पीसी वरून अचूकपणे एकाच पानावर (Single Page) PDF म्हणून सेव्ह होतो.</li>
         </ul>
+
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; color:#0b5d3b;">📝 २. फॉर्म कसा भरावा? (Step-by-Step मार्गदर्शिका)</h3>
+        <ol style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
+            <li style="margin-bottom:10px;"><b>सुरक्षित लॉगिन:</b> सॉफ्टवेअर सुरू करण्यासाठी सुरुवातीला <b>'Google ने Login करा'</b> या बटणावर क्लिक करा. लॉगिन असल्याशिवाय क्लाउडवर माहिती सेव्ह करता येत नाही.</li>
+            <li style="margin-bottom:10px;"><b>वैयक्तिक व पद माहिती:</b> तुमचा विभाग (ड्रापडाऊनमधून शोधा), कार्यालयाचे नाव, कर्मचाऱ्याचे पूर्ण नाव आणि पदनाम भरा. त्यानंतर 'कर्मचारी वर्ग (गट)' निवडून <b>जन्म दिनांक</b> टाका. नियमानुसार निवृत्तीचा दिनांक आपोआप निश्चित होईल.</li>
+            <li style="margin-bottom:10px;"><b>सेवा कालावधी तपशील:</b> तुमची 'आस्थापना' (कायम किंवा तात्पुरती) निवडा. जर सेवा <b>'रोजंदारीवरून नियमित'</b> असेल, तर रोजंदारी रुजू दिनांक टाका. सॉफ्टवेअर पहिली ५ वर्षे वगळून पुढील सेवेच्या ५०% कालावधीची स्वयंचलित गणना करून देईल. शेवटी <b>'⏳ सेवा कालावधी तपासा'</b> वर क्लिक करा.</li>
+            <li style="margin-bottom:10px;"><b>वेतन तपशील (7th Pay Commission):</b> ७ व्या वेतन आयोगानुसार तुमचा 'वेतन स्तर (S-1 ते S-31)' निवडा. त्यानुसार बेसिक पे चे योग्य पर्याय खाली उपलब्ध होतील. सद्यस्थितीतील महागाई भत्ता (DA) टक्केवारीत टाка (उदा. ५०).</li>
+            <li style="margin-bottom:10px;"><b>अंशराशीकरण (Commutation):</b> निवृत्तीवेतनाचे अंशराशीकरण हवे असल्यास 'होय' निवडून हवी असलेली टक्केवारी (कमाल ४०%) टाка. वय-गुणक ऑटोमॅटिक येईल.</li>
+            <li style="margin-bottom:10px;"><b>रजा रोखीकरण, GPF आणि GIS:</b> 
+                <ul style="margin-top:5px; list-style-type: disc;">
+                    <li>शिल्लक अर्जित रजांचे दिवस टाका.</li>
+                    <li>GPF ची एकूण जमा रक्कम टाका.</li>
+                    <li>GIS साठी तक्त्यामध्ये तुमचा सुरुवातीचा गट व महिना-वर्ष टाका. सेवेमध्ये प्रमोशन किंवा गट बदल झाला असल्यास <b>'➕ नवीन गट/प्रमोशन जोडा'</b> वर क्लिक करून तपशील टाका आणि <b>'📊 GIS रक्कम निश्चित करा'</b> बटण दाबा.</li>
+                </ul>
+            </li>
+            <li style="margin-bottom:10px;"><b>अहवाल पाहणे व जतन करणे:</b> 
+                <ul>
+                    <li>माहिती तपासण्यासाठी खालील <b>'📄 अहवाल पहा'</b> बटण दाबा.</li>
+                    <li>माहिती कायमस्वरूपी सेव्ह करण्यासाठी हरी रंगाचे <b>'💾 जतन करा'</b> बटण दाबा.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; color:#0b5d3b;">📁 ३. जतन केलेली माहिती कशी व्यवस्थापित करावी?</h3>
+        <ul style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
+            <li style="margin-bottom:8px;">वर दिलेल्या मेनूमधील <b>'📁 जतन माहिती'</b> या टॅबवर क्लिक करा. तिथे तुम्ही आजवर सेव्ह केलेल्या सर्व कर्मचाऱ्यांची यादी दिसेल.</li>
+            <li style="margin-bottom:8px;"><b>माहिती सुधारा (Edit):</b> एखाद्या कर्मचाऱ्याच्या माहितीत बदल करायचा असल्यास <b>'✏️ Edit'</b> बटण दाबा. माहिती फॉर्ममध्ये लोड होईल, तिथे आवश्यक बदल करून पुन्हा जतन करता येईल.</li>
+            <li style="margin-bottom:8px;"><b>थेट प्रिंट (Print):</b> सेव्ह केलेल्या रेकॉर्डची थेट प्रिंट किंवा PDF काढण्यासाठी <b>'🖨️ Print'</b> बटण दाबा.</li>
+            <li style="margin-bottom:8px;"><b>डिलीट (Delete):</b> नोंद कायमची काढून टाकण्यासाठी <b>'🗑️ Delete'</b> बटण वापरू शकता.</li>
+        </ul>
+
+        <div style="background: #fff3cd; padding: 15px; border-left: 6px solid #ffecb5; border-radius: 6px; font-size:13.5px;">
+            <b>⚠️ कायदेशीर टीप व निवेदना (Disclaimer):</b> <br><br>
+            हा कॅल्क्युलेटर महाराष्ट्र शासनाच्या शासकीय कर्मचाऱ्यांच्या व अधिकाऱ्यांच्या सोयीसाठी <b>प्राथमिक आणि अंदाजे (Tentative)</b> गणना करण्यासाठी तयार करण्यात आला आहे. अंतिम आणि अधिकृत सेवानिवृत्ती देयकांसाठी संबंधित शासन निर्णय, 'महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम १९८२', 'अंशराशीकरण नियम १९८४', लागू असलेले वेतन/महारहाट आदेश आणि सक्षम प्राधिकाऱ्याची पडताळणी अनिवार्य राहील.
+        </div>
       </div>
     </section>
     </main>
