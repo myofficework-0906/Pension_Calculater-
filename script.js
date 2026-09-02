@@ -130,6 +130,7 @@ const GIS_RATES_2026 = {
     "2002-01": 26731,
     "2010-01": 16530,
     "2016-01": 7903,
+    "2016-06": 7903,
     "2018-01": 6333,
     "2018-07": 5877, 
     "2026-01": 42
@@ -188,7 +189,7 @@ function calculateRetirementDate() {
     if($("joiningDate").value) {
          const p = sixMonthlyPeriods();
          $("serviceHalfYears").value = p;
-         $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने`;
+         $("serviceOutput").textContent = `एकूण सेवा: ${Math.floor(p/2)} वर्षे ${p%2?6:0} महिने`;
     }
 }
 
@@ -206,7 +207,7 @@ function toggleRozandari() {
     const isRoz = (est === "rozandari");
     $("rozandariDateBlock").style.display = isRoz ? "block" : "none";
     $("rozandariHint").style.display = isRoz ? "block" : "none";
-    $("joiningDateLabel").textContent = isRoz ? "नियमित रुजू दिनांक (Automatic)" : "सेवेत रुजू दिनांक";
+    $("joiningDateLabel").textContent = isRoz ? "नियमित रुजू दिनांक" : "सेवेत रुजू दिनांक";
     $("joiningDate").readOnly = isRoz;
     $("joiningDate").style.backgroundColor = isRoz ? "#e9ecef" : "";
     if(!isRoz) $("rozandariDate").value = "";
@@ -261,7 +262,7 @@ function sixMonthlyPeriods() {
 $("calcService").addEventListener("click",()=> {
   const p = sixMonthlyPeriods();
   $("serviceHalfYears").value = p;
-  $("serviceOutput").textContent = `अर्हताकारी सेवा: ${Math.floor(p/2)} वर्ष ${p%2?6:0} महिने`;
+  $("serviceOutput").textContent = `एकूण सेवा: ${Math.floor(p/2)} वर्षे ${p%2?6:0} महिने`;
 });
 
 // ==========================================
@@ -291,7 +292,7 @@ window.addGISRow = function() {
     `;
 }
 
-// Get required units for a given date and group based on govt rules
+// Get required units based on Govt rules
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
@@ -311,15 +312,13 @@ window.calculateAutoGIS = function() {
     const rows = document.querySelectorAll("#gisTable tr");
     
     let events = [];
-    // 1. Gather all user inputs
     for(let i=1; i < rows.length; i++) {
         const dateInput = rows[i].querySelector('.gis-date').value;
         const groupInput = rows[i].querySelector('.gis-group').value;
         if(dateInput && groupInput) {
             events.push({ date: dateInput, group: groupInput, type: 'user' });
-            // Auto fill approx subscription amount visually
             let units = getGisUnits(dateInput, groupInput);
-            rows[i].querySelector('.gis-sub').value = units * 10; 
+            rows[i].querySelector('.gis-sub').value = units * 10; // Visual base sub
         }
     }
     
@@ -328,11 +327,10 @@ window.calculateAutoGIS = function() {
         return;
     }
 
-    // Sort by date
     events.sort((a, b) => a.date.localeCompare(b.date));
     const startYear = parseInt(events[0].date.split('-')[0]);
     
-    // 2. Inject Automatic Rule Changes that affected units
+    // Auto rules injections
     if (startYear < 2002) events.push({ date: "2002-01", group: null, type: 'auto' });
     if (startYear < 2010) events.push({ date: "2010-01", group: null, type: 'auto' });
     if (startYear < 2016) events.push({ date: "2016-01", group: null, type: 'auto' });
@@ -342,13 +340,12 @@ window.calculateAutoGIS = function() {
     let currentGroup = events[0].group;
     let previousUnits = 0;
     
-    // 3. Process events chronologically
     for(let i=0; i < events.length; i++) {
         let ev = events[i];
         if(ev.type === 'user') {
-            currentGroup = ev.group; // Update current group if user entered promotion
+            currentGroup = ev.group; 
         } else {
-            ev.group = currentGroup; // Auto event inherits the current group
+            ev.group = currentGroup; 
         }
         
         let currentUnits = getGisUnits(ev.date, currentGroup);
@@ -360,9 +357,9 @@ window.calculateAutoGIS = function() {
                 let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर (Maturity Value of 1 Unit) येथे टाईप करा:\n(उदा. 38315)`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
-                    GIS_RATES_2026[ev.date] = rate; // Save for session
+                    GIS_RATES_2026[ev.date] = rate; // Store for session
                 } else {
-                    return; // Cancel calculation
+                    return; 
                 }
             }
             totalGisAmount += (diffUnits * rate);
@@ -372,13 +369,12 @@ window.calculateAutoGIS = function() {
     
     $("gis").value = Math.round(totalGisAmount);
     
-    // Visual Success Feedback
     $("gisAutoSection").style.border = "2px solid #28a745";
     setTimeout(() => { $("gisAutoSection").style.border = "none"; }, 1500);
 }
 
 // ==========================================
-// MAIN CALCULATE FUNCTION
+// MAIN CALCULATE FUNCTION (Fix for Save Bug & Formatting)
 // ==========================================
 function calculate(){
   const basic=val("basicPay");
@@ -400,34 +396,43 @@ function calculate(){
   const commutationValue=commute ? commuted * 12 * factor : 0;
   
   calculateRealtimeLeave();
-  const leave=val("leaveEncashment"), gpf=val("gpf"), gis=val("gis");
-  const recovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
-  const other=val("otherDeduction");
   
-  // DA is calculated on original basic pension
+  // Safe Variable Names for Save Fix
+  const amtLeave=val("leaveEncashment");
+  const amtGpf=val("gpf");
+  const amtGis=val("gis");
+  const amtRecovery=document.querySelector('input[name="recovery"]:checked').value==="yes"?val("recovery"):0;
+  const amtOther=val("otherDeduction");
+  
+  // DA on Basic Pension
   const pensionDA = pension * (da/100);
-  const totalMonthlyPension = pension + pensionDA; // Added new calculation
+  const totalMonthlyPension = pension + pensionDA; 
   
-  const lump=Math.max(0,commutationValue+gratuity+leave+gpf+gis-recovery-other);
+  const lump=Math.max(0,commutationValue+gratuity+amtLeave+amtGpf+amtGis-amtRecovery-amtOther);
 
   $("pension").textContent=money(pension);
   $("pensionDA").textContent=money(pensionDA);
-  $("totalMonthlyPension").textContent=money(totalMonthlyPension); // Display new field
+  $("totalMonthlyPension").textContent=money(totalMonthlyPension); 
   $("commuted").textContent=money(commuted);
   $("reducedPension").textContent=money(reduced);
   $("commutationValue").textContent=money(commutationValue);
   $("gratuity").textContent=money(gratuity);
-  $("leaveResult").textContent=money(leave);
-  $("gpfResult").textContent=money(gpf);
-  $("gisResult").textContent=money(gis);
+  $("leaveResult").textContent=money(amtLeave);
+  $("gpfResult").textContent=money(amtGpf);
+  $("gisResult").textContent=money(amtGis);
   $("lumpSum").textContent=money(lump);
   $("reportDate").textContent=new Date().toLocaleDateString("en-IN");
   
   let deptText = $("department").selectedIndex > 0 ? $("department").options[$("department").selectedIndex].text : "-";
   
-  $("summary").innerHTML=`<p><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
-  <p>विभाग: <b>${deptText}</b></p>
-  <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; अर्हताकारी सेवा: <b>${halfYears} सहामाही</b></p>`;
+  // Formatting service in Years and Months
+  let yrs = Math.floor(halfYears / 2);
+  let mths = (halfYears % 2) ? 6 : 0;
+  let serviceStr = `${yrs} वर्षे ${mths} महिने`;
+  
+  $("summary").innerHTML=`<p style="margin-bottom:4px;"><b>${$("employeeName").value}</b> | ${$("designation").value||"-"} | ${$("officeName").value||"-"}</p>
+  <p style="margin-bottom:4px;">विभाग: <b>${deptText}</b></p>
+  <p>Basic Pay: <b>${money(basic)}</b> &nbsp; | &nbsp; एकूण सेवा: <b>${serviceStr}</b></p>`;
   
   $("resultModal").style.display = "block";
   
@@ -438,7 +443,7 @@ function calculate(){
     joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,
     serviceHalfYears:halfYears, payLevel:$("payLevel").value, basicPay:basic, daPercent:da,
     commute:commute, commutePercent:cp, commuteFactor:factor, earnedLeaveDays: val("earnedLeaveDays"),
-    recovery, recoveryAmount:recovery, otherDeduction:other, gpf, gis, leaveEncashment:leave, 
+    recovery: amtRecovery, recoveryAmount: amtRecovery, otherDeduction: amtOther, gpf: amtGpf, gis: amtGis, leaveEncashment: amtLeave, 
     savedAt:new Date().toISOString()
   };
 }
@@ -450,7 +455,7 @@ $("pensionForm").addEventListener("submit", async e=>{
   e.preventDefault();
   if(!currentUser) { alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); return; }
   
-  const data = calculate();
+  const data = calculate(); // calculate first, then proceed to save
   const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
   try {
