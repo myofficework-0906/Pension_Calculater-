@@ -10,44 +10,52 @@
   
   <style>
     /* =========================================
-       ✨ ATTRACTIVE UI & REPEATING WATERMARK ✨
+       ✨ COMPACT UI & REPEATING WATERMARK ✨
        ========================================= */
     body {
         background-color: #f4f7f6;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.04' font-family='Arial' font-size='28' font-weight='bold' fill='%230b5d3b'%3E%3Ctext x='20' y='40'%3E%E2%82%B9%3C/text%3E%3Ctext x='70' y='90'%3E%E2%82%B9%3C/text%3E%3C/svg%3E");
         background-attachment: fixed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;
+        font-size: 14px;
     }
-    .section { background: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); padding: 20px; margin-bottom: 25px; border-top: 4px solid #0b5d3b; transition: transform 0.3s ease; }
-    .section:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-    .section h3 { color: #0b5d3b; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; margin-top: 0; font-size: 16px; }
-    input, select { border-radius: 6px; border: 1px solid #ced4da; padding: 10px; transition: border-color 0.3s; }
-    input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
-    button { transition: all 0.3s ease; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     
-    .select2-container .select2-selection--single { height: 40px; border: 1px solid #ced4da; border-radius: 6px; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 40px; }
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
+    .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 12px 15px; margin-bottom: 15px; border-top: 3px solid #0b5d3b; transition: transform 0.2s ease; }
+    .section:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 0; margin-bottom: 10px; font-size: 15px; }
     
-    /* Login Screen Setup */
-    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-    .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #0b5d3b; }
-    .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 22px; }
-    .login-box p { color: #555; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
-    .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 12px 25px; font-size: 16px; width: 100%; }
+    input, select { border-radius: 4px; border: 1px solid #ced4da; padding: 6px 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; box-sizing: border-box;}
+    input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 4px rgba(11,93,59,0.3); outline: none; }
+    button { transition: all 0.2s ease; border-radius: 4px; font-weight: bold; cursor: pointer; padding: 8px 12px; font-size: 13px;}
+    button:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
     
-    .auth-section { position: absolute; top: 15px; right: 15px; z-index: 1001; display: flex; align-items: center; }
-    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 8px 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .user-name { color: white; margin-right: 15px; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    label { font-size: 12px; font-weight: bold; color: #444; margin-bottom: 3px; display: block; }
     
-    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 20px; backdrop-filter: blur(5px); }
-    .modal-content { background-color: #fff; margin: auto; padding: 30px; border-radius: 12px; width: 95%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; margin-bottom: 50px; border-top: 5px solid #0b5d3b; }
-    .close-modal { color: #d9534f; float: right; font-size: 35px; cursor: pointer; line-height: 1; transition: color 0.3s; }
+    .select2-container .select2-selection--single { height: 32px; border: 1px solid #ced4da; border-radius: 4px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 32px; font-size: 13px;}
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 30px; }
     
-    .gis-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    .gis-table th { background-color: #0b5d3b; color: white; padding: 8px; }
-    .gis-table td { border: 1px solid #ccc; padding: 8px; text-align: center; background-color: white;}
-    .gis-table input, .gis-table select { width: 95%; padding: 5px; font-size: 13px; }
+    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: linear-gradient(135deg, rgba(232,245,233,0.95) 0%, rgba(244,247,246,0.95) 100%); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; max-width: 350px; width: 90%; border-top: 5px solid #0b5d3b; }
+    .login-box h2 { color: #0b5d3b; margin-top: 0; font-size: 20px; }
+    .login-box p { color: #555; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
+    .btn-main-login { background-color: #4285F4; color: white; border: none; padding: 10px 20px; font-size: 15px; width: 100%; }
+    
+    .auth-section { position: absolute; top: 10px; right: 10px; z-index: 1001; display: flex; align-items: center; }
+    .logout-btn { background-color: #d9534f; color: white; border: none; padding: 6px 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .user-name { color: white; margin-right: 10px; font-weight: bold; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    
+    .grid3, .grid4 { display: grid; gap: 10px; }
+    .grid3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; padding-top: 15px; backdrop-filter: blur(3px); }
+    .modal-content { background-color: #fff; margin: auto; padding: 20px; border-radius: 8px; width: 95%; max-width: 700px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; margin-bottom: 30px; border-top: 4px solid #0b5d3b; }
+    .close-modal { color: #d9534f; float: right; font-size: 28px; cursor: pointer; line-height: 1; transition: color 0.3s; margin-top: -5px;}
+    
+    .gis-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
+    .gis-table th { background-color: #0b5d3b; color: white; padding: 5px; font-weight: normal;}
+    .gis-table td { border: 1px solid #ccc; padding: 4px; text-align: center; background-color: white;}
+    .gis-table input, .gis-table select { width: 95%; padding: 4px; font-size: 12px; }
     
     @media print {
         body * { visibility: hidden; }
@@ -65,9 +73,9 @@
 <!-- 🛑 LOGIN SCREEN (Gatekeeper) -->
 <div id="loginScreen">
     <div class="login-box">
-        <h2 style="font-size: 30px; margin-bottom: 10px;">🏛️</h2>
+        <h2 style="font-size: 26px; margin-bottom: 5px;">🏛️</h2>
         <h2>निवृत्तीवेतन गणना सॉफ्टवेअर</h2>
-        <p>महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांसाठी प्रगत पेन्शन आणि लाभ कॅल्क्युलेटर.<br><br><b>सॉफ्टवेअर सुरू करण्यासाठी व आपली माहिती सुरक्षित क्लाउडवर जतन करण्यासाठी कृपया अधिकृत लॉगिन करा.</b></p>
+        <p>महाराष्ट्र राज्य शासकीय अधिकारी आणि कर्मचाऱ्यांसाठी प्रगत पेन्शन आणि लाभ कॅल्क्युलेटर.<br><br><b>सॉफ्टवेअर सुरू करण्यासाठी व माहिती सुरक्षित क्लाउडवर जतन करण्यासाठी अधिकृत लॉगिन करा.</b></p>
         <button id="loginBtnMain" class="btn-main-login">🔐 Google ने Login करा</button>
     </div>
 </div>
@@ -79,18 +87,18 @@
         <button id="logoutBtn" class="logout-btn">🚪 लॉगआउट</button>
     </div>
 
-    <header class="topbar">
-      <div class="brand">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
-      <div class="sub">Maharashtra Government Pension Calculator</div>
+    <header class="topbar" style="padding: 10px; text-align: center;">
+      <div class="brand" style="font-size: 18px;">राज्य शासकीय अधिकारी / कर्मचारी निवृत्तीवेतन गणना</div>
+      <div class="sub" style="font-size: 12px;">Maharashtra Government Pension Calculator</div>
     </header>
 
-    <nav class="tabs">
-      <button class="tab active" data-tab="calculator">🧮 मुख्य फॉर्म</button>
-      <button class="tab" data-tab="saved">📁 जतन केलेली माहिती</button>
-      <button class="tab" data-tab="help">📖 मार्गदर्शिका</button>
+    <nav class="tabs" style="margin-bottom: 10px;">
+      <button class="tab active" data-tab="calculator" style="padding: 8px;">🧮 मुख्य फॉर्म</button>
+      <button class="tab" data-tab="saved" style="padding: 8px;">📁 जतन माहिती</button>
+      <button class="tab" data-tab="help" style="padding: 8px;">📖 मदत</button>
     </nav>
 
-    <main class="container">
+    <main class="container" style="padding: 5px;">
     <section id="calculator" class="tabpage active">
     <form id="pensionForm">
 
@@ -160,9 +168,10 @@
       <label>निवृत्त / सेवा समाप्ती दिनांक <input id="retirementDate" type="date"></label>
       <label>अर्हताकारी सेवा सहामाही <input id="serviceHalfYears" type="number" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
     </div>
-    <p class="hint" id="rozandariHint" style="display:none; color:#d9534f; margin-top:5px; font-weight:bold;">* कालेलकर समितीनुसार: रोजंदारीची पहिली ५ वर्षे वगळून, पुढील रोजंदारी सेवेच्या ५०% कालावधी ग्राह्य धरला जाईल.</p>
-    <button type="button" class="smallbtn" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
-    <span id="serviceOutput" class="serviceout" style="font-weight:bold; margin-left:10px; color:#6f42c1;"></span>
+    <div style="margin-top: 8px;">
+        <button type="button" id="calcService" style="background-color: #6f42c1; color: white;">⏳ सेवा कालावधी तपासा</button>
+        <span id="serviceOutput" style="font-weight:bold; margin-left:10px; color:#6f42c1; font-size:13px;"></span>
+    </div>
     </div>
 
     <div class="section teal">
@@ -182,7 +191,7 @@
     <div class="section orange">
     <h3>📉 अंशराशीकरण (Commutation)</h3>
     <div class="grid4">
-      <label>हवे आहे का? <div class="radio"><label><input type="radio" name="commute" value="yes" checked> होय (%)</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
+      <label>हवे आहे का? <div style="display:flex; gap:10px; margin-top:5px;"><label><input type="radio" name="commute" value="yes" checked> होय</label><label><input type="radio" name="commute" value="no"> नाही</label></div></label>
       <label>अंशराशीकरण % <input id="commutePercent" type="number" min="0" max="40" step="0.01" value="40"></label>
       <label>अंशराशीकरण गुणक <input id="commuteFactor" type="number" min="0" step="0.001" value="8.194" disabled></label>
       <label>टीप <input value="वय-गुणक तक्त्यानुसार ऑटोमॅटिक" disabled></label>
@@ -192,7 +201,7 @@
     <div class="section red">
     <h3>🛡️ शासकीय वसुली (Recovery)</h3>
     <div class="grid3">
-      <label>वसुली आहे का? <div class="radio"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div></label>
+      <label>वसुली आहे का? <div style="display:flex; gap:10px; margin-top:5px;"><label><input type="radio" name="recovery" value="yes"> होय</label><label><input type="radio" name="recovery" value="no" checked> नाही</label></div></label>
       <label>एकूण वसुली रक्कम <input id="recovery" type="number" min="0" value="0"></label>
       <label>इतर वजावट <input id="otherDeduction" type="number" min="0" value="0"></label>
     </div>
@@ -201,35 +210,38 @@
     <div class="section green">
     <h3>💸 रजा रोखीकरण / GPF / GIS</h3>
     <div class="grid4">
-      <label>शिल्लक अर्जित रजा (३०० पर्यंत) <input id="earnedLeaveDays" type="number" min="0" max="300" value="0" oninput="calculateRealtimeLeave()"></label>
+      <label>शिल्लक अर्जित रजा (३०० पर्यंत) <input id="earnedLeaveDays" type="number" min="0" max="300" value="0" placeholder="उदा. 300" oninput="calculateRealtimeLeave()"></label>
       <label>रजा रोखीकरण रक्कम (₹) <input id="leaveEncashment" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold; color:#0b5d3b;"></label>
       <label>GPF रक्कम (₹) <input id="gpf" type="number" min="0" value="0"></label>
       <label>GIS रक्कम (₹) <input id="gis" type="number" min="0" value="0" readonly style="background-color: #e9ecef; font-weight:bold;"></label>
     </div>
 
-    <div style="margin-top: 15px; padding: 15px; background: #f8fdf8; border-radius: 8px; border: 1px solid #c3e6cb;">
-       <h4 style="margin:0 0 10px 0; color:#0b5d3b;">📊 महाकोश GIS गणना (प्रमोशन गट बदलासह)</h4>
-       <label style="font-size: 13px; font-weight:bold; color:#d9534f;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
+    <div style="margin-top: 10px; padding: 10px; background: #f8fdf8; border-radius: 6px; border: 1px solid #c3e6cb;">
+       <h4 style="margin:0 0 5px 0; color:#0b5d3b; font-size:14px;">📊 गट विमा योजना (GIS) गणना</h4>
+       <label style="font-size: 12px; font-weight:bold; color:#d9534f; margin-bottom:5px;"><input type="checkbox" id="manualGisToggle" onchange="toggleGisMode()"> मला मॅन्युअली GIS रक्कम भरायची आहे</label>
        
        <div id="gisAutoSection">
-           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची माहिती द्या. सॉफ्टवेअर 'युनिट फरकाच्या' सूत्रानुसार आपोआप गणना करेल.</p>
+           <p style="font-size: 12px; margin-bottom:5px; color:#444;">खालील तक्त्यात तुमची GIS सुरु झाल्याची आणि गट बदलल्याची (प्रमोशनची) माहिती द्या. वर्गणी रक्कम आपोआप निश्चित होईल.</p>
            <table class="gis-table" id="gisTable">
-               <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>कृती</th></tr>
+               <tr><th>लागू दिनांक (महिना-वर्ष)</th><th>गट (Group)</th><th>मासिक वर्गणी (₹)</th><th>कृती</th></tr>
                <tr>
-                   <td><input type="month" class="gis-date" required></td>
-                   <td><select class="gis-group"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+                   <td><input type="month" class="gis-date" required onchange="autoFillGisRow(this)"></td>
+                   <td><select class="gis-group" onchange="autoFillGisRow(this)"><option value="">निवडा</option><option value="D">गट ड</option><option value="C">गट क</option><option value="B">गट ब</option><option value="A">गट अ</option></select></td>
+                   <td><input type="number" class="gis-sub" placeholder="रक्कम" readonly style="background-color:#e9ecef;"></td>
                    <td>-</td>
                </tr>
            </table>
-           <button type="button" class="smallbtn" onclick="addGISRow()" style="margin-top:10px; background-color:#17a2b8; color:white;">➕ नवीन गट/प्रमोशन जोडा</button>
-           <button type="button" class="smallbtn" onclick="calculateAutoGIS()" style="margin-top:10px; background-color: #0b5d3b; color:white;">📊 GIS रक्कम निश्चित करा</button>
+           <div style="margin-top:8px;">
+               <button type="button" onclick="addGISRow()" style="background-color:#17a2b8; color:white; font-size:12px; padding: 5px 8px;">➕ गट/प्रमोशन जोडा</button>
+               <button type="button" onclick="calculateAutoGIS()" style="background-color: #0b5d3b; color:white; font-size:12px; padding: 5px 8px; margin-left:5px;">📊 GIS रक्कम निश्चित करा</button>
+           </div>
        </div>
     </div>
     </div>
 
-    <div class="actions" style="margin-top: 30px;">
-      <button type="submit" class="primary" id="submitBtn" style="font-size: 16px; padding: 12px 25px;">💾 जतन करा आणि अहवाल पहा</button>
-      <button type="reset" class="secondary" id="resetBtn" style="font-size: 16px; padding: 12px 25px; background-color:#6c757d; color:white;">🧹 सर्व माहिती पुसा</button>
+    <div class="actions" style="margin-top: 15px; display:flex; gap:10px; justify-content:center;">
+      <button type="submit" class="primary" id="submitBtn" style="font-size: 14px; padding: 10px 20px;">💾 जतन करा आणि अहवाल पहा</button>
+      <button type="reset" class="secondary" id="resetBtn" style="font-size: 14px; padding: 10px 20px; background-color:#6c757d; color:white;">🧹 रिकामा करा</button>
     </div>
     </form>
 
@@ -239,8 +251,8 @@
         <span class="close-modal" id="closeModal">&times;</span>
         <div id="result" class="result">
           <div class="resulthead"><h2>📜 निवृत्तीवेतन गणना अहवाल</h2><span id="reportDate"></span></div>
-          <div id="summary"></div>
-          <div class="resultgrid">
+          <div id="summary" style="font-size:13px;"></div>
+          <div class="resultgrid" style="font-size:14px;">
             <div><span>मासिक मूळ निवृत्तीवेतन</span><b id="pension"></b></div>
             <div><span>महागाई राहत (DA)</span><b id="pensionDA"></b></div>
             <div><span>अंशराशीकरण रक्कम</span><b id="commuted"></b></div>
@@ -250,11 +262,11 @@
             <div><span>रजा रोखीकरण</span><b id="leaveResult"></b></div>
             <div><span>GPF</span><b id="gpfResult"></b></div>
             <div><span>GIS (अंदाजे)</span><b id="gisResult"></b></div>
-            <div class="total"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
+            <div class="total" style="font-size:16px;"><span>अंदाजे एकूण एकरकमी लाभ</span><b id="lumpSum"></b></div>
           </div>
-          <p class="warning">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय लागू राहतील.</p>
-          <div class="actions" style="margin-top:20px; text-align:center;">
-             <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 16px; padding: 10px 20px;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
+          <p class="warning" style="font-size:11px; margin-top:10px;">⚠️ हा कॅल्क्युलेटर प्राथमिक/अंदाजे गणनेसाठी आहे. अंतिम देयकासाठी संबंधित शासन निर्णय, महाराष्ट्र नागरी सेवा (निवृत्तीवेतन) नियम, 1982, अंशराशीकरण नियम, 1984, लागू वेतन/महागाई राहत आदेश व सक्षम प्राधिकाऱ्याची पडताळणी आवश्यक आहे.</p>
+          <div class="actions" style="margin-top:15px; text-align:center;">
+             <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 14px; padding: 8px 15px;">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
         </div>
       </div>
@@ -268,20 +280,20 @@
 
     <section id="help" class="tabpage">
       <h2>📖 मार्गदर्शिका (User Manual)</h2>
-      <div class="helpbox" style="text-align: justify; line-height: 1.6;">
-        <h3 style="color:#0b5d3b;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये</h3>
-        <ul style="margin-left: 20px;">
+      <div class="helpbox" style="text-align: justify; line-height: 1.6; font-size:13px;">
+        <h3 style="color:#0b5d3b; font-size:15px;">कॅल्क्युलेटरची प्रमुख वैशिष्ट्ये</h3>
+        <ul style="margin-left: 15px; padding-left:10px;">
             <li><b>सक्तीचे सुरक्षित लॉगिन:</b> गुगल लॉगिन केल्याने तुमचा डेटा सुरक्षित राहतो.</li>
             <li><b>Pop-up अहवाल:</b> गणना पूर्ण झाल्यावर अहवाल 'पॉप-अप विंडो' मध्ये उघडतो.</li>
             <li><b>ऑटोमॅटिक रजा रोखीकरण:</b> शिल्लक रजांचे दिवस टाकले की सूत्रानुसार रक्कम आपोआप निघेल.</li>
-            <li><b>GIS ऑटो गणना (प्रमोशनसह):</b> युनिटच्या फरकानुसार सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
+            <li><b>GIS ऑटो गणना:</b> शासन निर्णयानुसार युनिटच्या फरकावर आधारित सॉफ्टवेअर अचूक GIS रक्कम काढते.</li>
         </ul>
       </div>
     </section>
     </main>
 </div> <!-- End of Main App -->
 
-<footer>©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
+<footer style="font-size:11px; padding:10px; text-align:center;">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</footer>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
