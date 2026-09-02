@@ -3,26 +3,6 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
-// SMART HIDE FIXED BOTTOM ON MOBILE (When Typing)
-// ==========================================
-document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-        if(window.innerWidth <= 768) {
-            const footerArea = document.querySelector('.fixed-bottom-area');
-            if(footerArea) footerArea.style.display = 'none';
-        }
-    }
-});
-document.addEventListener('focusout', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-        if(window.innerWidth <= 768) {
-            const footerArea = document.querySelector('.fixed-bottom-area');
-            if(footerArea) footerArea.style.display = 'block';
-        }
-    }
-});
-
-// ==========================================
 // FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
@@ -195,12 +175,20 @@ function calculateRetirementDate() {
     }
 }
 
-document.querySelectorAll(".tab").forEach(btn=>{
+// 📱 Update tab click listener to handle both PC and Mobile tabs
+document.querySelectorAll(".tab, .mobile-tab").forEach(btn=>{
   btn.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab, .mobile-tab").forEach(x=>x.classList.remove("active"));
     document.querySelectorAll(".tabpage").forEach(x=>x.classList.remove("active"));
-    btn.classList.add("active"); $(btn.dataset.tab).classList.add("active");
-    if(btn.dataset.tab==="saved") renderSaved();
+    
+    const targetTab = btn.dataset.tab;
+    
+    // Activate all matching tab buttons (desktop + mobile)
+    document.querySelectorAll(`.tab[data-tab="${targetTab}"], .mobile-tab[data-tab="${targetTab}"]`).forEach(x=>x.classList.add("active"));
+    $(targetTab).classList.add("active");
+    
+    if(targetTab==="saved") renderSaved();
+    window.scrollTo({top: 0, behavior: 'smooth'});
   });
 });
 
@@ -377,15 +365,27 @@ window.calculateAutoGIS = function() {
 }
 
 // ==========================================
-// MAIN CALCULATE FUNCTION
+// VALIDATION & MAIN CALCULATE FUNCTION
 // ==========================================
-$("calcBtn").addEventListener("click", () => {
-    if($("pensionForm").reportValidity()) calculate(true);
-});
+window.validateAndProceed = function(action) {
+    if($("pensionForm").reportValidity()) {
+        if(action === 'calc') {
+            calculate(true); // Show Modal
+        } else if(action === 'save') {
+            saveData(); // Silent calculate and Save
+        }
+    }
+};
 
-$("saveBtn").addEventListener("click", async () => {
-    if(!$("pensionForm").reportValidity()) return;
-    if(!currentUser) { alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); return; }
+async function saveData() {
+    if(!currentUser) { 
+        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
+        return; 
+    }
+    
+    const saveBtn = $("saveBtn");
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = "⏳ जतन होत आहे...";
     
     const data = calculate(false); 
     const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
@@ -399,9 +399,27 @@ $("saveBtn").addEventListener("click", async () => {
         }
         fetchDataFromFirebase();
         alert("माहिती यशस्वीरित्या जतन झाली!");
+        
+        // Switch to saved tab
         document.querySelector('.tab[data-tab="saved"]').click();
-    } catch(error) { alert("त्रुटी: " + error.message); }
-});
+        if(window.innerWidth <= 768) {
+            document.querySelector('.mobile-tab[data-tab="saved"]').click();
+        }
+    } catch(error) { 
+        alert("त्रुटी: " + error.message); 
+    } finally {
+        saveBtn.innerHTML = "💾 जतन करा";
+    }
+}
+
+window.resetApp = function() {
+    $("pensionForm").reset(); 
+    $("resultModal").style.display = "none";
+    currentEditId = null;
+    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
+    toggleRozandari();
+    window.scrollTo(0,0);
+};
 
 function calculate(showModal = true){
   const basic=val("basicPay");
@@ -493,14 +511,6 @@ function calculate(showModal = true){
 $("closeModal").addEventListener("click", () => $("resultModal").style.display = "none");
 window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal").style.display = "none"; }
 
-$("resetBtn").addEventListener("click",()=>{
-    $("pensionForm").reset(); 
-    $("resultModal").style.display = "none";
-    currentEditId = null;
-    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
-    toggleRozandari();
-});
-
 function fetchDataFromFirebase() {
     if(!currentUser) return;
     db.ref('users/' + currentUser.uid + '/pensionRecords').on('value', (snapshot) => {
@@ -548,7 +558,10 @@ window.loadRecord = function(i){
   document.querySelector(`input[name="recovery"][value="${r.recovery>0?"yes":"no"}"]`).checked=true;
   
   currentEditId = fetchedRecords[i].id; 
-  document.querySelector('[data-tab="calculator"]').click(); 
+  document.querySelector('.tab[data-tab="calculator"]').click(); 
+  if(window.innerWidth <= 768) {
+      document.querySelector('.mobile-tab[data-tab="calculator"]').click();
+  }
   
   $("resultModal").style.display = "none";
   setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
