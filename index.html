@@ -56,30 +56,33 @@
     .action-bar .secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
     .footer-text { background: #0b5d3b; color: white; padding: 5px; text-align: center; font-size: 11px; }
     
-    /* 🌟 COMPACT FORM SPACING (स्पेस कमी केली) */
-    main.container { max-width: 950px; margin: 5px auto 0; padding-left: 15px; padding-right: 15px; }
+    /* Container & Gaps Reduced */
+    main.container { max-width: 980px; margin: 5px auto 0; padding-left: 15px; padding-right: 15px; }
     .section { background: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 12px 15px; margin-bottom: 12px; border-top: 4px solid #0b5d3b; transition: transform 0.2s ease; }
     .section:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-top: 0; margin-bottom: 8px; font-size: 14px; }
+    .section h3 { color: #0b5d3b; border-bottom: 1px solid #e9ecef; padding-bottom: 6px; margin-top: 0; margin-bottom: 10px; font-size: 14px; }
     
-    /* Input padding and label margins reduced */
     input[type="text"], input[type="number"], input[type="date"], input[type="month"], select { 
-        border-radius: 6px; border: 1px solid #ced4da; padding: 5px 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; height: 32px;
+        border-radius: 6px; border: 1px solid #ced4da; padding: 6px 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; height: 32px;
     }
     input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
     button.smallbtn { border-radius: 6px; font-weight: bold; cursor: pointer; padding: 6px 12px; font-size: 12px; border:none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
     button.smallbtn:hover { transform: translateY(-2px); }
     
-    label { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 2px; display: block; }
+    label { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 3px; display: block; line-height: 1.2; }
     
-    .grid3 { display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    .grid4 { display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-    .two-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;}
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-
-    /* Radio button custom alignment */
-    .radio-group { display:flex; gap:15px; margin-top:4px; font-weight:normal; }
-    .radio-label { display:flex; align-items:center; gap:4px; margin:0; font-size: 13px;}
+    /* 🌟 GRIDS (६ रकाने एका ओळीत आणण्यासाठी नवीन Grid) */
+    .grid3 { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: flex-end; }
+    .grid4 { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: flex-end; }
+    .grid6 { display: grid; gap: 10px; grid-template-columns: repeat(6, 1fr); align-items: flex-end; }
+    
+    /* ✨ RADIO BUTTONS AS INPUT BOXES (एका ओळीत सरळ दिसण्यासाठी) */
+    .radio-group { 
+        display:flex; justify-content: space-around; align-items:center; 
+        height: 32px; background: #fff; border: 1px solid #ced4da; 
+        border-radius: 6px; padding: 0 5px; font-weight:normal; 
+    }
+    .radio-label { font-size: 13px; gap: 4px; display:flex; align-items:center; cursor: pointer; margin: 0;}
     .radio-label input[type="radio"] { width: 14px; height: 14px; margin: 0; padding: 0; cursor: pointer; }
     
     /* Login Screen Setup */
@@ -128,6 +131,13 @@
     .print-footer { display: none; }
 
     /* 📱 Mobile Adjustments */
+    @media (max-width: 850px) {
+        .grid6 { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .grid6 { grid-template-columns: repeat(2, 1fr); }
+    }
+
     @media (max-width: 768px) { 
         body { padding-top: 65px; padding-bottom: 110px; } 
         .fixed-top-area { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-bottom: none;}
@@ -141,7 +151,7 @@
         .user-name { display: none; } 
         .auth-section { position: static; }
         .logout-btn { padding: 5px 10px; font-size: 11px; }
-        .two-col-grid { grid-template-columns: 1fr; gap: 0; margin-bottom: 0;}
+        
         .fixed-bottom-area { bottom: 50px; } 
         .action-bar { gap: 6px; padding: 8px 5px;}
         .action-bar button { padding: 8px 10px; font-size: 12px; width: 31%; text-align: center;} 
@@ -219,6 +229,7 @@
     <!-- 🧮 FORM TAB -->
     <section id="calculator" class="tabpage active">
     <form id="pensionForm">
+    
     <div class="section blue">
     <h3>👤 वैयक्तिक व पद माहिती</h3>
     <div class="grid3">
@@ -305,34 +316,29 @@
     </div>
     </div>
 
-    <!-- ✅ SIDE-BY-SIDE SECTIONS -->
-    <div class="two-col-grid">
-        <div class="section orange" style="margin-bottom:0;">
-            <h3>📉 अंशराशीकरण (Commutation)</h3>
-            <div class="grid3">
-                <label>हवे आहे का? 
-                    <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="commute" value="yes" checked> होय</label>
-                        <label class="radio-label"><input type="radio" name="commute" value="no"> नाही</label>
-                    </div>
-                </label>
-                <label>अंशराशीकरण % <input type="number" id="commutePercent" min="0" max="40" step="0.01" value="40"></label>
-                <label>अंशराशीकरण गुणक <input type="number" id="commuteFactor" min="0" step="0.001" value="8.194" disabled style="background-color: #e9ecef;"></label>
-            </div>
-        </div>
-
-        <div class="section red" style="margin-bottom:0;">
-            <h3>🛡️ शासकीय वसुली (Recovery)</h3>
-            <div class="grid3">
-                <label>वसुली आहे का? 
-                    <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="recovery" value="yes"> होय</label>
-                        <label class="radio-label"><input type="radio" name="recovery" value="no" checked> नाही</label>
-                    </div>
-                </label>
-                <label>एकूण वसुली रक्कम <input type="number" id="recovery" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
-                <label>इतर वजावट <input type="number" id="otherDeduction" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
-            </div>
+    <!-- ✅ 6-COLUMN GRID (अंशराशीकरण व वसुली एकाच ओळीत) -->
+    <div class="section orange">
+        <h3>📉 अंशराशीकरण (Commutation) व 🛡️ शासकीय वसुली (Recovery)</h3>
+        <div class="grid6">
+            <!-- Commutation Options -->
+            <label>हवे आहे का? 
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="commute" value="yes" checked> होय</label>
+                    <label class="radio-label"><input type="radio" name="commute" value="no"> नाही</label>
+                </div>
+            </label>
+            <label>अंशराशीकरण % <input type="number" id="commutePercent" min="0" max="40" step="0.01" value="40"></label>
+            <label>अंशराशीकरण गुणक <input type="number" id="commuteFactor" min="0" step="0.001" value="8.194" disabled style="background-color: #e9ecef;"></label>
+            
+            <!-- Recovery Options -->
+            <label>वसुली आहे का? 
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="recovery" value="yes"> होय</label>
+                    <label class="radio-label"><input type="radio" name="recovery" value="no" checked> नाही</label>
+                </div>
+            </label>
+            <label>एकूण वसुली रक्कम <input type="number" id="recovery" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
+            <label>इतर वजावट <input type="number" id="otherDeduction" min="0" value="0" readonly style="background-color: #e9ecef;"></label>
         </div>
     </div>
 
@@ -416,9 +422,9 @@
         <h3 style="font-size:16px; border-bottom: 2px solid #ccc; padding-bottom: 6px; margin-top:15px; color:#0b5d3b;">🚀 १. प्रणालीची प्रमुख वैशिष्ट्ये</h3>
         <ul style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
             <li style="margin-bottom:6px;"><b>माहितीचे सुरक्षित जतन (Cloud Storage):</b> अधिकृत गुगल लॉगिन (Google Login) प्रणालीद्वारे नोंदविलेली माहिती क्लाउडवर कायमस्वरूपी व सुरक्षितरित्या जतन होते.</li>
-            <li style="margin-bottom:6px;"><b>सुधारित प्रणाली रचना (Smart UI):</b> 'अंशराशीकरण' व 'वसुली' यांसारख्या रकान्यांमध्ये सुटसुटीतपणा आणला असून, आवश्यकतेनुसारच संबंधित रकाने दृश्यमान (Visible) होतील.</li>
+            <li style="margin-bottom:6px;"><b>सुधारित प्रणाली रचना (Smart UI):</b> 'अंशराशीकरण' व 'वसुली' यांसारख्या रकान्यांमध्ये सुटसुटीतपणा आणला असून, आवश्यकतेनुसारच संबंधित रकाने दृश्यमान (Visible) होतील. सर्व रकाने आता अतिशय कमी जागेत (Compact) बसवले आहेत.</li>
             <li style="margin-bottom:6px;"><b>रजा रोखीकरण (स्वयंचलित):</b> शिल्लक अर्जित रजेचे दिवस (कमाल ३००) प्रविष्ट केल्यास, प्रचलित शासन नियमानुसार (मूळ वेतन + महागाई भत्ता) योग्य परिगणना होते.</li>
-            <li style="margin-bottom:6px;"><b>गट विमा योजना (GIS) परिगणना:</b> महाराष्ट्र राज्य शासकीय कर्मचारी गट विमा योजना, १९८२ च्या तरतुदींनुसार व युनिटमधील बदलानुसार (उदा. २००२ व २०१६) अचूक कपातीची परिगणना केली जाते.</li>
+            <li style="margin-bottom:6px;"><b>गट विमा योजना (GIS) परिगणना:</b> महाराष्ट्र राज्य शासकीय कर्मचारी गट विमा योजना, १९८२ च्या तरतुदींनुसार व युनिटमधील बदलानुसार अचूक कपातीची परिगणना केली जाते.</li>
             <li style="margin-bottom:6px;"><b>सुटसुटीत पीडीएफ अहवाल (PDF Print):</b> परिगणना पूर्ण झाल्यानंतर एकाच पानावर (Single Page) अचूक व सुस्पष्ट पीडीएफ अहवाल उपलब्ध होतो.</li>
         </ul>
 
@@ -426,7 +432,7 @@
         <ol style="margin-left: 20px; margin-bottom: 20px; padding-left:5px;">
             <li style="margin-bottom:8px;"><b>अधिकृत लॉगिन:</b> प्रणालीचा वापर व माहिती जतन करण्यासाठी 'Google ने Login करा' या पर्यायावर क्लिक करून अधिकृत प्रवेश (Login) निश्चित करावा.</li>
             <li style="margin-bottom:8px;"><b>वैयक्तिक व पदनिहाय माहिती:</b> प्रशासकीय विभाग, कार्यालयाचे नाव, कर्मचाऱ्याचे नाव, पदनाम, संवर्ग (गट) व जन्म दिनांक यांची अचूक नोंद करावी. सदर माहितीच्या आधारे सेवानिवृत्तीचा दिनांक स्वयंचलितरित्या निश्चित होईल.</li>
-            <li style="margin-bottom:8px;"><b>सेवा कालावधीचा तपशील:</b> आस्थापनेचा प्रकार (कायम/तात्पुरती/रोजंदारी) निवडावा. सेवा 'रोजंदारीवरून नियमित' असल्यास, रोजंदारीवर रुजू झालेला दिनांक नमूद करावा. शासन निर्णयानुसार पहिली ५ वर्षे वगळून उर्वरित सेवेच्या ५०% कालावधीची अर्हताकारी सेवा म्हणून स्वयंचलित परिगणना होईल. त्यानंतर '⏳ सेवा कालावधी तपासा' या बटणावर क्लिक करावे.</li>
+            <li style="margin-bottom:8px;"><b>सेवा कालावधीचा तपशील:</b> आस्थापनेचा प्रकार (कायम/तात्पुरती/रोजंदारी) निवडावा. सेवा 'रोजंदारीवरून नियमित' असल्यास, रोजंदारीवर रुजू झालेला दिनांक नमूद करावा. शासन निर्णयानुसार पहिली ५ वर्षे वगळून उर्वरित सेवेच्या ५०% कालावधीची अर्हताकारी सेवा म्हणून स्वयंचलित परिगणना होईल.</li>
             <li style="margin-bottom:8px;"><b>वेतन तपशील (७ वा वेतन आयोग):</b> वेतन आयोगानुसार 'वेतन स्तर (Pay Level)' निवडावा व त्यानुसार 'मूळ वेतन (Basic Pay)' निश्चित करावे. सद्यस्थितीतील 'महागाई भत्ता (DA)' टक्केवारीत प्रविष्ट करावा.</li>
             <li style="margin-bottom:8px;"><b>अंशराशीकरण (Commutation) व शासकीय वसुली:</b> निवृत्तीवेतनाचे अंशराशीकरण करावयाचे असल्यास 'होय' हा पर्याय निवडून योग्य टक्केवारी नमूद करावी. तसेच, काही शासकीय वसुली असल्यास ती रकान्यात नोंदवावी.</li>
             <li style="margin-bottom:8px;"><b>रजा रोखीकरण, भविष्य निर्वाह निधी (GPF) व गट विमा योजना (GIS):</b> शिल्लक अर्जित रजा, GPF ची एकूण जमा रक्कम आणि GIS चा तपशील नोंदवावा. GIS साठी प्रारंभिक गट व दिनांक नोंदवून '📊 GIS रक्कम निश्चित करा' या पर्यायाचा वापर करावा.</li>
