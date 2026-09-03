@@ -418,9 +418,6 @@ window.handleCalc = function() {
     calculate(true);
 };
 
-// ==========================================
-// 🚀 UPDATED SAVE FUNCTION
-// ==========================================
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -482,7 +479,6 @@ window.handleReset = function() {
     document.getElementById("resultModal").style.display = "none";
     currentEditId = null;
     
-    // ⚠️ jQuery Error Fix
     if(window.jQuery && jQuery('#department').length) {
         jQuery('#department').val('').trigger('change');
     }
@@ -591,8 +587,10 @@ function calculate(showModal = true){
       $("resultModal").style.display = "block";
   }
   
+  // ⚠️ FIX: employeeName आणि officeName चे ID तंतोतंत जुळवून घेतले आहेत 
   return {
-    name:$("employeeName").value, department:$("department").value, office:$("officeName").value,
+    employeeName:$("employeeName").value, officeName:$("officeName").value, 
+    name:$("employeeName").value, office:$("officeName").value, department:$("department").value, 
     designation:$("designation").value, group:$("group").value, dob:$("dob").value,
     retirementType:$("retirementType").value, establishment:$("establishment").value,
     joiningDate:$("joiningDate").value, rozandariDate:$("rozandariDate").value, retirementDate:$("retirementDate").value,
@@ -625,10 +623,14 @@ function renderSaved(){
   $("savedList").innerHTML = fetchedRecords.map((rObj, i)=>{
       let r = rObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
+      
+      // ⚠️ FIX: जुने 'r.name' किंवा नवीन 'r.employeeName' दोन्ही घेईल
+      let displayName = r.employeeName || r.name || "नाव नाही"; 
+      
       return `
       <div class="section" style="padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
           <div>
-              <h3 style="margin:0; color:#0b5d3b;">👤 ${r.name || "नाव नाही"}</h3>
+              <h3 style="margin:0; color:#0b5d3b;">👤 ${displayName}</h3>
               <p style="margin:5px 0 0 0; font-size:13px; color:#555;">${r.designation || ""} | ${deptName || ""}</p>
               <p style="margin:5px 0 0 0; font-size:13px;">Basic Pay: ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | सेव्ह दिनांक: ${new Date(r.savedAt).toLocaleDateString("en-IN")}</p>
           </div>
@@ -641,10 +643,6 @@ function renderSaved(){
   }).join("");
 }
 
-// ==========================================
-// 🚀 RECORD HANDLING (Edit, Print, Delete) 
-// ⚠️ Fixed jQuery Conflict inside this function
-// ==========================================
 window.loadRecord = function(i){
   try {
       const r = fetchedRecords[i].data;
@@ -654,7 +652,6 @@ window.loadRecord = function(i){
           if($(k)) $(k).value = r[k]; 
       });
       
-      // ⚠️ jQuery Error Fix: Used 'jQuery' word instead of '$' here
       if(r.department && window.jQuery) {
           jQuery('#department').val(r.department).trigger('change');
       }
