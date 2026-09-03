@@ -37,7 +37,7 @@ function toggleCommute() {
     if (!isYes) {
         cp.value = "0";
     } else if (cp.value === "0" || cp.value === "") {
-        cp.value = "40"; // Default back to 40
+        cp.value = "40"; 
     }
 }
 
@@ -84,7 +84,6 @@ let currentUser = null;
 let fetchedRecords = []; 
 let currentEditId = null; 
 
-// Gatekeeper
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
@@ -102,7 +101,6 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// Fixed Popup Login
 $("loginBtnMain").addEventListener("click", () => {
     $("loginBtnMain").innerHTML = "⏳ लॉगिन होत आहे... पॉप-अप Allow करा";
     auth.signInWithPopup(provider).catch(error => {
@@ -115,7 +113,6 @@ $("logoutBtn").addEventListener("click", () => auth.signOut().then(()=> window.l
 
 let currentRetirementAge = 58;
 
-// Pay Matrix (7th Pay Commission)
 const payMatrix = {
     "S-1": [15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600],
     "S-2": [15300, 15800, 16300, 16800, 17300, 17800, 18300, 18800, 19400, 20000, 20600, 21200, 21800, 22500, 23200, 23900, 24600, 25300, 26100, 26900, 27700, 28500, 29400, 30300, 31200, 32100, 33100, 34100, 35100, 36200, 37300, 38400, 39600, 40800, 42000, 43300, 44600, 45900, 47300, 48700],
@@ -160,9 +157,6 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
-// ==========================================
-// 📊 GIS RATES 2026 (Maturity Value per 1 Unit)
-// ==========================================
 const GIS_RATES_2026 = {
     "1982-05": 76102, 
     "1990-01": 51424,
@@ -235,7 +229,6 @@ function calculateRetirementDate() {
     }
 }
 
-// 📱 Update tab click listener to handle both PC and Mobile tabs
 document.querySelectorAll(".tab, .mobile-tab").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab, .mobile-tab").forEach(x=>x.classList.remove("active"));
@@ -255,7 +248,6 @@ function toggleRozandari() {
     const est = $("establishment").value;
     const isRoz = (est === "rozandari");
     $("rozandariDateBlock").style.display = isRoz ? "block" : "none";
-    $("rozandariHint").style.display = isRoz ? "block" : "none";
     $("joiningDateLabel").textContent = isRoz ? "नियमित रुजू दिनांक" : "सेवेत रुजू दिनांक";
     $("joiningDate").readOnly = isRoz;
     $("joiningDate").style.backgroundColor = isRoz ? "#e9ecef" : "";
@@ -316,9 +308,6 @@ $("calcService").addEventListener("click",()=> {
   $("serviceOutput").textContent = `एकूण सेवा: ${yrs} वर्षे ${mths} महिने`;
 });
 
-// ==========================================
-// ADVANCED AUTO GIS MODULE
-// ==========================================
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
     if(isManual) {
@@ -419,9 +408,6 @@ window.calculateAutoGIS = function() {
     setTimeout(() => { $("gisAutoSection").style.border = "none"; }, 1500);
 }
 
-// ==========================================
-// VALIDATION, DYNAMIC GRID & OFFLINE SAVE
-// ==========================================
 window.handleCalc = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -450,7 +436,6 @@ window.handleSave = function() {
         const cleanData = JSON.parse(JSON.stringify(rawData)); // Safe Object for Firebase
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
-        // Background Sync (Fire and Forget)
         if(currentEditId !== null) {
             dbRef.child(currentEditId).set(cleanData).catch(e => console.log("Background sync error:", e));
             currentEditId = null;
@@ -482,25 +467,30 @@ window.handleReset = function() {
     window.scrollTo(0,0);
 };
 
+// ==========================================
+// 🎯 MAIN CALCULATION FUNCTION 
+// (Updated Logic as per User Request)
+// ==========================================
 function calculate(showModal = true){
-  const basic=val("basicPay");
-  const halfYears=Math.max(0,Math.floor(val("serviceHalfYears")));
-  const da=val("daPercent");
+  const basic = val("basicPay");
+  const halfYears = Math.max(0, Math.floor(val("serviceHalfYears")));
+  const da = val("daPercent");
   
-  let pension=basic*0.50;
-  if(halfYears>0 && halfYears<40) pension=basic*0.50*(halfYears/66);
+  let pension = basic * 0.50;
+  if(halfYears > 0 && halfYears < 40) pension = basic * 0.50 * (halfYears / 66);
+  pension = Math.round(pension);
   
-  const gratuity=Math.min(basic*0.25*halfYears, basic*16.5, 1400000);
+  // ✅ १. Gratuity (उपदान) फक्त बेसिक पे वर आधारित मोजली आहे (DA वगळून)
+  const gratuity = Math.round(Math.min(basic * 0.25 * halfYears, basic * 16.5, 1400000));
   
-  const isCommute = document.querySelector('input[name="commute"]:checked').value==="yes";
-  const cp = Math.min(40,Math.max(0,val("commutePercent")));
+  const isCommute = document.querySelector('input[name="commute"]:checked').value === "yes";
+  const cp = Math.min(40, Math.max(0, val("commutePercent")));
   
-  let ageNextBirthday = currentRetirementAge + 1;
   let factor = val("commuteFactor") || 8.194;
   
-  const commuted = isCommute ? pension*cp/100 : 0;
-  const reduced = Math.max(0,pension-commuted);
-  const commutationValue = isCommute ? commuted * 12 * factor : 0;
+  const commuted = isCommute ? Math.round(pension * cp / 100) : 0;
+  const reduced = Math.max(0, pension - commuted);
+  const commutationValue = isCommute ? Math.round(commuted * 12 * factor) : 0;
   
   calculateRealtimeLeave();
   
@@ -508,16 +498,17 @@ function calculate(showModal = true){
   const amtGpf = val("gpf");
   const amtGis = val("gis");
   
-  const hasRecovery = document.querySelector('input[name="recovery"]:checked').value==="yes";
+  const hasRecovery = document.querySelector('input[name="recovery"]:checked').value === "yes";
   const amtRecovery = hasRecovery ? val("recovery") : 0;
   const amtOther = hasRecovery ? val("otherDeduction") : 0;
   
-  // DA is ALWAYS calculated on Original Basic Pension
-  const pensionDA = pension * (da/100);
+  // ✅ २. DA ची गणना: अंशराशीकरण असेल तर 'Reduced पेन्शनवर', अन्यथा 'मूळ पेन्शनवर'
+  const baseForDA = isCommute ? reduced : pension;
+  const pensionDA = Math.round(baseForDA * (da / 100));
   
-  const lump=Math.max(0,commutationValue+gratuity+amtLeave+amtGpf+amtGis-amtRecovery-amtOther);
+  const lump = Math.max(0, commutationValue + gratuity + amtLeave + amtGpf + amtGis - amtRecovery - amtOther);
 
-  // ✅ DYNAMIC RESULT GRID INJECTION
+  // DYNAMIC RESULT GRID INJECTION
   const resultGrid = $("resultGridContainer");
   let gridHTML = "";
 
@@ -526,8 +517,8 @@ function calculate(showModal = true){
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>मासिक मूळ निवृत्तीवेतन:</span><b>${money(pension)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण रक्कम:</span><b>${money(commuted)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरण एकरकमी रक्कम:</span><b>${money(commutationValue)}</b></div>
-        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरणानंतर पेन्शन:</span><b>${money(reduced)}</b></div>
-        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA) (${da}% मूळ पेन्शनवर):</span><b>${money(pensionDA)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>अंशराशीकरणानंतर पेन्शन (Reduced):</span><b>${money(reduced)}</b></div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding-bottom:5px;"><span>महागाई भत्ता (DA) (${da}% Reduced पेन्शनवर):</span><b>${money(pensionDA)}</b></div>
         <div style="display:flex; justify-content:space-between; border-bottom:2px solid #ddd; padding-bottom:5px; margin-top:3px; color:#0b5d3b;"><span><b>एकूण मासिक पेन्शन (Reduced + DA):</b></span><b>${money(reduced + pensionDA)}</b></div>
       `;
   } else {
@@ -547,7 +538,6 @@ function calculate(showModal = true){
   `;
 
   resultGrid.innerHTML = gridHTML;
-  // ==========================================
 
   let deptText = $("department").selectedIndex > 0 ? $("department").options[$("department").selectedIndex].text : "-";
   
@@ -597,7 +587,7 @@ window.onclick = function(e) { if(e.target == $("resultModal")) $("resultModal")
 function fetchDataFromFirebase() {
     if(!currentUser) return;
     const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
-    dbRef.off(); // Prevent duplicate listeners
+    dbRef.off(); 
     dbRef.on('value', (snapshot) => {
         fetchedRecords = [];
         snapshot.forEach((child) => fetchedRecords.push({id: child.key, data: child.val()}));
