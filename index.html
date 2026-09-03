@@ -131,9 +131,10 @@
         .resulthead h2 { font-size: 18px !important; margin-bottom: 5px !important; text-align:center;}
         #summary { display: block !important; padding: 10px !important; margin-bottom: 10px !important; font-size: 13px !important; border: 1px solid #000 !important; border-left: 1px solid #000 !important; background: transparent !important;}
         .total { padding: 8px !important; font-size: 15px !important; margin-top: 5px !important; background: #e8f5e9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #000 !important; border-bottom: none !important;}
-        .warning { font-size: 11px !important; margin-top: 10px !important; color: #000 !important; margin-bottom:25px !important; page-break-after: avoid;}
+        .warning { font-size: 11px !important; margin-top: 10px !important; color: #000 !important; margin-bottom:10px !important; page-break-after: avoid;}
         
-        .print-footer { display: block !important; position: fixed; bottom: 0; left:0; width: 100%; text-align: center; font-size: 11px; font-weight: bold; padding-top: 5px; border-top: 1px solid #000; color: #000;}
+        /* ⚠️ PDF Footer ओव्हरलॅप दुरुस्त केला (Static Position) */
+        .print-footer { display: block !important; position: static !important; text-align: center; font-size: 11px; font-weight: bold; padding-top: 10px; margin-top: 20px; border-top: 1px solid #000; color: #000; clear: both;}
     }
 
     .print-footer { display: none; }
@@ -424,7 +425,7 @@
         <h3 style="font-size:18px; border-bottom: 2px solid #ccc; padding-bottom: 8px; color:#0b5d3b;">📝 २. फॉर्म कसा भरावा? (Step-by-Step मार्गदर्शिका)</h3>
         <ol style="margin-left: 20px; margin-bottom: 25px; padding-left:5px;">
             <li style="margin-bottom:10px;"><b>सुरक्षित लॉगिन:</b> सॉफ्टवेअर सुरू करण्यासाठी सुरुवातीला <b>'Google ने Login करा'</b> या बटणावर क्लिक करा. लॉगिन असल्याशिवाय क्लाउडवर माहिती सेव्ह करता येत नाही.</li>
-            <li style="margin-bottom:10px;"><b>वैयक्तिक व पद माहिती:</b> तुमचा विभाग (ड्रापडाऊनमधून शोधा), कार्यालयाचे नाव, कर्मचाऱ्याचे पूर्ण नाव आणि पदनाम भरा. त्यानंतर 'कर्मचारी वर्ग (गट)' निवडून <b>जन्म दिनांक</b> टाका. नियमानुसार निवृत्तीचा दिनांक आपोआप निश्चित होईल.</li>
+            <li style="margin-bottom:10px;"><b>वैयक्तिक व पद माहिती:</b> तुमचा विभाग (ड्रापडाऊनमधून शोधा), कार्यालयाचे नाव, कर्मचाऱ्याचे पूर्ण नाव आणि पदनाम भरा. त्यानंतर 'कर्मचारी वर्ग (गट)' निवडून <b>जन्म दिनांक</b> टाका. नियमानुसार निवृत्तीचा दिनांक आपो জ্ঞاپन निश्चित होईल.</li>
             <li style="margin-bottom:10px;"><b>सेवा कालावधी तपशील:</b> तुमची 'आस्थापना' (कायम किंवा तात्पुरती) निवडा. जर सेवा <b>'रोजंदारीवरून नियमित'</b> असेल, तर रोजंदारी रुजू दिनांक टाका. सॉफ्टवेअर पहिली ५ वर्षे वगळून पुढील सेवेच्या ५०% कालावधीची स्वयंचलित गणना करून देईल. शेवटी <b>'⏳ सेवा कालावधी तपासा'</b> वर क्लिक करा.</li>
             <li style="margin-bottom:10px;"><b>वेतन तपशील (7th Pay Commission):</b> ७ व्या वेतन आयोगानुसार तुमचा 'वेतन स्तर (S-1 ते S-31)' निवडा. त्यानुसार बेसिक पे चे योग्य पर्याय खाली उपलब्ध होतील. सद्यस्थितीतील महागाई भत्ता (DA) टक्केवारीत टाका (उदा. ५०).</li>
             <li style="margin-bottom:10px;"><b>अंशराशीकरण (Commutation) आणि वसुली:</b> निवृत्तीवेतनाचे अंशराशीकरण हवे असल्यास 'होय' निवडून हवी असलेली टक्केवारी टाका. तसेच शासकीय वसुली असल्यास 'होय' निवडून रक्कम भरा.</li>
