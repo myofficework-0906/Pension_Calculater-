@@ -641,16 +641,11 @@ function renderSaved(){
   }).join("");
 }
 
-// ==========================================
-// 🚀 RECORD HANDLING (Edit, Print) 
-// ⚠️ Backward Compatibility Fix (जुना डेटा नवीन फॉर्ममध्ये भरण्यासाठी)
-// ==========================================
 window.loadRecord = function(i){
   try {
       const r = fetchedRecords[i].data;
       if(!r) return;
       
-      // ⚠️ जुन्या सेव्ह केलेल्या फाईल्समधील नावे नवीन फॉर्ममध्ये आणण्यासाठी
       if (r.name && !r.employeeName) r.employeeName = r.name;
       if (r.office && !r.officeName) r.officeName = r.office;
 
