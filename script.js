@@ -392,7 +392,7 @@ window.calculateAutoGIS = function() {
                 let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर (Maturity Value of 1 Unit) येथे टाईप करा:\n(उदा. 38315)`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
-                    GIS_RATES_2026[ev.date] = rate; // Store for session
+                    GIS_RATES_2026[ev.date] = rate; 
                 } else {
                     return; 
                 }
@@ -438,7 +438,7 @@ window.handleSave = function() {
     
     try {
         const rawData = calculate(false); 
-        const cleanData = JSON.parse(JSON.stringify(rawData)); // Safe Object for Firebase
+        const cleanData = JSON.parse(JSON.stringify(rawData)); 
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
         let saveTask;
@@ -587,7 +587,6 @@ function calculate(showModal = true){
       $("resultModal").style.display = "block";
   }
   
-  // ⚠️ FIX: employeeName आणि officeName चे ID तंतोतंत जुळवून घेतले आहेत 
   return {
     employeeName:$("employeeName").value, officeName:$("officeName").value, 
     name:$("employeeName").value, office:$("officeName").value, department:$("department").value, 
@@ -624,7 +623,6 @@ function renderSaved(){
       let r = rObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
       
-      // ⚠️ FIX: जुने 'r.name' किंवा नवीन 'r.employeeName' दोन्ही घेईल
       let displayName = r.employeeName || r.name || "नाव नाही"; 
       
       return `
@@ -643,11 +641,19 @@ function renderSaved(){
   }).join("");
 }
 
+// ==========================================
+// 🚀 RECORD HANDLING (Edit, Print) 
+// ⚠️ Backward Compatibility Fix (जुना डेटा नवीन फॉर्ममध्ये भरण्यासाठी)
+// ==========================================
 window.loadRecord = function(i){
   try {
       const r = fetchedRecords[i].data;
       if(!r) return;
       
+      // ⚠️ जुन्या सेव्ह केलेल्या फाईल्समधील नावे नवीन फॉर्ममध्ये आणण्यासाठी
+      if (r.name && !r.employeeName) r.employeeName = r.name;
+      if (r.office && !r.officeName) r.officeName = r.office;
+
       Object.keys(r).forEach(k => { 
           if($(k)) $(k).value = r[k]; 
       });
