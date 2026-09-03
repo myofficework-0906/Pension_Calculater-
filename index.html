@@ -23,7 +23,7 @@
         padding-bottom: 60px; 
     }
     
-    /* 🌟 TAB PAGE LOGIC (नवीन ॲड केलेला कोड - ज्यामुळे टॅब वेगवेगळे दिसतील) */
+    /* 🌟 TAB PAGE LOGIC */
     .tabpage { display: none; animation: fadeIn 0.3s ease-in-out; }
     .tabpage.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -98,25 +98,41 @@
     .inline-checkbox-label { font-size: 13px; font-weight:bold; color:#d9534f; margin-bottom:8px; display:flex; align-items:center; cursor:pointer; gap: 6px; }
     .inline-checkbox-label input[type="checkbox"] { width: 16px; height: 16px; margin: 0; padding: 0; cursor: pointer; }
 
-    /* Print Styles - One Page PDF */
+    /* 🖨️ Print Styles - PDF कोरे पान न येण्यासाठी सुधारित (FIXED) */
     @media print {
-        @page { size: A4 portrait; margin: 8mm; }
-        body { visibility: hidden; background: #fff !important; padding: 0 !important; }
+        @page { size: A4 portrait; margin: 10mm; }
         
-        #resultModal { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: white; overflow: visible; padding: 0; margin:0;}
-        #resultModal * { visibility: visible; }
-        .modal-content { box-shadow: none; margin: 0; padding: 0; width: 100%; border: none; }
+        body, html { background: #fff !important; padding: 0 !important; margin: 0 !important; height: auto !important; }
+        
+        /* ⚠️ सर्व अनावश्यक जागा आणि घटक पूर्णपणे काढून टाकले (display: none) */
+        body > *:not(#mainApp),
+        .fixed-top-area, 
+        .fixed-bottom-area, 
+        .mobile-bottom-nav, 
+        #loginScreen, 
+        #pensionForm, 
+        .tabs-container,
+        #saved,
+        #help { display: none !important; }
+
+        main.container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+        .section { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
+
+        /* फक्त पॉप-अप आणि त्यातील कंटेंट दाखवा */
+        #resultModal { display: block !important; position: relative !important; background: #fff !important; overflow: visible !important; height: auto !important; }
+        .modal-content { box-shadow: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; border: none !important; max-width: none !important; }
+        
         .close-modal, #modalPrintBtn { display: none !important; }
         
-        .resultgrid { gap: 4px !important; padding: 8px !important; font-size: 13px !important; border: 1px solid #000 !important; }
-        .resultgrid div { padding-bottom: 3px !important; border-bottom: 1px dashed #999 !important; border-radius:0 !important; margin-bottom: 2px !important;}
-        .resulthead h2 { font-size: 18px !important; margin-bottom: 5px !important; text-align:center;}
-        #reportDate { text-align:center; display:block; margin-bottom:8px; font-size:12px;}
-        #summary { padding: 8px !important; margin-bottom: 8px !important; font-size: 13px !important; border: 1px solid #000 !important; border-left: 1px solid #000 !important; background: transparent !important;}
-        .total { padding: 6px !important; font-size: 14px !important; margin-top: 5px !important; background: #e8f5e9 !important; -webkit-print-color-adjust: exact; color: #000 !important; border-bottom: none !important;}
-        .warning { font-size: 11px !important; margin-top: 10px !important; color: #000 !important; margin-bottom:25px !important;}
+        /* ग्रिड आणि लेआउट व्यवस्थित दिसावे म्हणून */
+        .resultgrid { display: grid !important; gap: 4px !important; padding: 8px !important; font-size: 13px !important; border: 1px solid #000 !important; }
+        .resultgrid div { display: flex !important; justify-content: space-between !important; padding-bottom: 3px !important; border-bottom: 1px dashed #999 !important; border-radius:0 !important; margin-bottom: 2px !important;}
         
-        .fixed-top-area, .mobile-bottom-nav, .fixed-bottom-area { display: none !important; }
+        .resulthead h2 { font-size: 18px !important; margin-bottom: 5px !important; text-align:center;}
+        #summary { display: block !important; padding: 10px !important; margin-bottom: 10px !important; font-size: 13px !important; border: 1px solid #000 !important; border-left: 1px solid #000 !important; background: transparent !important;}
+        .total { padding: 8px !important; font-size: 15px !important; margin-top: 5px !important; background: #e8f5e9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #000 !important; border-bottom: none !important;}
+        .warning { font-size: 11px !important; margin-top: 10px !important; color: #000 !important; margin-bottom:25px !important; page-break-after: avoid;}
+        
         .print-footer { display: block !important; position: fixed; bottom: 0; left:0; width: 100%; text-align: center; font-size: 11px; font-weight: bold; padding-top: 5px; border-top: 1px solid #000; color: #000;}
     }
 
