@@ -80,6 +80,11 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
+// ✨ ही नवीन ओळ ॲड केली आहे ज्यामुळे प्रत्येक वेळी ई-मेल आयडी विचारला जाईल ✨
+provider.setCustomParameters({
+    prompt: 'select_account'
+});
+
 let currentUser = null;
 let fetchedRecords = []; 
 let currentEditId = null; 
@@ -427,7 +432,7 @@ window.handleSave = function() {
     }
     
     if(!currentUser) { 
-        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक ভাগে!"); 
+        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
         return; 
     }
 
@@ -719,3 +724,4 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleCommute();
     toggleRecovery();
 });
+
