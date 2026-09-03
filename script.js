@@ -419,7 +419,7 @@ window.handleCalc = function() {
 };
 
 // ==========================================
-// 🚀 UPDATED SAVE FUNCTION (With Error Handling)
+// 🚀 UPDATED SAVE FUNCTION
 // ==========================================
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
@@ -451,7 +451,6 @@ window.handleSave = function() {
             saveTask = dbRef.push(cleanData);
         }
         
-        // Firebase वरून Confirm झाल्यावरच मेसेज दाखवणे
         saveTask.then(() => {
             currentEditId = null;
             alert("माहिती यशस्वीरित्या जतन झाली!");
@@ -465,7 +464,6 @@ window.handleSave = function() {
                 if(mobTab) mobTab.click();
             }
         }).catch(error => {
-            // जर Firebase ने डेटा सेव्ह करण्यास नकार दिला तर इथे एरर दिसेल
             saveBtn.innerHTML = originalBtnText;
             saveBtn.disabled = false;
             alert("डेटाबेस त्रुटी (Save Failed): " + error.message + "\n\nकृपया तुमचे Firebase Rules तपासा.");
@@ -483,7 +481,12 @@ window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
     currentEditId = null;
-    if(window.jQuery && $('#department').length) $('#department').val('').trigger('change');
+    
+    // ⚠️ jQuery Error Fix
+    if(window.jQuery && jQuery('#department').length) {
+        jQuery('#department').val('').trigger('change');
+    }
+    
     toggleRozandari();
     toggleCommute();
     toggleRecovery();
@@ -492,7 +495,6 @@ window.handleReset = function() {
 
 // ==========================================
 // 🎯 MAIN CALCULATION FUNCTION 
-// (Updated Logic as per User Request)
 // ==========================================
 function calculate(showModal = true){
   const basic = val("basicPay");
@@ -503,7 +505,6 @@ function calculate(showModal = true){
   if(halfYears > 0 && halfYears < 40) pension = basic * 0.50 * (halfYears / 66);
   pension = Math.round(pension);
   
-  // ✅ १. Gratuity (उपदान) फक्त बेसिक पे वर आधारित मोजली आहे (DA वगळून)
   const gratuity = Math.round(Math.min(basic * 0.25 * halfYears, basic * 16.5, 1400000));
   
   const isCommute = document.querySelector('input[name="commute"]:checked').value === "yes";
@@ -525,13 +526,11 @@ function calculate(showModal = true){
   const amtRecovery = hasRecovery ? val("recovery") : 0;
   const amtOther = hasRecovery ? val("otherDeduction") : 0;
   
-  // ✅ २. DA ची गणना: अंशराशीकरण असेल तर 'Reduced पेन्शनवर', अन्यथा 'मूळ पेन्शनवर'
   const baseForDA = isCommute ? reduced : pension;
   const pensionDA = Math.round(baseForDA * (da / 100));
   
   const lump = Math.max(0, commutationValue + gratuity + amtLeave + amtGpf + amtGis - amtRecovery - amtOther);
 
-  // DYNAMIC RESULT GRID INJECTION
   const resultGrid = $("resultGridContainer");
   let gridHTML = "";
 
@@ -642,34 +641,64 @@ function renderSaved(){
   }).join("");
 }
 
+// ==========================================
+// 🚀 RECORD HANDLING (Edit, Print, Delete) 
+// ⚠️ Fixed jQuery Conflict inside this function
+// ==========================================
 window.loadRecord = function(i){
-  const r = fetchedRecords[i].data;
-  if(!r) return;
-  
-  Object.keys(r).forEach(k=>{ if($(k)) $(k).value=r[k]; });
-  if(r.department && window.jQuery) $('#department').val(r.department).trigger('change');
-  if(r.establishment) { $("establishment").value = r.establishment; toggleRozandari(); if(r.establishment==="rozandari" && r.rozandariDate) $("rozandariDate").value = r.rozandariDate; }
-  if(r.payLevel){ updateBasicPay(); if(r.basicPay) $("basicPay").value = r.basicPay; }
-  calculateRealtimeLeave();
+  try {
+      const r = fetchedRecords[i].data;
+      if(!r) return;
+      
+      Object.keys(r).forEach(k => { 
+          if($(k)) $(k).value = r[k]; 
+      });
+      
+      // ⚠️ jQuery Error Fix: Used 'jQuery' word instead of '$' here
+      if(r.department && window.jQuery) {
+          jQuery('#department').val(r.department).trigger('change');
+      }
+      
+      if(r.establishment) { 
+          $("establishment").value = r.establishment; 
+          toggleRozandari(); 
+          if(r.establishment === "rozandari" && r.rozandariDate) {
+              $("rozandariDate").value = r.rozandariDate;
+          }
+      }
+      if(r.payLevel){ 
+          updateBasicPay(); 
+          if(r.basicPay) $("basicPay").value = r.basicPay; 
+      }
+      calculateRealtimeLeave();
 
-  document.querySelector(`input[name="commute"][value="${r.commute?"yes":"no"}"]`).checked=true;
-  
-  let hasRec = (r.recoveryAmount > 0 || r.otherDeduction > 0) ? "yes" : "no";
-  let recRadio = document.querySelector(`input[name="recovery"][value="${hasRec}"]`);
-  if(recRadio) recRadio.checked = true;
-  
-  toggleCommute();
-  toggleRecovery();
-  
-  currentEditId = fetchedRecords[i].id; 
-  document.querySelector('.tab[data-tab="calculator"]').click(); 
-  if(window.innerWidth <= 768) {
-      document.querySelector('.mobile-tab[data-tab="calculator"]').click();
+      const commuteVal = r.commute ? "yes" : "no";
+      const commuteRadio = document.querySelector(`input[name="commute"][value="${commuteVal}"]`);
+      if(commuteRadio) commuteRadio.checked = true;
+      
+      const hasRec = (Number(r.recoveryAmount) > 0 || Number(r.otherDeduction) > 0) ? "yes" : "no";
+      const recRadio = document.querySelector(`input[name="recovery"][value="${hasRec}"]`);
+      if(recRadio) recRadio.checked = true;
+      
+      toggleCommute();
+      toggleRecovery();
+      
+      currentEditId = fetchedRecords[i].id; 
+      
+      document.querySelector('.tab[data-tab="calculator"]').click(); 
+      if(window.innerWidth <= 768) {
+          const mobTab = document.querySelector('.mobile-tab[data-tab="calculator"]');
+          if(mobTab) mobTab.click();
+      }
+      
+      $("resultModal").style.display = "none";
+      setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
+      
+  } catch (error) {
+      console.error("Load Error:", error);
+      alert("माहिती लोड करताना तांत्रिक त्रुटी आली: " + error.message);
   }
-  
-  $("resultModal").style.display = "none";
-  setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
-}
+};
 
 window.printRecord = function(i) {
     loadRecord(i);
@@ -677,9 +706,14 @@ window.printRecord = function(i) {
 }
 
 window.deleteRecord = function(i){
-  if(confirm("ही माहिती कायमची डिलीट करायची आहे का?")) {
-      db.ref('users/' + currentUser.uid + '/pensionRecords/' + fetchedRecords[i].id).remove()
-      .then(() => alert("माहिती कायमची डिलीट झाली.")).catch(e => alert(e.message));
+  try {
+      if(confirm("ही माहिती कायमची डिलीट करायची आहे का?")) {
+          db.ref('users/' + currentUser.uid + '/pensionRecords/' + fetchedRecords[i].id).remove()
+          .then(() => alert("माहिती कायमची डिलीट झाली."))
+          .catch(e => alert("डिलीट करताना त्रुटी: " + e.message));
+      }
+  } catch(error) {
+      alert("तांत्रिक त्रुटी: " + error.message);
   }
 }
 
