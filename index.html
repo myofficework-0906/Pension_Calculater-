@@ -19,10 +19,15 @@
         background-attachment: fixed; 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 14px;
-        padding-top: 115px; /* अतिरिक्त जागा कमी केली */
-        padding-bottom: 60px; /* अतिरिक्त जागा कमी केली */
+        padding-top: 115px; 
+        padding-bottom: 60px; 
     }
     
+    /* 🌟 TAB PAGE LOGIC (नवीन ॲड केलेला कोड - ज्यामुळे टॅब वेगवेगळे दिसतील) */
+    .tabpage { display: none; animation: fadeIn 0.3s ease-in-out; }
+    .tabpage.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
     /* 🌟 FIXED HEADER AREA */
     .fixed-top-area { position: fixed; top: 0; left: 0; width: 100%; z-index: 1010; box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: #ffffff; }
     
@@ -193,8 +198,9 @@
 
     <!-- 🌟 MAIN CONTENT AREA -->
     <main class="container">
-    <section id="calculator" class="tabpage active">
     
+    <!-- 🧮 FORM TAB -->
+    <section id="calculator" class="tabpage active">
     <form id="pensionForm">
     <div class="section blue">
     <h3>👤 वैयक्तिक व पद माहिती</h3>
@@ -374,6 +380,7 @@
     </div>
     </section>
 
+    <!-- 📁 SAVED TAB -->
     <section id="saved" class="tabpage">
       <div class="section">
           <h2 style="color:#0b5d3b; margin-top:0; font-size:20px; border-bottom:2px solid #ccc; padding-bottom:10px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
@@ -382,7 +389,7 @@
       </div>
     </section>
 
-    <!-- 📖 विस्तृत आणि सविस्तर मदत -->
+    <!-- 📖 HELP TAB -->
     <section id="help" class="tabpage">
       <div class="section" style="line-height: 1.8; font-size:14.5px;">
         <div style="background: #e8f5e9; padding: 18px; border-left: 5px solid #0b5d3b; margin-bottom: 20px; border-radius: 6px;">
@@ -426,6 +433,7 @@
         </div>
       </div>
     </section>
+
     </main>
 
     <!-- 🌟 FIXED BOTTOM ACTION BAR & FOOTER -->
