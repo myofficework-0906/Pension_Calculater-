@@ -427,7 +427,7 @@ window.handleSave = function() {
     }
     
     if(!currentUser) { 
-        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
+        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक ভাগে!"); 
         return; 
     }
 
