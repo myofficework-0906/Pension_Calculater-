@@ -418,6 +418,9 @@ window.handleCalc = function() {
     calculate(true);
 };
 
+// ==========================================
+// 🚀 UPDATED SAVE FUNCTION (With Error Handling)
+// ==========================================
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -430,28 +433,48 @@ window.handleSave = function() {
         alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
         return; 
     }
+
+    const saveBtn = document.getElementById("saveBtn");
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.innerHTML = "⏳ जतन होत आहे...";
+    saveBtn.disabled = true;
     
     try {
         const rawData = calculate(false); 
         const cleanData = JSON.parse(JSON.stringify(rawData)); // Safe Object for Firebase
         const dbRef = db.ref('users/' + currentUser.uid + '/pensionRecords');
 
+        let saveTask;
         if(currentEditId !== null) {
-            dbRef.child(currentEditId).set(cleanData).catch(e => console.log("Background sync error:", e));
-            currentEditId = null;
+            saveTask = dbRef.child(currentEditId).set(cleanData);
         } else {
-            dbRef.push(cleanData).catch(e => console.log("Background sync error:", e));
+            saveTask = dbRef.push(cleanData);
         }
         
-        alert("माहिती यशस्वीरित्या जतन झाली!");
-        
-        document.querySelector('.tab[data-tab="saved"]').click();
-        if(window.innerWidth <= 768) {
-            const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
-            if(mobTab) mobTab.click();
-        }
+        // Firebase वरून Confirm झाल्यावरच मेसेज दाखवणे
+        saveTask.then(() => {
+            currentEditId = null;
+            alert("माहिती यशस्वीरित्या जतन झाली!");
+            
+            saveBtn.innerHTML = originalBtnText;
+            saveBtn.disabled = false;
+
+            document.querySelector('.tab[data-tab="saved"]').click();
+            if(window.innerWidth <= 768) {
+                const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
+                if(mobTab) mobTab.click();
+            }
+        }).catch(error => {
+            // जर Firebase ने डेटा सेव्ह करण्यास नकार दिला तर इथे एरर दिसेल
+            saveBtn.innerHTML = originalBtnText;
+            saveBtn.disabled = false;
+            alert("डेटाबेस त्रुटी (Save Failed): " + error.message + "\n\nकृपया तुमचे Firebase Rules तपासा.");
+            console.error("Firebase Save Error:", error);
+        });
 
     } catch(error) { 
+        saveBtn.innerHTML = originalBtnText;
+        saveBtn.disabled = false;
         alert("तांत्रिक त्रुटी: " + error.message); 
     }
 };
