@@ -80,10 +80,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// ✨ प्रत्येक वेळी ई-मेल आयडी विचारण्यासाठी ✨
-provider.setCustomParameters({
-    prompt: 'select_account'
-});
+provider.setCustomParameters({ prompt: 'select_account' });
 
 let currentUser = null;
 let fetchedRecords = []; 
@@ -162,7 +159,6 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
-// ✨ GIS दरांचा मॅट्रिक्स (निवृत्तीच्या महिन्यानुसार अचूक दर घेण्यासाठी) ✨
 const GIS_RATES_MATRIX = {
     "1982-05": {1:75881, 2:76369, 3:76861, 4:77355, 5:77852, 6:78352, 7:78855, 8:79360, 9:79869, 10:80381, 11:80896, 12:81414},
     "1990-01": {1:48118, 2:48443, 3:48770, 4:49099, 5:49430, 6:49762, 7:50097, 8:50434, 9:50772, 10:51113, 11:51456, 12:51800},
@@ -206,6 +202,20 @@ window.calculateRealtimeLeave = function() {
 
 $("basicPay").addEventListener("change", calculateRealtimeLeave);
 
+// ✨ स्वयंचलित (Automatic) सेवा कालावधी अपडेट करण्यासाठी फंक्शन ✨
+window.updateServicePeriod = function() {
+    const p = sixMonthlyPeriods();
+    $("serviceHalfYears").value = p;
+    let yrs = Math.floor(p / 2);
+    let mths = (p % 2) ? 6 : 0;
+    
+    if(p > 0) {
+        $("serviceOutput").innerHTML = `✓ एकूण अर्हताकारी सेवा: <span style="background:#e8f5e9; padding:2px 8px; border-radius:4px; border:1px solid #28a745;">${yrs} वर्षे ${mths} महिने</span>`;
+    } else {
+        $("serviceOutput").textContent = "";
+    }
+};
+
 function calculateRetirementDate() {
     const dobVal = $("dob").value;
     const groupVal = $("group").value;
@@ -229,12 +239,9 @@ function calculateRetirementDate() {
         $("commuteFactor").value = commutationFactors[ageNextBirthday];
     }
     
+    // निवृत्ती दिनांक निश्चित झाल्यावर आपोआप सेवा कालावधी अपडेट करा
     if($("joiningDate").value) {
-         const p = sixMonthlyPeriods();
-         $("serviceHalfYears").value = p;
-         let yrs = Math.floor(p / 2);
-         let mths = (p % 2) ? 6 : 0;
-         $("serviceOutput").textContent = `एकूण सेवा: ${yrs} वर्षे ${mths} महिने`;
+         updateServicePeriod();
     }
 }
 
@@ -269,7 +276,9 @@ function calculateRegularDate() {
     const rozDate = new Date(rDateVal);
     rozDate.setFullYear(rozDate.getFullYear() + 5); 
     $("joiningDate").value = rozDate.toISOString().split('T')[0];
-    if($("retirementDate").value) $("serviceHalfYears").value = sixMonthlyPeriods();
+    
+    // रुजू दिनांक निश्चित झाल्यावर आपोआप सेवा कालावधी अपडेट करा
+    if($("retirementDate").value) updateServicePeriod();
 }
 
 function sixMonthlyPeriods() {
@@ -309,14 +318,6 @@ function sixMonthlyPeriods() {
     return Math.floor(totalMonths / 6);
 }
 
-$("calcService").addEventListener("click",()=> {
-  const p = sixMonthlyPeriods();
-  $("serviceHalfYears").value = p;
-  let yrs = Math.floor(p / 2);
-  let mths = (p % 2) ? 6 : 0;
-  $("serviceOutput").textContent = `एकूण सेवा: ${yrs} वर्षे ${mths} महिने`;
-});
-
 window.toggleGisMode = function() {
     const isManual = $("manualGisToggle").checked;
     if(isManual) {
@@ -340,7 +341,6 @@ window.addGISRow = function() {
     `;
 }
 
-// ✨ युनिटची परिगणना (तक्त्यानुसार) ✨
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
@@ -355,7 +355,6 @@ function getGisUnits(dateStr, group) {
     return 0;
 }
 
-// ✨ सुधारित ऑटो GIS परिगणना (निवृत्तीच्या महिन्यानुसार) ✨
 window.calculateAutoGIS = function() {
     let totalGisAmount = 0;
     const rows = document.querySelectorAll("#gisTable tr");
@@ -379,13 +378,12 @@ window.calculateAutoGIS = function() {
         alert("कृपया प्रथम निवृत्ती दिनांक तपासा/भरा. निवृत्तीच्या महिन्यावरून GIS दर निश्चित केला जातो.");
         return;
     }
-    // निवृत्तीचा महिना काढला
+    
     const retMonth = parseInt(retDate.split('-')[1], 10);
 
     events.sort((a, b) => a.date.localeCompare(b.date));
     const startYear = parseInt(events[0].date.split('-')[0]);
     
-    // शासन निर्णयानुसार (GR) ऑटोमॅटिक युनिट बदल ॲड करणे
     if (startYear < 2002 && !events.some(e => e.date === "2002-01")) events.push({ date: "2002-01", group: null, type: 'auto' });
     if (startYear < 2016 && !events.some(e => e.date === "2016-01")) events.push({ date: "2016-01", group: null, type: 'auto' });
     
@@ -410,16 +408,14 @@ window.calculateAutoGIS = function() {
             if (GIS_RATES_MATRIX[ev.date] && GIS_RATES_MATRIX[ev.date][retMonth]) {
                 rate = GIS_RATES_MATRIX[ev.date][retMonth];
             } else {
-                // जर मॅट्रिक्समध्ये दर नसेल, तर युझरला दर विचारणे
                 let monthName = new Date(2026, retMonth - 1).toLocaleString('mr-IN', { month: 'long' });
                 let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा आणि तुमच्या निवृत्ती महिन्यासाठीचा (${monthName}) GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया शासन तक्त्यातून तो दर (Maturity Value) पाहून येथे टाईप करा:`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
-                    // टेम्पररी सेव्ह करा
                     if(!GIS_RATES_MATRIX[ev.date]) GIS_RATES_MATRIX[ev.date] = {};
                     GIS_RATES_MATRIX[ev.date][retMonth] = rate;
                 } else {
-                    return; // रद्द केल्यास कॅल्क्युलेशन थांबवा
+                    return; 
                 }
             }
             totalGisAmount += (diffUnits * rate);
@@ -502,6 +498,7 @@ window.handleSave = function() {
 window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
+    $("serviceOutput").textContent = "";
     currentEditId = null;
     
     if(window.jQuery && jQuery('#department').length) {
@@ -713,6 +710,9 @@ window.loadRecord = function(i){
           const mobTab = document.querySelector('.mobile-tab[data-tab="calculator"]');
           if(mobTab) mobTab.click();
       }
+      
+      // लोड झाल्यावर स्वयंचलित कालावधी अपडेट करा
+      updateServicePeriod();
       
       $("resultModal").style.display = "none";
       setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 200);
