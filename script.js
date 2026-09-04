@@ -80,7 +80,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// ✨ ही नवीन ओळ ॲड केली आहे ज्यामुळे प्रत्येक वेळी ई-मेल आयडी विचारला जाईल ✨
+// ✨ प्रत्येक वेळी ई-मेल आयडी विचारण्यासाठी ✨
 provider.setCustomParameters({
     prompt: 'select_account'
 });
@@ -162,17 +162,21 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
-const GIS_RATES_2026 = {
-    "1982-05": 76102, 
-    "1990-01": 51424,
-    "1994-01": 38315,
-    "2002-01": 26731,
-    "2010-01": 16530,
-    "2016-01": 7903,
-    "2016-06": 7903,
-    "2018-01": 6333,
-    "2018-07": 5877, 
-    "2026-01": 42
+// ✨ GIS दरांचा मॅट्रिक्स (निवृत्तीच्या महिन्यानुसार अचूक दर घेण्यासाठी) ✨
+const GIS_RATES_MATRIX = {
+    "1982-05": {1:75881, 2:76369, 3:76861, 4:77355, 5:77852, 6:78352, 7:78855, 8:79360, 9:79869, 10:80381, 11:80896, 12:81414},
+    "1990-01": {1:48118, 2:48443, 3:48770, 4:49099, 5:49430, 6:49762, 7:50097, 8:50434, 9:50772, 10:51113, 11:51456, 12:51800},
+    "1994-01": {1:37001, 2:37261, 3:37522, 4:37785, 5:38049, 6:38315, 7:38582, 8:38851, 9:39122, 10:39394, 11:39668, 12:39943},
+    "1998-01": {1:30074, 2:30293, 3:30513, 4:30735, 5:30957, 6:31181, 7:31407, 8:31634, 9:31862, 10:32091, 11:32322, 12:32554},
+    "2002-01": {1:25752, 2:25946, 3:26140, 4:26336, 5:26533, 6:26731, 7:26930, 8:27131, 9:27332, 10:27535, 11:27739, 12:27944},
+    "2006-01": {1:20007, 2:20167, 3:20327, 4:20489, 5:20651, 6:20815, 7:20979, 8:21145, 9:21311, 10:21478, 11:21647, 12:21816},
+    "2010-01": {1:15846, 2:15981, 3:16117, 4:16254, 5:16392, 6:16530, 7:16669, 8:16809, 9:16950, 10:17092, 11:17234, 12:17378},
+    "2014-01": {1:9802,  2:9902,  3:10002, 4:10103, 5:10204, 6:10306, 7:10409, 8:10512, 9:10616, 10:10720, 11:10825, 12:10931},
+    "2016-01": {1:7468,  2:7554,  3:7641,  4:7728,  5:7815,  6:7903,  7:7992,  8:8081,  9:8170,  10:8260,  11:8351,  12:8442},
+    "2018-01": {1:5500,  2:5575,  3:5650,  4:5725,  5:5800,  6:5877,  7:5953,  8:6030,  9:6108,  10:6186,  11:6264,  12:6343},
+    "2020-01": {1:3818,  2:3883,  3:3948,  4:4013,  5:4079,  6:4145,  7:4211,  8:4278,  9:4345,  10:4412,  11:4480,  12:4549},
+    "2022-01": {1:2377,  2:2433,  3:2490,  4:2546,  5:2603,  6:2660,  7:2718,  8:2776,  9:2834,  10:2893,  11:2952,  12:3011},
+    "2026-01": {1:42,    2:84,    3:127,   4:169,   5:212,   6:256,   7:299,   8:343,   9:387,   10:431,   11:476,   12:521}
 };
 
 function updateBasicPay() {
@@ -336,6 +340,7 @@ window.addGISRow = function() {
     `;
 }
 
+// ✨ युनिटची परिगणना (तक्त्यानुसार) ✨
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
@@ -350,6 +355,7 @@ function getGisUnits(dateStr, group) {
     return 0;
 }
 
+// ✨ सुधारित ऑटो GIS परिगणना (निवृत्तीच्या महिन्यानुसार) ✨
 window.calculateAutoGIS = function() {
     let totalGisAmount = 0;
     const rows = document.querySelectorAll("#gisTable tr");
@@ -368,12 +374,20 @@ window.calculateAutoGIS = function() {
         return;
     }
 
+    const retDate = $("retirementDate").value;
+    if (!retDate) {
+        alert("कृपया प्रथम निवृत्ती दिनांक तपासा/भरा. निवृत्तीच्या महिन्यावरून GIS दर निश्चित केला जातो.");
+        return;
+    }
+    // निवृत्तीचा महिना काढला
+    const retMonth = parseInt(retDate.split('-')[1], 10);
+
     events.sort((a, b) => a.date.localeCompare(b.date));
     const startYear = parseInt(events[0].date.split('-')[0]);
     
-    if (startYear < 2002) events.push({ date: "2002-01", group: null, type: 'auto' });
-    if (startYear < 2010) events.push({ date: "2010-01", group: null, type: 'auto' });
-    if (startYear < 2016) events.push({ date: "2016-01", group: null, type: 'auto' });
+    // शासन निर्णयानुसार (GR) ऑटोमॅटिक युनिट बदल ॲड करणे
+    if (startYear < 2002 && !events.some(e => e.date === "2002-01")) events.push({ date: "2002-01", group: null, type: 'auto' });
+    if (startYear < 2016 && !events.some(e => e.date === "2016-01")) events.push({ date: "2016-01", group: null, type: 'auto' });
     
     events.sort((a, b) => a.date.localeCompare(b.date));
     
@@ -392,14 +406,20 @@ window.calculateAutoGIS = function() {
         let diffUnits = currentUnits - previousUnits;
         
         if(diffUnits > 0) {
-            let rate = GIS_RATES_2026[ev.date]; 
-            if(!rate) {
-                let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया तुमचा दर (Maturity Value of 1 Unit) येथे टाईप करा:\n(उदा. 38315)`);
+            let rate = 0;
+            if (GIS_RATES_MATRIX[ev.date] && GIS_RATES_MATRIX[ev.date][retMonth]) {
+                rate = GIS_RATES_MATRIX[ev.date][retMonth];
+            } else {
+                // जर मॅट्रिक्समध्ये दर नसेल, तर युझरला दर विचारणे
+                let monthName = new Date(2026, retMonth - 1).toLocaleString('mr-IN', { month: 'long' });
+                let manualRate = prompt(`⚠️ त्रुटी: ${ev.date} या महिन्याचा आणि तुमच्या निवृत्ती महिन्यासाठीचा (${monthName}) GIS 'प्रति युनिट दर' सिस्टममध्ये नाही.\nकृपया शासन तक्त्यातून तो दर (Maturity Value) पाहून येथे टाईप करा:`);
                 if(manualRate && !isNaN(manualRate)) {
                     rate = Number(manualRate);
-                    GIS_RATES_2026[ev.date] = rate; 
+                    // टेम्पररी सेव्ह करा
+                    if(!GIS_RATES_MATRIX[ev.date]) GIS_RATES_MATRIX[ev.date] = {};
+                    GIS_RATES_MATRIX[ev.date][retMonth] = rate;
                 } else {
-                    return; 
+                    return; // रद्द केल्यास कॅल्क्युलेशन थांबवा
                 }
             }
             totalGisAmount += (diffUnits * rate);
@@ -724,4 +744,3 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleCommute();
     toggleRecovery();
 });
-
