@@ -162,6 +162,7 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
+// ✨ GIS दरांचा मॅट्रिक्स ✨
 const GIS_RATES_MATRIX = {
     "1982-05": {1:75881, 2:76369, 3:76861, 4:77355, 5:77852, 6:78352, 7:78855, 8:79360, 9:79869, 10:80381, 11:80896, 12:81414},
     "1990-01": {1:48118, 2:48443, 3:48770, 4:49099, 5:49430, 6:49762, 7:50097, 8:50434, 9:50772, 10:51113, 11:51456, 12:51800},
@@ -208,7 +209,12 @@ $("basicPay").addEventListener("change", calculateRealtimeLeave);
 // ✨ स्वयंचलित (Automatic) सेवा कालावधी अपडेट करण्यासाठी फंक्शन ✨
 window.updateServicePeriod = function() {
     const p = sixMonthlyPeriods();
-    $("serviceHalfYears").value = p;
+    
+    // बॉक्स असेल तरच अपडेट करा (Error टाळण्यासाठी)
+    if($("serviceHalfYears")) {
+        $("serviceHalfYears").value = p;
+    }
+    
     let yrs = Math.floor(p / 2);
     let mths = (p % 2) ? 6 : 0;
     
@@ -271,6 +277,9 @@ function toggleRozandari() {
     $("joiningDate").readOnly = isRoz;
     $("joiningDate").style.backgroundColor = isRoz ? "#e9ecef" : "";
     if(!isRoz) $("rozandariDate").value = "";
+    
+    // आस्थापना बदलल्यास सेवा कालावधी अपडेट करा
+    updateServicePeriod();
 }
 
 function calculateRegularDate() {
@@ -344,6 +353,7 @@ window.addGISRow = function() {
     `;
 }
 
+// ✨ युनिटची परिगणना ✨
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
