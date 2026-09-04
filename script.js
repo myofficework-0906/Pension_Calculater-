@@ -80,7 +80,10 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-provider.setCustomParameters({ prompt: 'select_account' });
+// ✨ प्रत्येक वेळी ई-मेल आयडी विचारण्यासाठी ✨
+provider.setCustomParameters({
+    prompt: 'select_account'
+});
 
 let currentUser = null;
 let fetchedRecords = []; 
@@ -498,7 +501,7 @@ window.handleSave = function() {
 window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
-    $("serviceOutput").textContent = "";
+    $("serviceOutput").textContent = ""; // Reset Auto Service Output
     currentEditId = null;
     
     if(window.jQuery && jQuery('#department').length) {
