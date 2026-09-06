@@ -67,10 +67,7 @@
         border-radius: 6px; border: 1px solid #ced4da; padding: 5px 8px; font-size: 13px; transition: border-color 0.3s; width: 100%; height: 32px;
     }
     input:focus, select:focus { border-color: #0b5d3b; box-shadow: 0 0 5px rgba(11,93,59,0.3); outline: none; }
-    
-    /* ⚠️ dd/mm/yyyy मधील अतिरिक्त स्पेस कमी करण्यासाठी विशेष कोड */
     input[type="date"], input[type="month"] { max-width: 150px; }
-
     button.smallbtn { border-radius: 6px; font-weight: bold; cursor: pointer; padding: 6px 12px; font-size: 12px; border:none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
     button.smallbtn:hover { transform: translateY(-2px); }
     
@@ -81,6 +78,9 @@
     .grid4 { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: flex-end; }
     .grid6 { display: grid; gap: 10px; grid-template-columns: repeat(6, 1fr); align-items: flex-end; }
     
+    /* ✨ SAVED DATA GRID (नवीन शेजारी-शेजारी कार्ड्ससाठी) ✨ */
+    .saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; align-items: stretch; }
+
     /* ✨ RADIO BUTTONS AS INPUT BOXES */
     .radio-group { 
         display:flex; justify-content: space-around; align-items:center; 
@@ -192,16 +192,12 @@
               <!-- ✨ CUSTOM SVG LOGO ✨ -->
               <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 3px 4px rgba(0,0,0,0.3)); flex-shrink: 0;">
                   <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#c3e6cb" stroke-width="2"/>
-                  <!-- Roof -->
                   <path d="M50 16 L18 34 V40 H82 V34 Z" fill="#0b5d3b"/>
-                  <!-- Pillars -->
                   <rect x="24" y="40" width="8" height="28" fill="#0b5d3b"/>
                   <rect x="46" y="40" width="8" height="28" fill="#0b5d3b"/>
                   <rect x="68" y="40" width="8" height="28" fill="#0b5d3b"/>
-                  <!-- Base -->
                   <rect x="16" y="68" width="68" height="8" fill="#0b5d3b"/>
                   <rect x="10" y="76" width="80" height="6" fill="#0b5d3b"/>
-                  <!-- Coin in Center -->
                   <circle cx="50" cy="54" r="14" fill="#ffc107" stroke="#ffffff" stroke-width="2"/>
                   <text x="50" y="60" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0b5d3b" text-anchor="middle">₹</text>
               </svg>
@@ -287,7 +283,7 @@
     </div>
     </div>
 
-    <!-- ✨ सुधारित सेवा कालावधी (ऑटोमॅटिक काम करेल) ✨ -->
+    <!-- ✨ सेवा कालावधी (ऑटोमॅटिक) ✨ -->
     <div class="section purple">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 1px solid #e9ecef; padding-bottom: 5px; margin-bottom: 8px;">
         <h3 style="margin:0; border:none; padding:0;">📅 सेवा कालावधी तपशील</h3>
@@ -303,7 +299,6 @@
       <label><span id="joiningDateLabel">सेवेत रुजू दिनांक</span> <input type="date" id="joiningDate" required onchange="updateServicePeriod()"></label>
       <label>निवृत्त / सेवा समाप्ती दिनांक <input type="date" id="retirementDate" required onchange="updateServicePeriod()"></label>
     </div>
-    <!-- Hidden Input for Backend Calculation -->
     <input type="hidden" id="serviceHalfYears" value="0">
     </div>
 
@@ -321,11 +316,10 @@
     </div>
     </div>
 
-    <!-- ✅ 6-COLUMN GRID (अंशराशीकरण व वसुली एकाच ओळीत) -->
+    <!-- ✅ 6-COLUMN GRID (अंशराशीकरण व वसुली) -->
     <div class="section orange">
         <h3>📉 अंशराशीकरण (Commutation) व 🛡️ शासकीय वसुली (Recovery)</h3>
         <div class="grid6">
-            <!-- Commutation Options -->
             <label>हवे आहे का? 
                 <div class="radio-group">
                     <label class="radio-label"><input type="radio" name="commute" value="yes" checked> होय</label>
@@ -335,7 +329,6 @@
             <label>अंशराशीकरण % <input type="number" id="commutePercent" min="0" max="40" step="0.01" value="40"></label>
             <label>अंशराशीकरण गुणक <input type="number" id="commuteFactor" min="0" step="0.001" value="8.194" disabled style="background-color: #e9ecef;"></label>
             
-            <!-- Recovery Options -->
             <label>वसुली आहे का? 
                 <div class="radio-group">
                     <label class="radio-label"><input type="radio" name="recovery" value="yes"> होय</label>
@@ -392,16 +385,13 @@
           <div class="resulthead"><h2>📜 निवृत्तीवेतन परिगणना अहवाल</h2><span id="reportDate" style="display:none;"></span></div>
           <div id="summary" style="font-size:14px; background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #0b5d3b;"></div>
           
-          <!-- ✅ DYNAMIC RESULT GRID -->
           <div id="resultGridContainer" class="resultgrid" style="font-size:14px; display:grid; gap:8px; border:1px solid #ddd; padding:15px; border-radius:8px;">
-              <!-- Filled by Javascript dynamically -->
           </div>
           
           <p class="warning" style="font-size:11px; margin-top:10px; color:#d9534f; text-align:center;">⚠️ सदर परिगणना केवळ प्राथमिक स्वरूपाची असून, अंतिम देयके प्रचलित नियम व संबंधित शासन निर्णयांच्या अधीन राहतील.</p>
           <div class="actions" style="margin-top:15px; text-align:center;">
              <button type="button" class="print" id="modalPrintBtn" onclick="window.print()" style="font-size: 15px; padding: 10px 25px; background-color:#17a2b8; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🖨️ अहवाल प्रिंट / PDF सेव्ह करा</button>
           </div>
-          <!-- ✅ ONLY VISIBLE IN PDF/PRINT -->
           <div class="print-footer">©२०२६ श्री. अभिजित पोपटराव निंबाळकर, कनिष्ठ लिपीक मो. नं. ९९७५८४६३०६ सर्व हक्क राखीव</div>
         </div>
       </div>
@@ -412,8 +402,11 @@
     <section id="saved" class="tabpage">
       <div class="section">
           <h2 style="color:#0b5d3b; margin-top:0; font-size:20px; border-bottom:2px solid #ccc; padding-bottom:10px;">📁 क्लाऊडवर जतन केलेली माहिती</h2>
-          <p style="font-size:14px; color:#555; margin-top:10px;">येथे तुमची सेव्ह केलेली माहिती कायमस्वरूपी सुरक्षित राहील. तुम्ही ती उघडून कधीही अपडेट किंवा प्रिंट करू शकता.</p>
-          <div id="savedList" style="margin-top: 20px;"></div>
+          <p style="font-size:14px; color:#555; margin-top:10px;">येथे तुम्ही सेव्ह केलेली माहिती कायमस्वरूपी सुरक्षित राहील. तुम्ही ती उघडून कधीही अपडेट किंवा प्रिंट करू शकता.</p>
+          
+          <!-- ✨ या डीव्ह मध्ये कार्ड्स ग्रिड स्वरूपात (शेजारी-शेजारी) दिसतील ✨ -->
+          <div id="savedList" class="saved-grid"></div>
+          
       </div>
     </section>
 
