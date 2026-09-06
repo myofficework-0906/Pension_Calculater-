@@ -452,6 +452,9 @@ window.handleCalc = function() {
     calculate(true);
 };
 
+// ==========================================
+// 🚀 UPDATED SAVE FUNCTION (With Auto-Reset)
+// ==========================================
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -477,18 +480,32 @@ window.handleSave = function() {
 
         let saveTask;
         if(currentEditId !== null) {
+            // जर जुनी माहिती एडिट केली असेल, तर तीच अपडेट करा
             saveTask = dbRef.child(currentEditId).set(cleanData);
         } else {
-            saveTask = dbRef.push(cleanData);
+            // ✨ नवीन माहिती असल्यास, 'नवीन स्वतंत्र रेकॉर्ड' (New List Item) बनवा ✨
+            const newRecordRef = dbRef.push(); 
+            saveTask = newRecordRef.set(cleanData); 
         }
         
         saveTask.then(() => {
             currentEditId = null;
             alert("माहिती यशस्वीरित्या जतन झाली!");
             
+            // ✨ नवीन बदल: जतन झाल्यावर फॉर्म आपोआप रिकामा करा (Overwriting टाळण्यासाठी) ✨
+            document.getElementById("pensionForm").reset();
+            $("serviceOutput").textContent = "";
+            if(window.jQuery && jQuery('#department').length) {
+                jQuery('#department').val('').trigger('change');
+            }
+            toggleRozandari();
+            toggleCommute();
+            toggleRecovery();
+            
             saveBtn.innerHTML = originalBtnText;
             saveBtn.disabled = false;
 
+            // जतन माहिती टॅबवर जा
             document.querySelector('.tab[data-tab="saved"]').click();
             if(window.innerWidth <= 768) {
                 const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
