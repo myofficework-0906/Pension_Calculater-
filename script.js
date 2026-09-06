@@ -80,10 +80,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// ✨ प्रत्येक वेळी ई-मेल आयडी विचारण्यासाठी ✨
-provider.setCustomParameters({
-    prompt: 'select_account'
-});
+provider.setCustomParameters({ prompt: 'select_account' });
 
 let currentUser = null;
 let fetchedRecords = []; 
@@ -162,7 +159,6 @@ const commutationFactors = {
     80: 4.812, 81: 4.611
 };
 
-// ✨ GIS दरांचा मॅट्रिक्स ✨
 const GIS_RATES_MATRIX = {
     "1982-05": {1:75881, 2:76369, 3:76861, 4:77355, 5:77852, 6:78352, 7:78855, 8:79360, 9:79869, 10:80381, 11:80896, 12:81414},
     "1990-01": {1:48118, 2:48443, 3:48770, 4:49099, 5:49430, 6:49762, 7:50097, 8:50434, 9:50772, 10:51113, 11:51456, 12:51800},
@@ -206,11 +202,8 @@ window.calculateRealtimeLeave = function() {
 
 $("basicPay").addEventListener("change", calculateRealtimeLeave);
 
-// ✨ स्वयंचलित (Automatic) सेवा कालावधी अपडेट करण्यासाठी फंक्शन ✨
 window.updateServicePeriod = function() {
     const p = sixMonthlyPeriods();
-    
-    // बॉक्स असेल तरच अपडेट करा (Error टाळण्यासाठी)
     if($("serviceHalfYears")) {
         $("serviceHalfYears").value = p;
     }
@@ -248,7 +241,6 @@ function calculateRetirementDate() {
         $("commuteFactor").value = commutationFactors[ageNextBirthday];
     }
     
-    // निवृत्ती दिनांक निश्चित झाल्यावर आपोआप सेवा कालावधी अपडेट करा
     if($("joiningDate").value) {
          updateServicePeriod();
     }
@@ -278,7 +270,6 @@ function toggleRozandari() {
     $("joiningDate").style.backgroundColor = isRoz ? "#e9ecef" : "";
     if(!isRoz) $("rozandariDate").value = "";
     
-    // आस्थापना बदलल्यास सेवा कालावधी अपडेट करा
     updateServicePeriod();
 }
 
@@ -289,7 +280,6 @@ function calculateRegularDate() {
     rozDate.setFullYear(rozDate.getFullYear() + 5); 
     $("joiningDate").value = rozDate.toISOString().split('T')[0];
     
-    // रुजू दिनांक निश्चित झाल्यावर आपोआप सेवा कालावधी अपडेट करा
     if($("retirementDate").value) updateServicePeriod();
 }
 
@@ -353,7 +343,6 @@ window.addGISRow = function() {
     `;
 }
 
-// ✨ युनिटची परिगणना ✨
 function getGisUnits(dateStr, group) {
     if(!dateStr || !group) return 0;
     const year = parseInt(dateStr.split('-')[0]);
@@ -452,9 +441,6 @@ window.handleCalc = function() {
     calculate(true);
 };
 
-// ==========================================
-// 🚀 UPDATED SAVE FUNCTION (With Auto-Reset)
-// ==========================================
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -480,10 +466,8 @@ window.handleSave = function() {
 
         let saveTask;
         if(currentEditId !== null) {
-            // जर जुनी माहिती एडिट केली असेल, तर तीच अपडेट करा
             saveTask = dbRef.child(currentEditId).set(cleanData);
         } else {
-            // ✨ नवीन माहिती असल्यास, 'नवीन स्वतंत्र रेकॉर्ड' (New List Item) बनवा ✨
             const newRecordRef = dbRef.push(); 
             saveTask = newRecordRef.set(cleanData); 
         }
@@ -492,7 +476,6 @@ window.handleSave = function() {
             currentEditId = null;
             alert("माहिती यशस्वीरित्या जतन झाली!");
             
-            // ✨ नवीन बदल: जतन झाल्यावर फॉर्म आपोआप रिकामा करा (Overwriting टाळण्यासाठी) ✨
             document.getElementById("pensionForm").reset();
             $("serviceOutput").textContent = "";
             if(window.jQuery && jQuery('#department').length) {
@@ -505,7 +488,6 @@ window.handleSave = function() {
             saveBtn.innerHTML = originalBtnText;
             saveBtn.disabled = false;
 
-            // जतन माहिती टॅबवर जा
             document.querySelector('.tab[data-tab="saved"]').click();
             if(window.innerWidth <= 768) {
                 const mobTab = document.querySelector('.mobile-tab[data-tab="saved"]');
@@ -528,7 +510,7 @@ window.handleSave = function() {
 window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
-    $("serviceOutput").textContent = ""; // Reset Auto Service Output
+    $("serviceOutput").textContent = ""; 
     currentEditId = null;
     
     if(window.jQuery && jQuery('#department').length) {
@@ -667,6 +649,7 @@ function fetchDataFromFirebase() {
     });
 }
 
+// ✨ नवीन शेजारी-शेजारी कार्ड्ससाठी डिझाईन ✨
 function renderSaved(){
   if(!currentUser){ $("savedList").innerHTML="<p>माहिती पाहण्यासाठी लॉगिन करा.</p>"; return; }
   if(!fetchedRecords.length){ $("savedList").innerHTML="<p>कोणतीही माहिती जतन केलेली नाही.</p>"; return; }
@@ -674,20 +657,20 @@ function renderSaved(){
   $("savedList").innerHTML = fetchedRecords.map((rObj, i)=>{
       let r = rObj.data;
       let deptName = r.department ? document.querySelector(`#department option[value="${r.department}"]`)?.text : "";
-      
       let displayName = r.employeeName || r.name || "नाव नाही"; 
       
       return `
-      <div class="section" style="padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
+      <div class="section" style="padding:15px; margin:0; display:flex; flex-direction:column; justify-content:space-between; gap:10px; height:100%; box-sizing:border-box;">
           <div>
-              <h3 style="margin:0; color:#0b5d3b;">👤 ${displayName}</h3>
-              <p style="margin:5px 0 0 0; font-size:13px; color:#555;">${r.designation || ""} | ${deptName || ""}</p>
-              <p style="margin:5px 0 0 0; font-size:13px;">Basic Pay: ₹${Number(r.basicPay||0).toLocaleString("en-IN")} | सेव्ह दिनांक: ${new Date(r.savedAt).toLocaleDateString("en-IN")}</p>
+              <h3 style="margin:0; color:#0b5d3b; font-size:16px;">👤 ${displayName}</h3>
+              <p style="margin:5px 0 0 0; font-size:12px; color:#555; line-height:1.4;">${r.designation || ""} | ${deptName || ""}</p>
+              <p style="margin:5px 0 0 0; font-size:13px; font-weight:bold;">Basic Pay: ₹${Number(r.basicPay||0).toLocaleString("en-IN")}</p>
+              <p style="margin:2px 0 0 0; font-size:11px; color:#777;">सेव्ह दिनांक: ${new Date(r.savedAt).toLocaleDateString("en-IN")}</p>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
-              <button onclick="loadRecord(${i})" style="background-color:#ffc107; color:black; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">✏️ Edit</button>
-              <button onclick="printRecord(${i})" style="background-color:#17a2b8; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">🖨️ Print</button>
-              <button onclick="deleteRecord(${i})" style="background-color:#d9534f; color:white; font-weight:bold; padding: 6px 12px; border:none; border-radius:4px; font-size:13px;">🗑️ Delete</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
+              <button onclick="loadRecord(${i})" style="flex:1; background-color:#ffc107; color:black; font-weight:bold; padding: 6px; border:none; border-radius:4px; font-size:12px;">✏️ Edit</button>
+              <button onclick="printRecord(${i})" style="flex:1; background-color:#17a2b8; color:white; font-weight:bold; padding: 6px; border:none; border-radius:4px; font-size:12px;">🖨️ Print</button>
+              <button onclick="deleteRecord(${i})" style="flex:1; background-color:#d9534f; color:white; font-weight:bold; padding: 6px; border:none; border-radius:4px; font-size:12px;">🗑️ Delete</button>
           </div>
       </div>`;
   }).join("");
@@ -741,7 +724,6 @@ window.loadRecord = function(i){
           if(mobTab) mobTab.click();
       }
       
-      // लोड झाल्यावर स्वयंचलित कालावधी अपडेट करा
       updateServicePeriod();
       
       $("resultModal").style.display = "none";
@@ -774,3 +756,4 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleCommute();
     toggleRecovery();
 });
+
