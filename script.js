@@ -3,7 +3,7 @@ const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",ma
 const val=id=>Number($(id).value)||0;
 
 // ==========================================
-// SMART HIDE FIXED BOTTOM ON MOBILE (When Typing)
+// SMART HIDE FIXED BOTTOM ON MOBILE
 // ==========================================
 document.addEventListener('focusin', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
@@ -80,6 +80,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 
+// ई-मेल आयडी विचारण्यासाठी
 provider.setCustomParameters({ prompt: 'select_account' });
 
 let currentUser = null;
@@ -441,6 +442,16 @@ window.handleCalc = function() {
     calculate(true);
 };
 
+// ✨ नवीन सेव्ह करण्यासाठी फंक्शन ✨
+window.handleSaveAsNew = function() {
+    if(!currentUser) { 
+        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन आवश्यक आहे!"); 
+        return; 
+    }
+    currentEditId = null; // जुनी ID काढून टाका जेणेकरून नवीन फाईल बनेल
+    handleSave();
+};
+
 window.handleSave = function() {
     const form = document.getElementById("pensionForm");
     if(!form.checkValidity()) {
@@ -448,14 +459,12 @@ window.handleSave = function() {
         alert("कृपया सर्व आवश्यक माहिती (उदा. नाव, बेसिक पे, जन्म दिनांक इत्यादी) भरा!");
         return;
     }
-    
     if(!currentUser) { 
-        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन (Google Login) करणे आवश्यक आहे!"); 
+        alert("माहिती जतन करण्यासाठी सुरक्षित लॉगिन आवश्यक आहे!"); 
         return; 
     }
 
     const saveBtn = document.getElementById("saveBtn");
-    const originalBtnText = saveBtn.innerHTML;
     saveBtn.innerHTML = "⏳ जतन होत आहे...";
     saveBtn.disabled = true;
     
@@ -466,8 +475,10 @@ window.handleSave = function() {
 
         let saveTask;
         if(currentEditId !== null) {
+            // जुनी फाईल अपडेट करा
             saveTask = dbRef.child(currentEditId).set(cleanData);
         } else {
+            // नवीन फाईल बनवा
             const newRecordRef = dbRef.push(); 
             saveTask = newRecordRef.set(cleanData); 
         }
@@ -476,6 +487,7 @@ window.handleSave = function() {
             currentEditId = null;
             alert("माहिती यशस्वीरित्या जतन झाली!");
             
+            // फॉर्म रिकामा करा
             document.getElementById("pensionForm").reset();
             $("serviceOutput").textContent = "";
             if(window.jQuery && jQuery('#department').length) {
@@ -485,8 +497,10 @@ window.handleSave = function() {
             toggleCommute();
             toggleRecovery();
             
-            saveBtn.innerHTML = originalBtnText;
+            // बटणे पूर्ववत करा
+            saveBtn.innerHTML = "💾 जतन करा";
             saveBtn.disabled = false;
+            document.getElementById("saveAsNewBtn").style.display = "none";
 
             document.querySelector('.tab[data-tab="saved"]').click();
             if(window.innerWidth <= 768) {
@@ -494,14 +508,13 @@ window.handleSave = function() {
                 if(mobTab) mobTab.click();
             }
         }).catch(error => {
-            saveBtn.innerHTML = originalBtnText;
+            saveBtn.innerHTML = currentEditId ? "💾 अपडेट करा" : "💾 जतन करा";
             saveBtn.disabled = false;
-            alert("डेटाबेस त्रुटी (Save Failed): " + error.message + "\n\nकृपया तुमचे Firebase Rules तपासा.");
-            console.error("Firebase Save Error:", error);
+            alert("डेटाबेस त्रुटी (Save Failed): " + error.message);
         });
 
     } catch(error) { 
-        saveBtn.innerHTML = originalBtnText;
+        saveBtn.innerHTML = currentEditId ? "💾 अपडेट करा" : "💾 जतन करा";
         saveBtn.disabled = false;
         alert("तांत्रिक त्रुटी: " + error.message); 
     }
@@ -511,7 +524,11 @@ window.handleReset = function() {
     document.getElementById("pensionForm").reset(); 
     document.getElementById("resultModal").style.display = "none";
     $("serviceOutput").textContent = ""; 
+    
+    // बटणे पूर्ववत करा
     currentEditId = null;
+    document.getElementById("saveBtn").innerHTML = "💾 जतन करा";
+    document.getElementById("saveAsNewBtn").style.display = "none";
     
     if(window.jQuery && jQuery('#department').length) {
         jQuery('#department').val('').trigger('change');
@@ -649,7 +666,6 @@ function fetchDataFromFirebase() {
     });
 }
 
-// ✨ नवीन शेजारी-शेजारी कार्ड्ससाठी डिझाईन ✨
 function renderSaved(){
   if(!currentUser){ $("savedList").innerHTML="<p>माहिती पाहण्यासाठी लॉगिन करा.</p>"; return; }
   if(!fetchedRecords.length){ $("savedList").innerHTML="<p>कोणतीही माहिती जतन केलेली नाही.</p>"; return; }
@@ -716,7 +732,10 @@ window.loadRecord = function(i){
       toggleCommute();
       toggleRecovery();
       
+      // ✨ नवीन बटणांचे सेटिंग ✨
       currentEditId = fetchedRecords[i].id; 
+      document.getElementById("saveBtn").innerHTML = "💾 अपडेट करा";
+      document.getElementById("saveAsNewBtn").style.display = "inline-block";
       
       document.querySelector('.tab[data-tab="calculator"]').click(); 
       if(window.innerWidth <= 768) {
@@ -756,4 +775,3 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleCommute();
     toggleRecovery();
 });
-
